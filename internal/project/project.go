@@ -1,0 +1,126 @@
+package project
+
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+
+	"agenttm/internal/config"
+)
+
+func Git(dir string, args ...string) (string, error) {
+	c := exec.Command("git", append([]string{"-C", dir}, args...)...)
+	b, e := c.Output()
+	if e != nil {
+		return "", fmt.Errorf("git %s failed: %w", strings.Join(args, " "), e)
+	}
+	return strings.TrimSpace(string(b)), nil
+}
+func Root(dir string) (string, error) {
+	r, e := Git(dir, "rev-parse", "--show-toplevel")
+	if e != nil {
+		var ee *exec.ExitError
+		if errors.As(e, &ee) && bytes.Contains(ee.Stderr, []byte("dubious ownership")) {
+			return "", fmt.Errorf("Git refused repository ownership; run git status here and resolve the reported ownership issue")
+		}
+		return "", fmt.Errorf("not inside a Git working tree; run git init first")
+	}
+	r, e = filepath.EvalSymlinks(r)
+	if e != nil {
+		return "", e
+	}
+	return filepath.Abs(r)
+}
+
+// Check every existing component: local storage must never traverse a symlink.
+func SafePath(path string) error {
+	p, e := filepath.Abs(path)
+	if e != nil {
+		return e
+	}
+	for {
+		st, e := os.Lstat(p)
+		if e == nil && st.Mode()&os.ModeSymlink != 0 {
+			return fmt.Errorf("refusing symlink in storage path: %s", p)
+		}
+		if e != nil && !os.IsNotExist(e) {
+			return e
+		}
+		parent := filepath.Dir(p)
+		if parent == p {
+			break
+		}
+		p = parent
+	}
+	return nil
+}
+func Init(root string) error {
+	base := filepath.Join(root, ".agenttm")
+	if e := SafePath(base); e != nil {
+		return e
+	}
+	for _, p := range []string{"data", "objects", "logs"} {
+		target := filepath.Join(base, p)
+		if e := SafePath(target); e != nil {
+			return e
+		}
+		if e := os.MkdirAll(target, 0700); e != nil {
+			return e
+		}
+	}
+	cp := filepath.Join(base, "config.json")
+	if e := SafePath(cp); e != nil {
+		return e
+	}
+	b, _ := json.MarshalIndent(config.Default(), "", "  ")
+	f, e := os.OpenFile(cp, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	if e == nil {
+		_, e = f.Write(append(b, '\n'))
+		ce := f.Close()
+		if e == nil {
+			e = ce
+		}
+	} else if os.IsExist(e) {
+		_, e = config.Load(cp)
+	}
+	if e != nil {
+		return e
+	}
+	exclude, e := Git(root, "rev-parse", "--git-path", "info/exclude")
+	if e != nil {
+		return e
+	}
+	if !filepath.IsAbs(exclude) {
+		exclude = filepath.Join(root, exclude)
+	}
+	if e = SafePath(exclude); e != nil {
+		return e
+	}
+	if e = os.MkdirAll(filepath.Dir(exclude), 0700); e != nil {
+		return e
+	}
+	old, e := os.ReadFile(exclude)
+	if e != nil && !os.IsNotExist(e) {
+		return e
+	}
+	for _, line := range strings.Split(string(old), "\n") {
+		if strings.TrimSpace(line) == "/.agenttm/" {
+			return nil
+		}
+	}
+	f, e = os.OpenFile(exclude, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+	if e != nil {
+		return e
+	}
+	_, e = f.WriteString("\n# AgentTM local recording data\n/.agenttm/\n")
+	ce := f.Close()
+	if e != nil {
+		return e
+	}
+	return ce
+}
