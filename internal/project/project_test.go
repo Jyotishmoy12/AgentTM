@@ -71,3 +71,33 @@ func TestRejectStorageSymlink(t *testing.T) {
 		t.Fatal("storage symlink accepted")
 	}
 }
+
+func TestStorageAllowsRepositoryAncestorAlias(t *testing.T) {
+	parent := t.TempDir()
+	real := filepath.Join(parent, "physical")
+	if err := os.Mkdir(real, 0700); err != nil {
+		t.Fatal(err)
+	}
+	alias := filepath.Join(parent, "alias")
+	if err := os.Symlink(real, alias); err != nil {
+		t.Skip("symlinks unavailable:", err)
+	}
+	root := filepath.Join(alias, "repo")
+	if err := os.Mkdir(root, 0700); err != nil {
+		t.Fatal(err)
+	}
+	gitTest(t, root, "init")
+	if err := Init(root); err != nil {
+		t.Fatalf("legitimate ancestor alias rejected: %v", err)
+	}
+	if err := SafePath(filepath.Join(root, ".agenttm", "objects", "new-object")); err != nil {
+		t.Fatal(err)
+	}
+	outside := t.TempDir()
+	if err := os.Symlink(outside, filepath.Join(root, ".agenttm", "objects", "escape")); err != nil {
+		t.Fatal(err)
+	}
+	if err := SafePath(filepath.Join(root, ".agenttm", "objects", "escape", "blob")); err == nil {
+		t.Fatal("storage symlink beneath an aliased repository was accepted")
+	}
+}

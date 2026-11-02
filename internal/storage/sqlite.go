@@ -58,6 +58,16 @@ func ID() string {
 }
 func Now() string { return time.Now().UTC().Format(time.RFC3339Nano) }
 func Open(root string) (*Store, error) {
+	// Store identity must agree with CLI repository discovery even when callers
+	// pass an OS alias such as macOS's /var temporary-directory prefix.
+	canonical, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		return nil, err
+	}
+	root, err = filepath.Abs(canonical)
+	if err != nil {
+		return nil, err
+	}
 	path := filepath.Join(root, ".agenttm", "data", "events.db")
 	if e := project.SafePath(path); e != nil {
 		return nil, e

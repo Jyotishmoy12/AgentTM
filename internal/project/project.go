@@ -54,11 +54,34 @@ func Root(dir string) (string, error) {
 	return filepath.Abs(r)
 }
 
-// Check every existing component: local storage must never traverse a symlink.
+// Canonicalize the repository prefix, then check every protected component.
+// OS aliases above a repository (macOS /var -> /private/var, for example) are
+// legitimate. Symlinks at or beneath .agenttm/.git must still be rejected.
 func SafePath(path string) error {
 	p, e := filepath.Abs(path)
 	if e != nil {
 		return e
+	}
+	anchor := ""
+	for current := p; ; current = filepath.Dir(current) {
+		name := filepath.Base(current)
+		if strings.EqualFold(name, ".agenttm") || strings.EqualFold(name, ".git") {
+			anchor = filepath.Dir(current)
+		}
+		if filepath.Dir(current) == current {
+			break
+		}
+	}
+	if anchor != "" {
+		relative, err := filepath.Rel(anchor, p)
+		if err != nil {
+			return err
+		}
+		canonical, err := filepath.EvalSymlinks(anchor)
+		if err != nil {
+			return err
+		}
+		p = filepath.Join(canonical, relative)
 	}
 	for {
 		st, e := os.Lstat(p)

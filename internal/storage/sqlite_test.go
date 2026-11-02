@@ -95,3 +95,34 @@ func TestStore(t *testing.T) {
 		t.Fatal(e)
 	}
 }
+
+func TestStoreIdentityThroughRepositoryAlias(t *testing.T) {
+	root := t.TempDir()
+	if b, err := exec.Command("git", "init", root).CombinedOutput(); err != nil {
+		t.Fatalf("%s %v", b, err)
+	}
+	if err := project.Init(root); err != nil {
+		t.Fatal(err)
+	}
+	alias := filepath.Join(t.TempDir(), "repo-alias")
+	if err := os.Symlink(root, alias); err != nil {
+		t.Skip("symlinks unavailable:", err)
+	}
+	physical, err := Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer physical.DB.Close()
+	throughAlias, err := Open(alias)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer throughAlias.DB.Close()
+	if physical.ProjectID != throughAlias.ProjectID {
+		t.Fatal("repository alias created a second project identity")
+	}
+	var count int
+	if err := physical.DB.QueryRow("SELECT count(*) FROM projects").Scan(&count); err != nil || count != 1 {
+		t.Fatalf("expected one canonical project, got %d: %v", count, err)
+	}
+}
