@@ -5,6 +5,7 @@ import { changedPaths, checkpointNear, eventTitle, filterEvents, record } from '
 import { CodeViewer } from './components/CodeViewer';
 import { FileTree } from './components/FileTree';
 import { ForkDialog } from './components/ForkDialog';
+import { Onboarding } from './components/Onboarding';
 
 const short = (id: string) => id.slice(0, 8);
 const time = (value: string) => new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -104,6 +105,7 @@ export function App() {
       <div className="header-divider" />
       <div className="project-label"><span className="muted">PROJECT</span><strong>{health?.project ?? 'Loading project…'}</strong></div>
       <div className="header-spacer" />
+      <Onboarding />
       <span className="privacy-badge"><span className="status-dot" /> Local · private</span>
       <button className="icon-button" onClick={() => setRevision(n => n + 1)} title="Refresh history" aria-label="Refresh history">↻</button>
     </header>

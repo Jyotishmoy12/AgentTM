@@ -30,10 +30,20 @@ type Server struct {
 	Address   string
 	slots     chan struct{}
 	csrfToken string
+	desktop   bool
 }
 
 func New(engine *snapshot.Engine, version, address string) *Server {
 	return &Server{Engine: engine, Version: version, Address: address, slots: make(chan struct{}, 2), csrfToken: storage.ID()}
+}
+
+// NewDesktop configures the same API/UI handler for a native Wails window.
+// The handler is not exposed through a TCP listener in this mode, so browser
+// Host/Origin checks are unnecessary while all request-level limits remain.
+func NewDesktop(engine *snapshot.Engine, version string) *Server {
+	s := New(engine, version, "wails.localhost")
+	s.desktop = true
+	return s
 }
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -44,17 +54,19 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; worker-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'none'")
 	// Host validation prevents DNS rebinding; Origin/Fetch Metadata reject reads
 	// initiated by other websites. Mutations additionally require a per-server token.
-	if r.Host != s.Address {
+	if !s.desktop && r.Host != s.Address {
 		fail(w, 403, "untrusted_host", "Open the printed 127.0.0.1 URL.")
 		return
 	}
-	if o := r.Header.Get("Origin"); o != "" && o != "http://"+s.Address {
-		fail(w, 403, "untrusted_origin", "Cross-origin requests are not allowed.")
-		return
-	}
-	if site := r.Header.Get("Sec-Fetch-Site"); site != "" && site != "none" && site != "same-origin" {
-		fail(w, 403, "untrusted_origin", "Cross-origin requests are not allowed.")
-		return
+	if !s.desktop {
+		if o := r.Header.Get("Origin"); o != "" && o != "http://"+s.Address {
+			fail(w, 403, "untrusted_origin", "Cross-origin requests are not allowed.")
+			return
+		}
+		if site := r.Header.Get("Sec-Fetch-Site"); site != "" && site != "none" && site != "same-origin" {
+			fail(w, 403, "untrusted_origin", "Cross-origin requests are not allowed.")
+			return
+		}
 	}
 	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	forkPost := r.Method == http.MethodPost && len(parts) == 4 && parts[0] == "api" && parts[1] == "checkpoints" && parts[3] == "fork"
@@ -63,7 +75,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fail(w, 405, "method_not_allowed", "Only reads and the explicit checkpoint fork action are supported.")
 		return
 	}
-	if forkPost && (r.Header.Get("Origin") != "http://"+s.Address || subtle.ConstantTimeCompare([]byte(r.Header.Get("X-AgentTM-CSRF")), []byte(s.csrfToken)) != 1) {
+	if forkPost && ((!s.desktop && r.Header.Get("Origin") != "http://"+s.Address) || subtle.ConstantTimeCompare([]byte(r.Header.Get("X-AgentTM-CSRF")), []byte(s.csrfToken)) != 1) {
 		fail(w, 403, "csrf_required", "Fork requires this UI's same-origin confirmation token. Refresh the page and retry.")
 		return
 	}
