@@ -131,12 +131,40 @@ func Open(root string) (*Store, error) {
 			return fail(e)
 		}
 	}
-	id := ID()
-	if _, e = tx.Exec("INSERT INTO projects VALUES (?, ?, ?) ON CONFLICT(root_path) DO NOTHING", id, root, Now()); e != nil {
+	// Older databases may have recorded the OS-visible alias of the repository
+	// (for example a short Windows temp path) before Open began canonicalizing
+	// roots. Match those rows by their resolved path so migration retains the
+	// original project/session/event history.
+	id := ""
+	rows, e := tx.Query("SELECT id, root_path FROM projects")
+	if e != nil {
 		return fail(e)
 	}
-	if e = tx.QueryRow("SELECT id FROM projects WHERE root_path=?", root).Scan(&id); e != nil {
-		return fail(e)
+	for rows.Next() {
+		var candidate, stored string
+		if e = rows.Scan(&candidate, &stored); e != nil {
+			rows.Close()
+			return fail(e)
+		}
+		match := stored == root
+		if !match {
+			if resolved, resolveErr := filepath.EvalSymlinks(stored); resolveErr == nil {
+				if resolvedAbs, absErr := filepath.Abs(resolved); absErr == nil {
+					match = resolvedAbs == root
+				}
+			}
+		}
+		if match {
+			id = candidate
+			break
+		}
+	}
+	rows.Close()
+	if id == "" {
+		id = ID()
+		if _, e = tx.Exec("INSERT INTO projects VALUES (?, ?, ?)", id, root, Now()); e != nil {
+			return fail(e)
+		}
 	}
 	if e = tx.Commit(); e != nil {
 		return fail(e)

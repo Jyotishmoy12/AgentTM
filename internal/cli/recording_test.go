@@ -64,14 +64,15 @@ func TestRecordingSnapshots(t *testing.T) {
 		name += ".exe"
 	}
 	fake := filepath.Join(fakeDir, name)
-	if err = os.Link(binary, fake); err != nil {
-		b, err := os.ReadFile(binary)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if err = os.WriteFile(fake, b, 0700); err != nil {
-			t.Fatal(err)
-		}
+	// Copy rather than hard-linking the test executable. Windows keeps an
+	// executable image locked while the test process is alive, which makes
+	// TempDir cleanup fail when the child alias is a hard link to this binary.
+	b, err := os.ReadFile(binary)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = os.WriteFile(fake, b, 0700); err != nil {
+		t.Fatal(err)
 	}
 	t.Setenv("PATH", fakeDir+string(os.PathListSeparator)+os.Getenv("PATH"))
 	t.Setenv("AGENTTM_CLI_TEST_CHILD", "1")
