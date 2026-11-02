@@ -40,9 +40,9 @@ Release executables embed version, commit/dirty marker, build time and Go runtim
 information. Build timestamps mean builds are not claimed bit-for-bit identical.
 
 CI tests native Windows/Linux/macOS behavior, adds Linux race/browser checks, and
-checks native archive installation. The release workflow emits workflow artifacts
-for tags/manual dispatch. It neither creates a public GitHub release nor changes
-repository visibility. Publishing/signing is an owner-controlled external step.
+checks native archive installation. The release workflow publishes each archive,
+the checksum manifest, and installer scripts as individual assets on the GitHub
+Release for a tag or manual dispatch. Signing remains an owner-controlled step.
 
 ## Revalidate on a new Codex version
 

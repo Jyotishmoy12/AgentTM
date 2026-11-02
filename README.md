@@ -239,9 +239,10 @@ go run ./cmd/release --version 0.1.0 --out dist/0.1.0
 Rebuild the frontend first after UI source edits. The packager creates Windows,
 Linux and macOS archives for amd64/arm64 plus `SHA256SUMS`, notices and restore
 guidance. Existing outputs are refused; use a new output directory for a new build.
-CI runs native tests across all three OSes and browser tests on Linux. Version
-tags/manual release workflows produce downloadable artifacts; they do not publish
-a public GitHub release automatically.
+CI runs native tests across all three OSes and browser tests on Linux. A version
+tag or manual release workflow publishes the individual archives to the
+repository's GitHub Releases page, so users can download only their platform's
+archive.
 
 Deferred beyond v0.1: interactive Codex capture, additional agents, automatic
 continuation, cloud sync, encrypted backup, and blob garbage collection.
