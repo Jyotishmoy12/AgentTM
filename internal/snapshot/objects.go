@@ -43,35 +43,47 @@ func boundedRead(path string, max int64) ([]byte, error) {
 // Stage in the destination directory, sync and rename. Unreferenced files after
 // interruption are safe; doctor reports them and never removes data automatically.
 func atomicWrite(path string, b []byte) error {
+	tmp, err := stageFile(path, b)
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tmp)
+	return os.Rename(tmp, path)
+}
+func stageFile(path string, b []byte) (tmp string, err error) {
 	if e := project.SafePath(path); e != nil {
-		return e
+		return "", e
 	}
 	if e := os.MkdirAll(filepath.Dir(path), 0700); e != nil {
-		return e
+		return "", e
 	}
 	if _, e := os.Lstat(path); e == nil {
-		return fmt.Errorf("immutable destination already exists: %s", path)
+		return "", fmt.Errorf("immutable destination already exists: %s", path)
 	} else if !os.IsNotExist(e) {
-		return e
+		return "", e
 	}
 	f, e := os.CreateTemp(filepath.Dir(path), ".tmp-")
 	if e != nil {
-		return e
+		return "", e
 	}
-	tmp := f.Name()
-	defer os.Remove(tmp)
+	tmp = f.Name()
+	defer func() {
+		if err != nil {
+			os.Remove(tmp)
+		}
+	}()
 	if _, e = f.Write(b); e != nil {
 		f.Close()
-		return e
+		return tmp, e
 	}
 	if e = f.Sync(); e != nil {
 		f.Close()
-		return e
+		return tmp, e
 	}
 	if e = f.Close(); e != nil {
-		return e
+		return tmp, e
 	}
-	return os.Rename(tmp, path)
+	return tmp, nil
 }
 func (e *Engine) objectPath(id string) (string, error) {
 	h := strings.TrimPrefix(id, "sha256:")

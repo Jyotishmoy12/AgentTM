@@ -8,7 +8,7 @@ export default defineConfig({
     strictPort: true,
     proxy: { '/api': { target: 'http://127.0.0.1:7331', changeOrigin: true, configure(proxy) {
       // Development only: the backend still receives its own trusted origin.
-      proxy.on('proxyReq', request => { request.removeHeader('origin'); request.removeHeader('sec-fetch-site'); });
+      proxy.on('proxyReq', (request,original) => { if(original.headers.origin==='http://127.0.0.1:5173')request.setHeader('origin','http://127.0.0.1:7331'); });
     } } },
   },
 });

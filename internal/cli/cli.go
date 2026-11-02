@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -21,10 +22,11 @@ import (
 	"agenttm/internal/storage"
 )
 
-var Version = "0.3.0-phase3"
+var Version = "0.1.0"
 var Commit = "development"
+var BuildDate = "development"
 
-const usage = `AgentTM - local Codex events and workspace checkpoints (Phase 3)
+const usage = `AgentTM - local Codex history, checkpoints and safe forks
 
   agenttm init
   agenttm version
@@ -39,8 +41,11 @@ const usage = `AgentTM - local Codex events and workspace checkpoints (Phase 3)
   agenttm cat <checkpoint-id> <repo-relative-path>
   agenttm diff <checkpoint-id>
   agenttm ui [--port 7331] [--no-browser]
+  agenttm fork <checkpoint-id> --name <name> [--allow-partial]
+  agenttm forks
+  agenttm purge --session <session-id> [--yes]
 
-Only runs launched through AgentTM are recorded. Fork is a later milestone.
+Only runs launched through AgentTM are recorded. Forks never execute captured code.
 Snapshots observe baseline/final state, not guaranteed per-tool history.
 `
 
@@ -60,7 +65,7 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 		return nil, 0
 	}
 	if args[0] == "version" {
-		fmt.Fprintf(out, "agenttm %s (%s)\n", Version, Commit)
+		fmt.Fprintf(out, "agenttm %s (%s) %s/%s %s built %s\n", Version, Commit, runtime.GOOS, runtime.GOARCH, runtime.Version(), BuildDate)
 		return nil, 0
 	}
 	if args[0] == "codex" && len(args) == 2 && args[1] == "doctor" {
@@ -106,6 +111,12 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 	defer s.DB.Close()
 	engine := &snapshot.Engine{Root: root, Store: s, Config: c}
 	switch args[0] {
+	case "fork":
+		return forkCommand(ctx, args[1:], engine, out, errOut)
+	case "purge":
+		return purgeCommand(args[1:], engine, out, errOut)
+	case "forks":
+		return listForks(engine, out), 0
 	case "ui":
 		return uiCommand(ctx, args[1:], engine, out, errOut)
 	case "checkpoint", "checkpoints", "show", "cat", "diff":
@@ -189,6 +200,8 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 		fs := flag.NewFlagSet("run codex", flag.ContinueOnError)
 		fs.SetOutput(errOut)
 		model := fs.String("model", "", "explicit Codex model override")
+		sandbox := fs.String("sandbox", "", "explicit read-only or workspace-write override; default honors Codex configuration")
+		scanTools := fs.Bool("snapshot-after-tool", c.Capture.SnapshotAfterTool, "observe workspace near completed command/file-change items")
 		if e = fs.Parse(args[2:]); e != nil {
 			return e, 2
 		}
@@ -196,11 +209,17 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 			return fmt.Errorf("provide one quoted task after --"), 2
 		}
 		task := fs.Arg(0)
+		if len(task) > 1<<20 {
+			return fmt.Errorf("task exceeds 1 MiB"), 2
+		}
+		if *sandbox != "" && *sandbox != "read-only" && *sandbox != "workspace-write" {
+			return fmt.Errorf("--sandbox must be read-only or workspace-write"), 2
+		}
 		omit := task
 		if c.Capture.PromptMode == "sanitized" {
 			omit = ""
 		}
-		adapter := codex.Adapter{Model: *model, MaxPayload: c.Capture.MaxEventPayloadBytes, OmitTask: omit}
+		adapter := codex.Adapter{Model: *model, Sandbox: *sandbox, MaxPayload: c.Capture.MaxEventPayloadBytes, OmitTask: omit}
 		version, e := adapter.Available(ctx)
 		if e != nil {
 			return e, 1
@@ -210,12 +229,12 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 			return e, 1
 		}
 		fmt.Fprintf(errOut, "Recording session %s (%s)\n", id, version)
-		fmt.Fprintln(errOut, "Capturing baseline and final workspace state; no guaranteed per-tool checkpoints.")
-		if c.Capture.SnapshotAfterTool {
-			fmt.Fprintln(errOut, "snapshot_after_tool is reserved; this version scans only baseline/final and explicit manual observations.")
+		fmt.Fprintln(errOut, "Capturing baseline/final workspace state; intermediate observations are best-effort, not proof of causality.")
+		if *sandbox != "" {
+			fmt.Fprintln(errOut, "Explicit Codex sandbox:", *sandbox)
 		}
 		start := time.Now()
-		meta := map[string]any{"source": "agenttm", "prompt_bytes": len(task), "prompt_mode": c.Capture.PromptMode, "codex_version": version, "model_override": events.Redact(*model)}
+		meta := map[string]any{"source": "agenttm", "prompt_bytes": len(task), "prompt_mode": c.Capture.PromptMode, "codex_version": version, "model_override": events.Redact(*model), "sandbox_override": *sandbox, "snapshot_after_tool": *scanTools}
 		if c.Capture.PromptMode == "sanitized" {
 			meta["prompt"] = events.Redact(task)
 			if len(task) > c.Capture.MaxEventPayloadBytes/2 {
@@ -236,9 +255,10 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 		}
 		printCapture(errOut, baseline)
 		result, runErr := adapter.Run(ctx, root, task, func(r events.Record) error {
-			if e := s.Append(id, r.Kind, r.Tool, r.Call, r.Payload); e != nil {
+			eventID, appendErr := s.AppendID(id, r.Kind, r.Tool, r.Call, r.Payload)
+			if appendErr != nil {
 				captureFailed = true
-				return e
+				return appendErr
 			}
 			if r.Upstream != "" {
 				if _, e := s.DB.Exec("UPDATE sessions SET upstream_session_id=? WHERE id=?", r.Upstream, id); e != nil {
@@ -247,6 +267,17 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 				}
 			}
 			fmt.Fprintln(errOut, "  observed", r.Kind)
+			if *scanTools && r.Kind == "item.completed" && (r.Tool == "command_execution" || r.Tool == "file_change") {
+				observed, err := engine.CaptureNear(ctx, id, eventID)
+				if err != nil {
+					if ctx.Err() != nil {
+						return ctx.Err()
+					}
+					captureFailed = true
+					return fmt.Errorf("intermediate observation failed: %w", err)
+				}
+				printCapture(errOut, observed)
+			}
 			return nil
 		})
 		// A cancelled run still needs its final observation. Give the capture an
@@ -310,6 +341,7 @@ func codexDoctor(ctx context.Context, out io.Writer) error {
 		return e
 	}
 	fmt.Fprintf(out, "Codex: %s; exec --json advertised\n", version)
+	fmt.Fprintln(out, codex.Compatibility(version))
 	checkCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	if e = exec.CommandContext(checkCtx, "codex", "login", "status").Run(); e != nil {

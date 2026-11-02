@@ -128,5 +128,48 @@ func (e *Engine) Doctor() Report {
 	if _, err = os.Lstat(lock); err == nil {
 		r.Warnings = append(r.Warnings, "snapshot.lock exists: capture may be active; after confirming no capture is running, remove only this lock to recover from an interrupted process")
 	}
+	maintenance := filepath.Join(e.Root, ".agenttm", "data", "maintenance.lock")
+	if _, err = os.Lstat(maintenance); err == nil {
+		r.Warnings = append(r.Warnings, "maintenance.lock exists: fork/purge may be active; verify no operation is running before removing a stale lock")
+	}
+	forks, queryErr := e.Store.DB.Query("SELECT f.worktree_path,f.status FROM forks f JOIN checkpoints c ON c.id=f.checkpoint_id JOIN sessions s ON s.id=c.session_id WHERE s.project_id=?", e.Store.ProjectID)
+	known := map[string]bool{}
+	if queryErr != nil {
+		r.Problems = append(r.Problems, queryErr.Error())
+	} else {
+		for forks.Next() {
+			var p, status string
+			if err = forks.Scan(&p, &status); err != nil {
+				r.Problems = append(r.Problems, err.Error())
+				break
+			}
+			known[filepath.Clean(p)] = true
+			if status != "ready" {
+				r.Warnings = append(r.Warnings, "fork "+status+" retained for inspection: "+p)
+			}
+			if err = project.SafePath(p); err != nil {
+				r.Problems = append(r.Problems, err.Error())
+			} else if _, err = os.Stat(p); err != nil {
+				r.Warnings = append(r.Warnings, "recorded fork directory unavailable: "+p)
+			}
+		}
+		if err = forks.Err(); err != nil {
+			r.Problems = append(r.Problems, err.Error())
+		}
+		forks.Close()
+	}
+	worktrees := filepath.Join(e.Root, ".agenttm", "worktrees")
+	if err = project.SafePath(worktrees); err != nil {
+		r.Problems = append(r.Problems, err.Error())
+	} else if entries, err := os.ReadDir(worktrees); err == nil {
+		for _, d := range entries {
+			p := filepath.Join(worktrees, d.Name())
+			if !known[p] {
+				r.Warnings = append(r.Warnings, "unrecorded fork directory retained: "+p)
+			}
+		}
+	} else if !os.IsNotExist(err) {
+		r.Problems = append(r.Problems, err.Error())
+	}
 	return r
 }

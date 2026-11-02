@@ -1,4 +1,4 @@
-# Phase 3: local history UI
+# Local history UI and safe forks
 
 `agenttm ui` serves the current project's real SQLite sessions, events and
 checkpoints at `http://127.0.0.1:7331`, and opens the default browser. It does not
@@ -41,11 +41,17 @@ The UI shows observable events, not hidden reasoning or complete shell activity.
 An event's `completed` status is not proof that a requested coding task succeeded.
 Workspace changes can come from users or background tools. Baseline/final/manual
 scans do not establish per-tool causality. Only AgentTM-managed noninteractive
-Codex runs are recorded. Fork/restore actions are not implemented until Phase 4.
+Codex runs are recorded. **Fork checkpoint** opens a confirmation dialog with the
+server-computed destination/branch, warnings and separate partial-restore consent.
+Success shows the restored path; failures are displayed without running captured
+code or changing the original workspace.
 
 ## Loopback API
 
-All routes are GET-only. Other methods return a structured 405 error. The server
+History is GET-only. The sole mutation is POST to a checkpoint's `/fork` route,
+requiring a matching Origin, per-server `X-AgentTM-CSRF` token from same-origin
+`/api/health`, JSON content type, a bounded strict schema and `confirmed: true`.
+Other methods return structured 405 errors. The server
 binds only to `127.0.0.1`, checks the exact Host, and rejects foreign Origin and
 cross-site Fetch Metadata headers. There is no permissive CORS. Browser protections
 use same-origin checks, CSP, frame denial, no-store and nosniff. This does not stop
@@ -61,6 +67,8 @@ local programs/users who already have access to the repository's local files.
 | `/api/checkpoints/{id}/tree` | `cursor` offset; default 250, max 1000 paths |
 | `/api/checkpoints/{id}/file?path=` | Verified UTF-8 contents, max 1 MiB |
 | `/api/checkpoints/{id}/diff?against=parent` | `cursor` offset; default 20, max 100 changes |
+| `GET /api/checkpoints/{id}/fork?name=` | Server-computed restore plan and warnings |
+| `POST /api/checkpoints/{id}/fork` | `{name, allow_partial, confirmed}`; 4 KiB maximum |
 
 List responses contain `items` and `next_cursor` (`null` when complete). Checkpoint
 lists also expose `last_cursor` for incremental refresh. IDs must be UUIDs belonging
@@ -90,7 +98,7 @@ go build -o .\bin\agenttm.exe .\cmd\agenttm
 
 For Vite development, run `agenttm ui --no-browser` in one terminal and `npm.cmd run
 dev` in `web` in another. Vite serves on loopback and proxies `/api` to port 7331;
-only that development proxy rewrites Origin/Fetch Metadata to the backend origin.
+only that development proxy rewrites the trusted `127.0.0.1:5173` Origin to the backend origin.
 Production has no proxy. A production Go rebuild is needed after `npm run build`
 to embed changed assets. Node is needed to build, not to run the resulting binary.
 

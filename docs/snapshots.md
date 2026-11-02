@@ -1,10 +1,16 @@
-# Phase 2: workspace snapshots
+# Workspace snapshots
 
 Run `agenttm help` for the inspection commands. `agenttm run codex` captures an
 eligible-file baseline before launching Codex, then scans again after process exit,
 including failure or Ctrl+C. A final scan failure sets `recording_failed`; a
 baseline failure prevents Codex launch. A failed recording is never reported as a
 successful complete recording. Existing Phase 1 sessions and events are preserved.
+With `capture.snapshot_after_tool` or `--snapshot-after-tool=true`, supported
+completed command/file-change items trigger additional best-effort scans. These
+are `observed` checkpoints with an `observed_event_id`; the native tool event
+links to the observed checkpoint. Unchanged scans reuse the previous state.
+Codex and background processes are not paused. Attribution is **observed near
+event**, not caused by it or guaranteed atomic post-tool state.
 
 ## Checkpoints and observations
 

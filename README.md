@@ -1,18 +1,36 @@
-# Agent Time Machine — Phase 3
+# Agent Time Machine v0.1
 
 A local Go CLI that records **real, AgentTM-managed noninteractive Codex runs**
 in SQLite, with baseline/final workspace checkpoints and historical file inspection.
 The embedded React/TypeScript UI displays real stored sessions, timelines,
-historical files, and parent diffs. This implements Milestones 0–3 in
+historical files, parent diffs and isolated worktree forks. This implements Milestones 0–5 in
 [the MVP specification](AGENT_TIME_MACHINE_MVP.md).
 
-**Validation status:** automated tests and local builds pass. A real `gpt-6.1-sol`
-run completed, with command events and baseline/final observations persisted.
-Its attempted write was refused by normal Codex permissions; manual file changes
-were then captured and verified. See [compatibility evidence](docs/codex-compatibility.md)
-and [snapshot semantics and recovery](docs/snapshots.md).
-The local web UI was tested in Chrome against that real recording; see
-[UI usage, API limits, and development](docs/ui.md).
+**Validation status:** real Windows end-to-end coding, tests, intermediate capture,
+CLI/UI restoration, failure and Ctrl+C cancellation passed. Automated tests,
+selected race checks and five browser tests pass. All six OS/architecture release
+targets build; Windows installation was tested. Remote CI and native Linux/macOS
+execution are configured but not claimed as observed here. See [release evidence](docs/release-checklist.md),
+[Codex compatibility](docs/codex-compatibility.md), [snapshots](docs/snapshots.md),
+[UI/API](docs/ui.md), and [fork safety/recovery](docs/fork-and-recovery.md).
+
+## Release installation
+
+Local archives are generated under `dist/0.1.0/`. Select the archive for your OS
+and architecture, verify it against the matching `SHA256SUMS`, and extract the
+single executable. Git 2.42+ and an authenticated Codex CLI are required for
+recording. Go and Node are not needed to run the release executable.
+
+The local installers verify archive checksums before installing; they do not
+download anything. Windows example:
+
+```powershell
+.\scripts\install.ps1 -Archive .\dist\0.1.0\agenttm_0.1.0_windows_amd64.zip -AddToPath
+```
+
+PATH changes require `-AddToPath`; upgrades require `-Force`. If script execution
+is disabled, extract the ZIP and invoke `agenttm.exe` directly. On Unix use
+`sh scripts/install.sh archive.tar.gz [install-directory]`.
 
 ## Open your recorded history
 
@@ -33,6 +51,9 @@ historical tree and read-only Monaco viewer. **Compare with parent** shows chang
 paths and unified patches. Activity shows sanitized event input/output and the
 observed checkpoint. An event without a checkpoint displays the last known
 workspace with an explicit label; events preceding the baseline show no state.
+**Fork checkpoint** shows the exact destination, branch and partial-snapshot
+warnings before confirmation. Restored files live under `.agenttm/worktrees/`;
+the original working tree, index and HEAD stay unchanged. No restored code runs.
 
 ## Build and test (PowerShell)
 
@@ -93,6 +114,8 @@ Set-Content -LiteralPath snapshot-demo.txt -Value 'Changed content'
 & $agenttm cat '<baseline-id>' snapshot-demo.txt   # still Original content
 & $agenttm cat '<new-checkpoint-id>' snapshot-demo.txt
 & $agenttm show '<new-checkpoint-id>'
+& $agenttm fork '<new-checkpoint-id>' --name alternative
+& $agenttm forks
 ```
 
 If your configured model is unavailable, explicitly choose one available to your
@@ -106,6 +129,18 @@ Then try a real coding task in that disposable repo. Codex's existing permission
 sandbox, rules, hooks and authentication apply. AgentTM does not grant write access
 or bypass approval policy. Tasks may fail or be refused under those policies.
 Ctrl+C cancels the child process tree and attempts to persist cancellation status.
+The default honors Codex's existing sandbox/approval configuration. To explicitly
+allow a coding task to write inside a disposable repository:
+
+```powershell
+& $agenttm run codex --model gpt-6.1-sol --sandbox workspace-write --snapshot-after-tool=true -- "Implement a small function and test it."
+```
+
+`read-only` is the other supported explicit sandbox override. No unsafe bypass
+flags are passed. New configs enable best-effort scans near supported completed
+command/file-change items; older config values are preserved. Use the flag above
+or `capture.snapshot_after_tool` to enable them. They do not pause Codex or prove
+per-tool causality.
 The final workspace scan uses a separate two-minute cleanup context, including
 after cancellation or Codex failure. No change means the existing checkpoint is
 reused; the final observation event still links to it. Older Phase 1 sessions
@@ -133,6 +168,9 @@ Codex is only bundled with VS Code, add its executable directory to that termina
 | `show <checkpoint-id>` | Versioned manifest, file tree, hashes, modes and omissions as JSON |
 | `cat <checkpoint-id> <path>` | Verified historical UTF-8 text, maximum 1 MiB output |
 | `diff <checkpoint-id>` | JSON changes and bounded unified patches against parent (empty tree for baseline) |
+| `fork <checkpoint-id> --name NAME [--allow-partial]` | Restore and verify a new isolated worktree |
+| `forks` | List ready, restoring or failed fork records |
+| `purge --session ID [--yes]` | Confirm logical deletion of an ended, unforked session; retain shared blobs |
 | `ui [--port N] [--no-browser]` | Serve embedded read-only history on loopback and open your browser |
 
 Unknown commands return exit code 2; operational failures return 1. Normal child
@@ -176,9 +214,9 @@ telemetry or uploads are implemented; Codex itself uses its configured service.
 
 - Only runs launched through `agenttm run codex` are captured. Existing interactive
   sessions are not observed.
-- **No file restore or worktree fork yet.** Those belong to Milestone 4.
-  `capture.snapshot_after_tool` remains reserved. This version captures
-  baseline/final state and explicit manual observations; no per-tool fidelity is claimed.
+- Baseline/final/manual scans and optional completed-tool observations capture
+  scan-time state; continuous or deterministic per-tool history is not claimed.
+  Failed restore directories are retained for diagnosis.
 - Events are observations, not a complete tool trace or proof of file authorship.
   Separate receipts get separate UUIDs/sequences; no payload-hash deduplication.
 - Graceful Ctrl+C is handled. Forced AgentTM termination or machine failure can
@@ -192,4 +230,18 @@ telemetry or uploads are implemented; Codex itself uses its configured service.
   compatibility document. CI is configured for Windows, Linux and macOS; remote
   CI execution has not been observed here.
 
-Next: Milestone 4, safe worktree forks from checkpoints.
+## Build release archives
+
+```powershell
+go run ./cmd/release --version 0.1.0 --out dist/0.1.0
+```
+
+Rebuild the frontend first after UI source edits. The packager creates Windows,
+Linux and macOS archives for amd64/arm64 plus `SHA256SUMS`, notices and restore
+guidance. Existing outputs are refused; use a new output directory for a new build.
+CI runs native tests across all three OSes and browser tests on Linux. Version
+tags/manual release workflows produce downloadable artifacts; they do not publish
+a public GitHub release automatically.
+
+Deferred beyond v0.1: interactive Codex capture, additional agents, automatic
+continuation, cloud sync, encrypted backup, and blob garbage collection.

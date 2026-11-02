@@ -1,0 +1,31 @@
+{
+  "format": "AgentTM sanitized real-recording summary excerpt, not a portable/importable database",
+  "observed_date": "2026-11-02",
+  "codex_cli": "0.164.0-alpha.11.1",
+  "model": "gpt-6.1-sol",
+  "explicit_sandbox": "workspace-write",
+  "session_id": "0144ca9f-871b-4412-9d50-8e85c95c5c42",
+  "status": "completed",
+  "process_exit_code": 0,
+  "prompt_text": "omitted",
+  "checkpoints": [
+    {"id":"ac89d63b-8b5a-4061-8a64-c0554911fb24","kind":"baseline","file_count":3,"partial":false},
+    {"id":"ffc08b72-e339-414c-ae59-eae4fc23a656","kind":"observed","file_count":4,"partial":false}
+  ],
+  "changed_paths": [
+    {"path":"calc.go","kind":"modified"},
+    {"path":"calc_test.go","kind":"added"}
+  ],
+  "observed_tool_outcome": {
+    "command": "gofmt -w calc.go calc_test.go; go test ./...",
+    "exit_code": 0,
+    "output": "ok  \tagenttm-demo\t2.169s\n"
+  },
+  "verified": {
+    "baseline_and_edited_cli_forks": true,
+    "baseline_browser_fork": true,
+    "restored_content_hashes_match": true,
+    "original_head_index_and_file_hashes_unchanged": true
+  },
+  "limitations": ["Workspace scans do not pause Codex or prove causal attribution", "External runtime state is not restored"]
+}

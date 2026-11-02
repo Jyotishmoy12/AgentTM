@@ -1,0 +1,4 @@
+ALTER TABLE forks ADD COLUMN status TEXT NOT NULL DEFAULT 'ready';
+ALTER TABLE forks ADD COLUMN error TEXT NOT NULL DEFAULT '';
+ALTER TABLE forks ADD COLUMN base_commit TEXT NOT NULL DEFAULT '';
+CREATE UNIQUE INDEX idx_forks_path ON forks(worktree_path);

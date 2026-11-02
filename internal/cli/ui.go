@@ -24,7 +24,7 @@ func uiCommand(ctx context.Context, args []string, engine *snapshot.Engine, out,
 		return fmt.Errorf("usage: agenttm ui [--port 7331] [--no-browser]"), 2
 	}
 	err := server.Serve(ctx, engine, Version, *port, func(url string) {
-		fmt.Fprintf(out, "AgentTM UI: %s\nRead-only local history. Press Ctrl+C to stop.\n", url)
+		fmt.Fprintf(out, "AgentTM UI: %s\nLocal history and explicit isolated forks. Press Ctrl+C to stop.\n", url)
 		if !*noBrowser {
 			if err := openBrowser(url); err != nil {
 				fmt.Fprintln(errOut, "Could not open browser automatically; open the URL above.")

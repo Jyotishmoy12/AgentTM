@@ -16,11 +16,18 @@ import (
 
 type Adapter struct {
 	Executable, Model string
+	Sandbox           string
 	MaxPayload        int
 	OmitTask          string
 }
 
 func (a Adapter) Name() string { return "codex" }
+func Compatibility(version string) string {
+	if strings.Contains(version, "0.164.0-alpha.11.1") {
+		return "Observed JSONL integration version: 0.164.0-alpha.11.1"
+	}
+	return "CLI version has not been end-to-end verified by this build; JSON capability is advertised, but run a disposable real task to check schema compatibility."
+}
 func (a Adapter) binary() string {
 	if a.Executable != "" {
 		return a.Executable
@@ -52,6 +59,12 @@ func (a Adapter) Run(ctx context.Context, root, task string, sink agents.EventSi
 	args := []string{"exec", "--json"}
 	if a.Model != "" {
 		args = append(args, "--model", a.Model)
+	}
+	if a.Sandbox != "" {
+		if a.Sandbox != "read-only" && a.Sandbox != "workspace-write" {
+			return result, fmt.Errorf("unsupported explicit sandbox override")
+		}
+		args = append(args, "--sandbox", a.Sandbox)
 	}
 	args = append(args, "-")
 	cmd := exec.CommandContext(runCtx, a.binary(), args...)

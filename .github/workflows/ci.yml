@@ -25,6 +25,8 @@ jobs:
         working-directory: web
       - run: go test ./...
       - run: go vet ./...
+      - run: go test -race ./internal/storage ./internal/fork ./internal/server
+        if: runner.os == 'Linux'
       - run: go build -o bin/agenttm ./cmd/agenttm
       - run: npx playwright install --with-deps chromium
         if: runner.os == 'Linux'
@@ -32,3 +34,29 @@ jobs:
       - run: npm run test:e2e
         if: runner.os == 'Linux'
         working-directory: web
+      - name: Package native archive
+        shell: bash
+        run: go run ./cmd/release --version 0.1.0 --targets "$(go env GOOS)/$(go env GOARCH)" --out dist/native
+      - name: Install Windows archive
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $archive = Get-ChildItem dist/native -Filter '*.zip' | Select-Object -First 1
+          $target = Join-Path $env:GITHUB_WORKSPACE '.test-work/installed'
+          ./scripts/install.ps1 -Archive $archive.FullName -InstallDir $target
+          & (Join-Path $target 'agenttm.exe') version
+          $repo = Join-Path $env:GITHUB_WORKSPACE '.test-work/smoke repo 日本語'
+          New-Item -ItemType Directory -Path $repo | Out-Null
+          git init $repo
+          Push-Location $repo
+          try { & (Join-Path $target 'agenttm.exe') init; if ($LASTEXITCODE -ne 0) { throw 'Executable init failed' } } finally { Pop-Location }
+      - name: Install Unix archive
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          sh scripts/install.sh dist/native/*.tar.gz "$GITHUB_WORKSPACE/.test-work/installed"
+          "$GITHUB_WORKSPACE/.test-work/installed/agenttm" version
+          mkdir -p "$GITHUB_WORKSPACE/.test-work/smoke repo 日本語"
+          git init "$GITHUB_WORKSPACE/.test-work/smoke repo 日本語"
+          cd "$GITHUB_WORKSPACE/.test-work/smoke repo 日本語"
+          "$GITHUB_WORKSPACE/.test-work/installed/agenttm" init

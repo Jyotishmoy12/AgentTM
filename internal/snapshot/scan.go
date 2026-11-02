@@ -1,12 +1,12 @@
 package snapshot
 
 import (
+	"agenttm/internal/project"
 	"bytes"
 	"context"
 	"fmt"
 	"io"
 	"os"
-	"os/exec"
 	"path"
 	"sort"
 	"strings"
@@ -24,7 +24,7 @@ func (b *limitedBuffer) Write(p []byte) (int, error) {
 	return b.Buffer.Write(p)
 }
 func candidates(ctx context.Context, root string) ([]string, error) {
-	cmd := exec.CommandContext(ctx, "git", "-C", root, "ls-files", "--cached", "--others", "--exclude-standard", "-z")
+	cmd := project.Command(ctx, root, "-c", "core.fsmonitor=false", "ls-files", "--cached", "--others", "--exclude-standard", "-z")
 	b := &limitedBuffer{max: 16 << 20}
 	cmd.Stdout = b
 	cmd.Stderr = io.Discard

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"crypto/subtle"
 	"embed"
 	"encoding/json"
 	"errors"
@@ -15,6 +16,7 @@ import (
 	"time"
 
 	"agenttm/internal/snapshot"
+	"agenttm/internal/storage"
 )
 
 //go:embed ui
@@ -23,14 +25,15 @@ var frontend embed.FS
 const maxResponse = 8 << 20
 
 type Server struct {
-	Engine  *snapshot.Engine
-	Version string
-	Address string
-	slots   chan struct{}
+	Engine    *snapshot.Engine
+	Version   string
+	Address   string
+	slots     chan struct{}
+	csrfToken string
 }
 
 func New(engine *snapshot.Engine, version, address string) *Server {
-	return &Server{engine, version, address, make(chan struct{}, 2)}
+	return &Server{Engine: engine, Version: version, Address: address, slots: make(chan struct{}, 2), csrfToken: storage.ID()}
 }
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -40,7 +43,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; worker-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'none'")
 	// Host validation prevents DNS rebinding; Origin/Fetch Metadata reject reads
-	// initiated by other websites. No CORS or state-changing routes are enabled.
+	// initiated by other websites. Mutations additionally require a per-server token.
 	if r.Host != s.Address {
 		fail(w, 403, "untrusted_host", "Open the printed 127.0.0.1 URL.")
 		return
@@ -53,9 +56,15 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fail(w, 403, "untrusted_origin", "Cross-origin requests are not allowed.")
 		return
 	}
-	if r.Method != http.MethodGet {
-		w.Header().Set("Allow", "GET")
-		fail(w, 405, "read_only", "Phase 3 supports read-only GET requests.")
+	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+	forkPost := r.Method == http.MethodPost && len(parts) == 4 && parts[0] == "api" && parts[1] == "checkpoints" && parts[3] == "fork"
+	if r.Method != http.MethodGet && !forkPost {
+		w.Header().Set("Allow", "GET, POST")
+		fail(w, 405, "method_not_allowed", "Only reads and the explicit checkpoint fork action are supported.")
+		return
+	}
+	if forkPost && (r.Header.Get("Origin") != "http://"+s.Address || subtle.ConstantTimeCompare([]byte(r.Header.Get("X-AgentTM-CSRF")), []byte(s.csrfToken)) != 1) {
+		fail(w, 403, "csrf_required", "Fork requires this UI's same-origin confirmation token. Refresh the page and retry.")
 		return
 	}
 	if len(r.URL.RawQuery) > 8192 {
@@ -163,7 +172,7 @@ func (s *Server) api(w http.ResponseWriter, r *http.Request) {
 	if len(parts) == 2 {
 		switch parts[1] {
 		case "health":
-			writeJSON(w, 200, map[string]any{"status": "ok", "version": s.Version, "project": filepath.Base(s.Engine.Root), "read_only": true, "prompt_mode": s.Engine.Config.Capture.PromptMode, "capture": "baseline_final_manual"})
+			writeJSON(w, 200, map[string]any{"status": "ok", "version": s.Version, "project": filepath.Base(s.Engine.Root), "read_only": false, "history_read_only": true, "fork_enabled": true, "csrf_token": s.csrfToken, "prompt_mode": s.Engine.Config.Capture.PromptMode, "capture": "baseline_observed_final_manual"})
 			return
 		case "sessions":
 			s.sessions(w, r)
@@ -198,6 +207,9 @@ func (s *Server) api(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		switch parts[3] {
+		case "fork":
+			s.fork(w, r, m.ID)
+			return
 		case "tree":
 			offset, err := queryInt(r, "cursor", 0, snapshot.MaxFiles)
 			if err != nil {
@@ -294,7 +306,7 @@ func Serve(ctx context.Context, engine *snapshot.Engine, version string, port in
 	}
 	address := listener.Addr().String()
 	app := New(engine, version, address)
-	srv := &http.Server{Handler: app, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 60 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 16 << 10}
+	srv := &http.Server{Handler: app, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 6 * time.Minute, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 16 << 10}
 	stopped := make(chan struct{})
 	defer close(stopped)
 	go func() {

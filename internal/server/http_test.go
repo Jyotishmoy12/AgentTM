@@ -127,7 +127,7 @@ func TestAPIRejectsUnsafeRequests(t *testing.T) {
 		{"GET", "/api/health", map[string]string{"Host": "attacker.example:7331"}, 403},
 		{"GET", "/api/sessions", map[string]string{"Origin": "https://attacker.example"}, 403},
 		{"GET", "/api/sessions", map[string]string{"Sec-Fetch-Site": "cross-site"}, 403},
-		{"POST", cp + "/fork", map[string]string{"Origin": "http://127.0.0.1:7331"}, 405},
+		{"POST", cp + "/fork", map[string]string{"Origin": "http://127.0.0.1:7331"}, 403},
 		{"POST", cp + "/fork", map[string]string{"Origin": "https://attacker.example"}, 403},
 		{"GET", cp + "/file?path=../.git/config", nil, 400},
 		{"GET", cp + "/file?path=C%3A%2Fsecret", nil, 400},

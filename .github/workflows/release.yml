@@ -1,0 +1,46 @@
+name: Release archives
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Semantic version without v
+        required: true
+        default: '0.1.0'
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: npm test
+        working-directory: web
+      - run: npm run build
+        working-directory: web
+      - run: go test ./...
+      - run: go vet ./...
+      - name: Build verified archives
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          version="${REQUESTED_VERSION:-${GITHUB_REF_NAME#v}}"
+          go run ./cmd/release --version "$version"
+          cp scripts/install.ps1 scripts/install.sh dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: agenttm-release
+          path: dist/*
+          if-no-files-found: error

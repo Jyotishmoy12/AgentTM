@@ -52,3 +52,13 @@ func TestReadJSONL(t *testing.T) {
 		t.Fatalf("%d %d %v", lines, huge, e)
 	}
 }
+func TestEmbeddedSecretsAndUsageCounters(t *testing.T) {
+	r := Normalize([]byte(`{"type":"error","message":"{\"api_key\":\"do-not-store\"}"}`), 4096, "")
+	if strings.Contains(string(r.Payload), "do-not-store") {
+		t.Fatal("embedded JSON secret leaked")
+	}
+	r = Normalize([]byte(`{"type":"turn.completed","usage":{"reasoning_output_tokens":12,"cache_write_input_tokens":34,"access_token":"do-not-store"}}`), 4096, "")
+	if strings.Contains(string(r.Payload), "do-not-store") || !strings.Contains(string(r.Payload), `"reasoning_output_tokens":12`) || !strings.Contains(string(r.Payload), `"cache_write_input_tokens":34`) {
+		t.Fatal("usage redaction lost numeric counters")
+	}
+}

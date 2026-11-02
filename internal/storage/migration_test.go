@@ -50,7 +50,7 @@ func TestPhaseOneMigrationPreservesHistory(t *testing.T) {
 		t.Fatalf("migration lost events: %+v %v", records, err)
 	}
 	var v int
-	if err = store.DB.QueryRow("PRAGMA user_version").Scan(&v); err != nil || v != 2 {
+	if err = store.DB.QueryRow("PRAGMA user_version").Scan(&v); err != nil || v != 3 {
 		t.Fatalf("schema version %d %v", v, err)
 	}
 }

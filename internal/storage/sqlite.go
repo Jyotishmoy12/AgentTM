@@ -20,6 +20,9 @@ var initial string
 //go:embed migrations/002_snapshot_integrity.sql
 var snapshotMigration string
 
+//go:embed migrations/003_fork_status.sql
+var forkMigration string
+
 type Store struct {
 	DB        *sql.DB
 	ProjectID string
@@ -91,8 +94,8 @@ func Open(root string) (*Store, error) {
 	if e = tx.QueryRow("PRAGMA user_version").Scan(&v); e != nil {
 		return fail(e)
 	}
-	if v > 2 {
-		return fail(fmt.Errorf("database schema %d is newer than supported version 2", v))
+	if v > 3 {
+		return fail(fmt.Errorf("database schema %d is newer than supported version 3", v))
 	}
 	if v == 0 {
 		if _, e = tx.Exec(initial); e != nil {
@@ -107,6 +110,14 @@ func Open(root string) (*Store, error) {
 			return fail(e)
 		}
 		if _, e = tx.Exec("PRAGMA user_version=2"); e != nil {
+			return fail(e)
+		}
+	}
+	if v < 3 {
+		if _, e = tx.Exec(forkMigration); e != nil {
+			return fail(e)
+		}
+		if _, e = tx.Exec("PRAGMA user_version=3"); e != nil {
 			return fail(e)
 		}
 	}
@@ -132,18 +143,23 @@ func (s *Store) Finish(id, status string, code int) error {
 	return e
 }
 func (s *Store) Append(session, kind, tool, call string, payload []byte) error {
+	_, err := s.AppendID(session, kind, tool, call, payload)
+	return err
+}
+func (s *Store) AppendID(session, kind, tool, call string, payload []byte) (string, error) {
+	id := ID()
 	tx, e := s.DB.Begin()
 	if e != nil {
-		return e
+		return "", e
 	}
 	defer tx.Rollback()
 	// One write statement allocates sequence and inserts the receipt. This avoids
 	// upgrading an earlier read transaction when another recorder is writing.
-	_, e = tx.Exec("INSERT INTO events(id,session_id,sequence,kind,tool_name,tool_call_id,received_at,payload_json) SELECT ?,?,COALESCE(MAX(sequence),0)+1,?,?,?,?,? FROM events WHERE session_id=?", ID(), session, kind, tool, call, Now(), string(payload), session)
+	_, e = tx.Exec("INSERT INTO events(id,session_id,sequence,kind,tool_name,tool_call_id,received_at,payload_json) SELECT ?,?,COALESCE(MAX(sequence),0)+1,?,?,?,?,? FROM events WHERE session_id=?", id, session, kind, tool, call, Now(), string(payload), session)
 	if e != nil {
-		return e
+		return "", e
 	}
-	return tx.Commit()
+	return id, tx.Commit()
 }
 func (s *Store) Sessions() ([]Session, error) {
 	rows, e := s.DB.Query("SELECT id,agent,started_at,ended_at,status,exit_code FROM sessions WHERE project_id=? ORDER BY started_at DESC", s.ProjectID)

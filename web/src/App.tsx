@@ -4,6 +4,7 @@ import type { Change, Checkpoint, FileContent, Health, Page, RecordedEvent, Sess
 import { changedPaths, checkpointNear, eventTitle, filterEvents, record } from './state';
 import { CodeViewer } from './components/CodeViewer';
 import { FileTree } from './components/FileTree';
+import { ForkDialog } from './components/ForkDialog';
 
 const short = (id: string) => id.slice(0, 8);
 const time = (value: string) => new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -34,6 +35,7 @@ export function App() {
   const [loading, setLoading] = useState(true);
   const [revision, setRevision] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
+  const [forkID,setForkID]=useState('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -102,7 +104,7 @@ export function App() {
       <div className="header-divider" />
       <div className="project-label"><span className="muted">PROJECT</span><strong>{health?.project ?? 'Loading project…'}</strong></div>
       <div className="header-spacer" />
-      <span className="privacy-badge"><span className="status-dot" /> Local · read only</span>
+      <span className="privacy-badge"><span className="status-dot" /> Local · private</span>
       <button className="icon-button" onClick={() => setRevision(n => n + 1)} title="Refresh history" aria-label="Refresh history">↻</button>
     </header>
     <div className="session-bar">
@@ -110,7 +112,7 @@ export function App() {
       {currentSession && <span className={`status-pill ${currentSession.status}`}>{currentSession.status.replaceAll('_', ' ')}</span>}
       <span className="session-meta">{currentSession?.agent ?? 'Codex'}<span> / </span>{health?.prompt_mode === 'sanitized' ? 'Sanitized prompts enabled' : 'Prompt text capture off'}</span>
     </div>
-    <div className="capture-note"><span aria-hidden="true">◈</span> Baseline, final, and manual workspace observations. Only runs launched through AgentTM are recorded.</div>
+    <div className="capture-note"><span aria-hidden="true">◈</span> Workspace observations, not proof of per-tool causality. Only runs launched through AgentTM are recorded.</div>
     {error && <div className="global-error"><ErrorBox>{error} <button className="text-button" onClick={() => setRevision(n => n + 1)}>Retry</button></ErrorBox></div>}
     {!sessionID ? <Empty title={loading ? 'Loading your history' : 'Your history starts with a run'}><p>Record a real Codex session from this repository, then refresh.</p><code>agenttm run codex --model gpt-6.1-sol -- "your task"</code><p className="muted">Existing interactive Codex sessions are not captured.</p></Empty> : <main className="workspace">
       <aside className="timeline-panel" aria-label="Recorded timeline">
@@ -131,7 +133,8 @@ export function App() {
       </section>
       <Activity event={selected} checkpointID={cpID} override={!!overrideCP} />
     </main>}
-    <footer className="app-footer"><span><span className="status-dot" /> {health?.version ?? 'AgentTM'} <span className="footer-scope">· local history</span></span><div className="event-navigation"><button onClick={() => selectEvent(filtered[Math.max(0, selectedIndex - 1)].id)} disabled={selectedIndex <= 0}>← Previous event</button><button onClick={() => selectEvent(filtered[selectedIndex + 1].id)} disabled={selectedIndex < 0 || selectedIndex >= filtered.length - 1}>Next event →</button></div><span className="muted">Forking arrives in Phase 4</span></footer>
+    <footer className="app-footer"><span><span className="status-dot" /> {health?.version ?? 'AgentTM'} <span className="footer-scope">· local history</span></span><div className="event-navigation"><button onClick={() => selectEvent(filtered[Math.max(0, selectedIndex - 1)].id)} disabled={selectedIndex <= 0}>← Previous event</button><button onClick={() => selectEvent(filtered[selectedIndex + 1].id)} disabled={selectedIndex < 0 || selectedIndex >= filtered.length - 1}>Next event →</button></div><button className="fork-action" disabled={!cpID||!health?.csrf_token} onClick={()=>setForkID(cpID)}>Fork checkpoint</button></footer>
+    {forkID&&health&&<ForkDialog key={forkID} id={forkID} token={health.csrf_token} onClose={()=>setForkID('')}/>}
   </div>;
 }
 

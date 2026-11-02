@@ -119,8 +119,24 @@ func (e *Engine) Load(id string) (Manifest, error) {
 	return m, nil
 }
 func (e *Engine) Capture(ctx context.Context, session, kind string) (CaptureResult, error) {
+	return e.capture(ctx, session, kind, "")
+}
+func (e *Engine) CaptureNear(ctx context.Context, session, event string) (CaptureResult, error) {
+	if !ValidID(event) {
+		return CaptureResult{}, fmt.Errorf("invalid observed event UUID")
+	}
+	var count int
+	if err := e.Store.DB.QueryRow("SELECT count(*) FROM events WHERE id=? AND session_id=? AND kind='item.completed' AND tool_name IN ('command_execution','file_change')", event, session).Scan(&count); err != nil {
+		return CaptureResult{}, err
+	}
+	if count != 1 {
+		return CaptureResult{}, fmt.Errorf("event is not a supported completed tool observation")
+	}
+	return e.capture(ctx, session, "observed", event)
+}
+func (e *Engine) capture(ctx context.Context, session, kind, observedEvent string) (CaptureResult, error) {
 	var result CaptureResult
-	if kind != "baseline" && kind != "final" && kind != "manual" {
+	if kind != "baseline" && kind != "final" && kind != "manual" && kind != "observed" {
 		return result, fmt.Errorf("invalid capture kind")
 	}
 	if err := e.session(session); err != nil {
@@ -160,6 +176,7 @@ func (e *Engine) Capture(ctx context.Context, session, kind string) (CaptureResu
 	m.ProjectID = e.Store.ProjectID
 	m.SessionID = session
 	m.EventID = storage.ID()
+	m.ObservedEventID = observedEvent
 	m.CreatedAt = storage.Now()
 	m.Kind = kind
 	m.Fidelity = "workspace_scan"
@@ -178,6 +195,10 @@ func (e *Engine) Capture(ctx context.Context, session, kind string) (CaptureResu
 		checkpointID = parent.ID
 	}
 	meta := map[string]any{"source": "agenttm", "observation": kind, "checkpoint_id": checkpointID, "created": changed, "partial": m.Partial, "potentially_inconsistent": m.PotentiallyInconsistent, "file_count": len(m.Files), "omission_count": len(m.Omissions), "fidelity": "workspace_scan", "attribution": "workspace_observation"}
+	if observedEvent != "" {
+		meta["observed_event_id"] = observedEvent
+		meta["attribution"] = "observed_near_event"
+	}
 	if parent != nil {
 		meta["changed_paths"] = ChangedPaths(*parent, m)
 	}
@@ -212,6 +233,11 @@ func (e *Engine) Capture(ctx context.Context, session, kind string) (CaptureResu
 	_, err = tx.Exec("INSERT INTO events(id,session_id,sequence,kind,received_at,payload_json,checkpoint_id) SELECT ?,?,COALESCE(MAX(sequence),0)+1,?,?,?,? FROM events WHERE session_id=?", m.EventID, session, "agenttm.snapshot."+kind, m.CreatedAt, string(payload), checkpointID, session)
 	if err != nil {
 		return result, err
+	}
+	if observedEvent != "" {
+		if _, err = tx.Exec("UPDATE events SET checkpoint_id=? WHERE id=? AND session_id=?", checkpointID, observedEvent, session); err != nil {
+			return result, err
+		}
 	}
 	if err = tx.Commit(); err != nil {
 		return result, err
