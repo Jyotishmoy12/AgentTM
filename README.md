@@ -1,13 +1,38 @@
-# Agent Time Machine — Phase 1
+# Agent Time Machine — Phase 3
 
 A local Go CLI that records **real, AgentTM-managed noninteractive Codex runs**
-in SQLite. This implements the foundation and event-ingestion code for Milestones
-0–1 in [the MVP specification](AGENT_TIME_MACHINE_MVP.md).
+in SQLite, with baseline/final workspace checkpoints and historical file inspection.
+The embedded React/TypeScript UI displays real stored sessions, timelines,
+historical files, and parent diffs. This implements Milestones 0–3 in
+[the MVP specification](AGENT_TIME_MACHINE_MVP.md).
 
-**Validation status:** foundation and synthetic integration tests are implemented.
-Real Codex failure events were observed; a successful run is blocked by this
-environment's account/model configuration. See [compatibility evidence](docs/codex-compatibility.md).
-Milestone 1 is not acceptance-complete until a successful real run passes.
+**Validation status:** automated tests and local builds pass. A real `gpt-6.1-sol`
+run completed, with command events and baseline/final observations persisted.
+Its attempted write was refused by normal Codex permissions; manual file changes
+were then captured and verified. See [compatibility evidence](docs/codex-compatibility.md)
+and [snapshot semantics and recovery](docs/snapshots.md).
+The local web UI was tested in Chrome against that real recording; see
+[UI usage, API limits, and development](docs/ui.md).
+
+## Open your recorded history
+
+From your initialized Git repository:
+
+```powershell
+$agenttm = 'C:\dev\AgentTM\bin\agenttm.exe'
+& $agenttm ui
+```
+
+AgentTM opens `http://127.0.0.1:7331` in your browser. Keep the terminal running;
+Ctrl+C stops the server. If the port is occupied, use `& $agenttm ui --port 7332`.
+Use `--no-browser` to print the URL without opening it. No Node installation is
+needed to run the prebuilt executable; all production assets are embedded.
+
+Select a session, then a timeline event or checkpoint. **Files** shows the
+historical tree and read-only Monaco viewer. **Compare with parent** shows changed
+paths and unified patches. Activity shows sanitized event input/output and the
+observed checkpoint. An event without a checkpoint displays the last known
+workspace with an explicit label; events preceding the baseline show no state.
 
 ## Build and test (PowerShell)
 
@@ -25,6 +50,18 @@ go build -o .\bin\agenttm.exe .\cmd\agenttm
 
 On macOS/Linux: `go build -o bin/agenttm ./cmd/agenttm`.
 
+The checked-in assets under `internal/server/ui` allow Go-only builds. After
+changing frontend source, rebuild the embedded assets first (Node 24+):
+
+```powershell
+Set-Location C:\dev\AgentTM\web
+npm.cmd ci
+npm.cmd test
+npm.cmd run build
+Set-Location ..
+go build -o .\bin\agenttm.exe .\cmd\agenttm
+```
+
 ## Try it in a disposable repository
 
 The source folder need not be a Git repository to build the executable.
@@ -38,11 +75,24 @@ Set-Location $demo
 git init
 & $agenttm init
 & $agenttm doctor
-& $agenttm run codex -- "Reply with a short greeting. Do not change files."
+Set-Content -LiteralPath snapshot-demo.txt -Value 'Original content'
+& $agenttm run codex --model gpt-6.1-sol -- "Reply with a short greeting. Do not change files."
 & $agenttm sessions
 # Copy the session UUID shown above:
 & $agenttm events '<session-id>'
 & $agenttm events '<session-id>' --after 10 --limit 50
+& $agenttm checkpoints '<session-id>'
+# Copy the baseline checkpoint UUID shown above:
+& $agenttm cat '<baseline-id>' snapshot-demo.txt
+
+# Explicitly observe a manual change, without another model request:
+Set-Content -LiteralPath snapshot-demo.txt -Value 'Changed content'
+& $agenttm checkpoint '<session-id>'
+# Copy the new checkpoint UUID:
+& $agenttm diff '<new-checkpoint-id>'
+& $agenttm cat '<baseline-id>' snapshot-demo.txt   # still Original content
+& $agenttm cat '<new-checkpoint-id>' snapshot-demo.txt
+& $agenttm show '<new-checkpoint-id>'
 ```
 
 If your configured model is unavailable, explicitly choose one available to your
@@ -56,6 +106,16 @@ Then try a real coding task in that disposable repo. Codex's existing permission
 sandbox, rules, hooks and authentication apply. AgentTM does not grant write access
 or bypass approval policy. Tasks may fail or be refused under those policies.
 Ctrl+C cancels the child process tree and attempts to persist cancellation status.
+The final workspace scan uses a separate two-minute cleanup context, including
+after cancellation or Codex failure. No change means the existing checkpoint is
+reused; the final observation event still links to it. Older Phase 1 sessions
+have no historical files. `checkpoint` observes the workspace **now**, even when
+linked to an older session; it does not reconstruct its past.
+
+Use `& $agenttm` in PowerShell; assigning a path to a variable does not install a
+bare `agenttm` command. `codex --version` must also work in that terminal. If
+Codex is only bundled with VS Code, add its executable directory to that terminal's
+`$env:PATH`, or install the standalone CLI.
 
 ## Available commands
 
@@ -68,6 +128,12 @@ Ctrl+C cancels the child process tree and attempts to persist cancellation statu
 | `run codex [--model MODEL] -- "task"` | Supervise real Codex and persist sanitized JSONL observations |
 | `sessions` | List sessions, UTC timestamps, status and exit code |
 | `events <id> [--after N] [--limit N]` | JSONL events ordered by per-session sequence; default 100, maximum 1000 |
+| `checkpoints <session-id>` | Checkpoint IDs, kind, time, files and partial flags |
+| `checkpoint <session-id>` | Manually observe the current workspace; reuse unchanged state |
+| `show <checkpoint-id>` | Versioned manifest, file tree, hashes, modes and omissions as JSON |
+| `cat <checkpoint-id> <path>` | Verified historical UTF-8 text, maximum 1 MiB output |
+| `diff <checkpoint-id>` | JSON changes and bounded unified patches against parent (empty tree for baseline) |
+| `ui [--port N] [--no-browser]` | Serve embedded read-only history on loopback and open your browser |
 
 Unknown commands return exit code 2; operational failures return 1. Normal child
 failure codes are forwarded; cancellation returns 130. Recording/protocol failure
@@ -78,8 +144,10 @@ to stderr. No executable or fixture simulates Codex during ordinary CLI usage.
 
 `init` resolves the canonical Git root even from nested directories. It creates
 `.agenttm/config.json`, `data/events.db`, `objects/`, and `logs/`. The SQLite store
-uses transactions, foreign keys, WAL and a busy timeout. Objects are reserved for
-the later snapshot milestone. Logs contain only a session outcome summary.
+uses transactions, foreign keys, WAL and a busy timeout. Snapshots use SHA-256
+objects and versioned JSON manifests under `.agenttm/manifests/`; SQLite indexes
+the manifest checksum and checkpoint/event links. Logs contain only a session
+outcome summary. Schema 1 databases migrate automatically without losing events.
 
 Only `.git/info/exclude` is updated, with `/.agenttm/`. Tracked `.gitignore`, the
 index and HEAD are untouched. Existing local storage symlinks are rejected.
@@ -92,6 +160,9 @@ into sanitized prompt storage set `capture.prompt_mode` to `sanitized` in config
 Prompts use stdin rather than OS process arguments. Raw events are not persisted.
 Known credential patterns are redacted before storage; this is best-effort and
 cannot identify every secret. Review recordings before sharing them.
+File objects preserve exact bytes and are **not content-redacted**. Snapshot
+privacy depends on filename/directory exclusions; credentials embedded in source
+code can still be captured. Inspect `show` for exclusions and partial flags.
 
 Event storage uses an allowlist of observable fields. Reasoning item text and
 unknown event bodies are omitted. Payloads are bounded by
@@ -105,19 +176,20 @@ telemetry or uploads are implemented; Codex itself uses its configured service.
 
 - Only runs launched through `agenttm run codex` are captured. Existing interactive
   sessions are not observed.
-- **No snapshots, file restore, diff, worktree fork, HTTP API or web UI yet.** Those
-  are Milestones 2–4. Snapshot/exclusion/server config fields are reserved and
-  validated; they do not enable those features in Phase 1.
+- **No file restore or worktree fork yet.** Those belong to Milestone 4.
+  `capture.snapshot_after_tool` remains reserved. This version captures
+  baseline/final state and explicit manual observations; no per-tool fidelity is claimed.
 - Events are observations, not a complete tool trace or proof of file authorship.
   Separate receipts get separate UUIDs/sequences; no payload-hash deduplication.
 - Graceful Ctrl+C is handled. Forced AgentTM termination or machine failure can
   leave a session `active`; `doctor` reports active sessions without assuming that
   a separate recorder has died. No crash-recovery rewrite is attempted.
-- SQLite corruption is checked by `doctor`; blob checks await Milestone 2.
+- `doctor` checks SQLite, manifests, object hashes and observation links. Interrupted
+  writes can leave unreferenced files or a stale snapshot lock; these are reported
+  without automatic deletion. See the snapshot recovery guide.
 - Automated tests use synthetic subprocesses explicitly labeled as test fixtures.
   Actual Codex schema/failure evidence and remaining acceptance checks are in the
   compatibility document. CI is configured for Windows, Linux and macOS; remote
   CI execution has not been observed here.
 
-Next: finish the successful real Codex acceptance check, then implement Milestone
-2's content-addressed snapshot engine.
+Next: Milestone 4, safe worktree forks from checkpoints.

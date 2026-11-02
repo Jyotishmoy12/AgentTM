@@ -1,0 +1,132 @@
+package snapshot
+
+import (
+	"fmt"
+	"io/fs"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"agenttm/internal/project"
+)
+
+type Report struct {
+	Checkpoints int      `json:"checkpoints"`
+	Objects     int      `json:"objects"`
+	Problems    []string `json:"problems"`
+	Warnings    []string `json:"warnings"`
+}
+
+func (e *Engine) Doctor() Report {
+	r := Report{Problems: []string{}, Warnings: []string{}}
+	rows, err := e.Store.DB.Query("SELECT c.id FROM checkpoints c JOIN sessions s ON s.id=c.session_id WHERE s.project_id=?", e.Store.ProjectID)
+	if err != nil {
+		r.Problems = append(r.Problems, err.Error())
+		return r
+	}
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err = rows.Scan(&id); err != nil {
+			r.Problems = append(r.Problems, err.Error())
+			break
+		}
+		ids = append(ids, id)
+	}
+	if err = rows.Err(); err != nil {
+		r.Problems = append(r.Problems, err.Error())
+	}
+	rows.Close()
+	referenced := map[string]bool{}
+	manifests := map[string]bool{}
+	checked := map[string]int64{}
+	for _, id := range ids {
+		manifests[id+".json"] = true
+		r.Checkpoints++
+		m, err := e.Load(id)
+		if err != nil {
+			r.Problems = append(r.Problems, fmt.Sprintf("checkpoint %s: %v", id, err))
+			continue
+		}
+		var n int
+		if err = e.Store.DB.QueryRow("SELECT count(*) FROM events WHERE id=? AND checkpoint_id=? AND session_id=?", m.EventID, m.ID, m.SessionID).Scan(&n); err != nil || n != 1 {
+			r.Problems = append(r.Problems, "checkpoint observation link missing: "+id)
+		}
+		if m.ParentID != "" {
+			p, err := e.Load(m.ParentID)
+			if err != nil || p.SessionID != m.SessionID || p.ID == m.ID {
+				r.Problems = append(r.Problems, "invalid parent checkpoint: "+id)
+			}
+		}
+		for _, f := range m.Files {
+			referenced[f.ObjectID] = true
+			if size, ok := checked[f.ObjectID]; ok {
+				if size != f.Size {
+					r.Problems = append(r.Problems, "object size mismatch: "+f.ObjectID)
+				}
+				continue
+			}
+			checked[f.ObjectID] = f.Size
+			if _, err = e.ReadObject(f); err != nil {
+				r.Problems = append(r.Problems, fmt.Sprintf("checkpoint %s file %q: %v", id, f.Path, err))
+			}
+		}
+	}
+	for _, area := range []string{"objects", "manifests"} {
+		base := filepath.Join(e.Root, ".agenttm", area)
+		if err = project.SafePath(base); err != nil {
+			r.Problems = append(r.Problems, err.Error())
+			continue
+		}
+		err = filepath.WalkDir(base, func(p string, d fs.DirEntry, walkErr error) error {
+			if walkErr != nil {
+				if p == base && os.IsNotExist(walkErr) {
+					return nil
+				}
+				r.Problems = append(r.Problems, walkErr.Error())
+				return nil
+			}
+			if d.Type()&os.ModeSymlink != 0 {
+				r.Problems = append(r.Problems, "symlink in snapshot store: "+p)
+				return nil
+			}
+			if d.IsDir() {
+				return nil
+			}
+			if strings.HasPrefix(d.Name(), ".tmp-") {
+				r.Warnings = append(r.Warnings, "interrupted write left temporary file: "+p)
+				return nil
+			}
+			if area == "manifests" {
+				if !manifests[d.Name()] {
+					r.Warnings = append(r.Warnings, "unindexed manifest (interrupted capture): "+p)
+				}
+				return nil
+			}
+			r.Objects++
+			id := "sha256:" + d.Name()
+			if !ValidHash(d.Name()) || filepath.Base(filepath.Dir(p)) != d.Name()[:2] {
+				r.Problems = append(r.Problems, "invalid object path: "+p)
+				return nil
+			}
+			if !referenced[id] {
+				r.Warnings = append(r.Warnings, "unreferenced object retained: "+id)
+			}
+			if _, ok := checked[id]; !ok {
+				b, err := boundedRead(p, MaxBlobBytes)
+				if err != nil || Hash(b) != d.Name() {
+					r.Problems = append(r.Problems, "corrupt unreferenced object: "+p)
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			r.Problems = append(r.Problems, err.Error())
+		}
+	}
+	lock := filepath.Join(e.Root, ".agenttm", "data", "snapshot.lock")
+	if _, err = os.Lstat(lock); err == nil {
+		r.Warnings = append(r.Warnings, "snapshot.lock exists: capture may be active; after confirming no capture is running, remove only this lock to recover from an interrupted process")
+	}
+	return r
+}

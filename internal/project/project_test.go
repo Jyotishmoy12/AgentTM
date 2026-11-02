@@ -18,6 +18,7 @@ func gitTest(t *testing.T, dir string, args ...string) []byte {
 }
 func TestInitSafety(t *testing.T) {
 	root := filepath.Join(t.TempDir(), "project spaces 日本語")
+	t.Setenv("GIT_CEILING_DIRECTORIES", filepath.Dir(root))
 	os.MkdirAll(root, 0700)
 	if _, e := Root(root); e == nil {
 		t.Fatal("non-Git accepted")

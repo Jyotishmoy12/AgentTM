@@ -17,19 +17,23 @@ import (
 //go:embed migrations/001_initial.sql
 var initial string
 
+//go:embed migrations/002_snapshot_integrity.sql
+var snapshotMigration string
+
 type Store struct {
 	DB        *sql.DB
 	ProjectID string
 }
 type Event struct {
-	ID         string          `json:"id"`
-	SessionID  string          `json:"session_id"`
-	Sequence   int64           `json:"sequence"`
-	Kind       string          `json:"kind"`
-	ToolName   string          `json:"tool_name,omitempty"`
-	ToolCallID string          `json:"tool_call_id,omitempty"`
-	ReceivedAt string          `json:"received_at"`
-	Payload    json.RawMessage `json:"payload"`
+	ID           string          `json:"id"`
+	SessionID    string          `json:"session_id"`
+	Sequence     int64           `json:"sequence"`
+	Kind         string          `json:"kind"`
+	ToolName     string          `json:"tool_name,omitempty"`
+	ToolCallID   string          `json:"tool_call_id,omitempty"`
+	ReceivedAt   string          `json:"received_at"`
+	Payload      json.RawMessage `json:"payload"`
+	CheckpointID string          `json:"checkpoint_id,omitempty"`
 }
 type Session struct {
 	ID        string         `json:"id"`
@@ -87,14 +91,22 @@ func Open(root string) (*Store, error) {
 	if e = tx.QueryRow("PRAGMA user_version").Scan(&v); e != nil {
 		return fail(e)
 	}
-	if v > 1 {
-		return fail(fmt.Errorf("database schema %d is newer than supported version 1", v))
+	if v > 2 {
+		return fail(fmt.Errorf("database schema %d is newer than supported version 2", v))
 	}
 	if v == 0 {
 		if _, e = tx.Exec(initial); e != nil {
 			return fail(e)
 		}
 		if _, e = tx.Exec("PRAGMA user_version=1"); e != nil {
+			return fail(e)
+		}
+	}
+	if v < 2 {
+		if _, e = tx.Exec(snapshotMigration); e != nil {
+			return fail(e)
+		}
+		if _, e = tx.Exec("PRAGMA user_version=2"); e != nil {
 			return fail(e)
 		}
 	}
@@ -160,7 +172,7 @@ func (s *Store) Events(id string, after int64, limit int) ([]Event, error) {
 	if n == 0 {
 		return nil, fmt.Errorf("session not found in this project")
 	}
-	rows, e := s.DB.Query("SELECT id,session_id,sequence,kind,COALESCE(tool_name,''),COALESCE(tool_call_id,''),received_at,payload_json FROM events WHERE session_id=? AND sequence>? ORDER BY sequence LIMIT ?", id, after, limit)
+	rows, e := s.DB.Query("SELECT id,session_id,sequence,kind,COALESCE(tool_name,''),COALESCE(tool_call_id,''),received_at,payload_json,COALESCE(checkpoint_id,'') FROM events WHERE session_id=? AND sequence>? ORDER BY sequence LIMIT ?", id, after, limit)
 	if e != nil {
 		return nil, e
 	}
@@ -169,7 +181,7 @@ func (s *Store) Events(id string, after int64, limit int) ([]Event, error) {
 	for rows.Next() {
 		var v Event
 		var p string
-		if e = rows.Scan(&v.ID, &v.SessionID, &v.Sequence, &v.Kind, &v.ToolName, &v.ToolCallID, &v.ReceivedAt, &p); e != nil {
+		if e = rows.Scan(&v.ID, &v.SessionID, &v.Sequence, &v.Kind, &v.ToolName, &v.ToolCallID, &v.ReceivedAt, &p, &v.CheckpointID); e != nil {
 			return nil, e
 		}
 		v.Payload = json.RawMessage(p)

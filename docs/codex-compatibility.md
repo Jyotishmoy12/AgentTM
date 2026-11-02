@@ -17,16 +17,17 @@ and `turn.failed` with `error.message`. The process exited 1.
 `tests/fixtures/codex-real-failed.jsonl` contains these actual stdout records;
 only the thread identifier was replaced. Stderr was excluded.
 
-Successful integration is **blocked in this environment**: the default model
+During initial Phase 1 validation, the default model
 `gpt-5.5` was rejected for the configured ChatGPT account. A separate explicit
 `gpt-5.3-codex` probe was also rejected. Network access inside the execution sandbox
 was blocked; the outside-sandbox probes reached the service and returned the model
-errors. No successful model response or real tool execution is claimed.
+errors. The user subsequently verified a successful greeting using `gpt-6.1-sol`.
 
 The parser also supports the documented `turn.completed` and item lifecycle
-categories for command execution, file changes, and agent messages. Those success
-paths are covered by synthetic tests and must still be verified on a successful
-real run. Unknown fields/events are omitted except for sanitized event type
+categories for command execution, file changes, and agent messages. Phase 2's
+real run confirmed command execution, agent messages, usage and turn completion.
+Successful file-edit events remain covered synthetically, not verified by an
+actual successful file write here. Unknown fields/events are omitted except for sanitized event type
 metadata. Reasoning item content is omitted. No timestamps or tool identifiers are
 invented; `received_at` and sequence are AgentTM observations.
 
@@ -43,7 +44,28 @@ macOS/arm64 binaries compile; non-Windows binaries were not executed here.
 It cannot prove model access or network connectivity. Run the wrapper with a model
 available to your account to finish the integration milestone.
 
-## Local verification still required
+## Phase 2 real-run validation
+
+On 2026-11-02, the built Phase 2 Windows executable ran a real Codex session with
+`--model gpt-6.1-sol` in a disposable path containing spaces and Japanese characters.
+Session `fd3d97ac-484e-4162-b982-1fca9c69514d` persisted 11 ordered records, including
+baseline/final observations, `command_execution` started/completed records,
+agent messages, `turn.completed`, usage, and supervisor exit code 0.
+
+The requested test-file write was attempted by a real command but denied with
+`UnauthorizedAccessException` under Codex's existing policy. The agent reported the
+restriction. AgentTM correctly reused the unchanged baseline checkpoint for its
+final observation. This is successful recording of a completed agent turn; it is
+not successful completion of that file-edit request.
+
+Manual mutations then changed the original file, added an eligible untracked file,
+and added `.env`. An explicit `checkpoint` created a second immutable manifest,
+marked partial with `.env` omitted. `cat` returned the baseline's original contents;
+`doctor` passed with two checkpoints and three content objects. Automated tests
+separately verify changed final state after successful/failed/cancelled synthetic
+child processes, including a final scan after Ctrl+C-style cancellation.
+
+## Further local verification
 
 1. Use the README quick start in a disposable Git repository.
 2. Run a real task, choosing an available model with `--model` if needed.
@@ -51,5 +73,5 @@ available to your account to finish the integration milestone.
 4. Ask Codex to run a harmless command; inspect actual command lifecycle metadata.
 5. Cancel a longer run with Ctrl+C; confirm `cancelled` and exit code 130.
 
-Snapshots and UI checks belong to later milestones. Never infer per-tool
-checkpoint fidelity from this event-only implementation.
+Snapshots now observe baseline/final state and explicit manual scans. UI checks
+belong to Milestone 3. Never infer per-tool checkpoint fidelity from these scans.

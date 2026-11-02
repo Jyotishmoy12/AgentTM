@@ -17,13 +17,14 @@ import (
 	"agenttm/internal/config"
 	"agenttm/internal/events"
 	"agenttm/internal/project"
+	"agenttm/internal/snapshot"
 	"agenttm/internal/storage"
 )
 
-var Version = "0.1.0-phase1"
+var Version = "0.3.0-phase3"
 var Commit = "development"
 
-const usage = `AgentTM - local Codex event recorder (Phase 1)
+const usage = `AgentTM - local Codex events and workspace checkpoints (Phase 3)
 
   agenttm init
   agenttm version
@@ -32,9 +33,15 @@ const usage = `AgentTM - local Codex event recorder (Phase 1)
   agenttm run codex [--model MODEL] -- "task"
   agenttm sessions
   agenttm events <session-id> [--after N] [--limit N]
+  agenttm checkpoints <session-id>
+  agenttm checkpoint <session-id>
+  agenttm show <checkpoint-id>
+  agenttm cat <checkpoint-id> <repo-relative-path>
+  agenttm diff <checkpoint-id>
+  agenttm ui [--port 7331] [--no-browser]
 
-Only runs launched through AgentTM are recorded. Snapshots, UI and fork
-are later milestones. Events show observations, not complete agent activity.
+Only runs launched through AgentTM are recorded. Fork is a later milestone.
+Snapshots observe baseline/final state, not guaranteed per-tool history.
 `
 
 func Run(ctx context.Context, args []string, out, errOut io.Writer) int {
@@ -97,7 +104,12 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 		return e, 1
 	}
 	defer s.DB.Close()
+	engine := &snapshot.Engine{Root: root, Store: s, Config: c}
 	switch args[0] {
+	case "ui":
+		return uiCommand(ctx, args[1:], engine, out, errOut)
+	case "checkpoint", "checkpoints", "show", "cat", "diff":
+		return snapshotCommand(ctx, args, engine, out)
 	case "doctor":
 		var check string
 		if e = s.DB.QueryRow("PRAGMA integrity_check").Scan(&check); e != nil {
@@ -107,7 +119,17 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 			return fmt.Errorf("database integrity check failed"), 1
 		}
 		fmt.Fprintln(out, "Repository, config and SQLite integrity: OK")
-		fmt.Fprintln(out, "Snapshot/blob verification: not implemented until Milestone 2")
+		report := engine.Doctor()
+		fmt.Fprintf(out, "Snapshot integrity: %d checkpoints, %d objects\n", report.Checkpoints, report.Objects)
+		for _, warning := range report.Warnings {
+			fmt.Fprintln(out, "WARNING:", warning)
+		}
+		for _, problem := range report.Problems {
+			fmt.Fprintln(out, "ERROR:", problem)
+		}
+		if len(report.Problems) > 0 {
+			return fmt.Errorf("snapshot integrity check failed; restore missing/corrupt storage from backup; no data was removed"), 1
+		}
 		var active int
 		if e = s.DB.QueryRow("SELECT count(*) FROM sessions WHERE project_id=? AND status='active'", s.ProjectID).Scan(&active); e != nil {
 			return e, 1
@@ -188,7 +210,10 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 			return e, 1
 		}
 		fmt.Fprintf(errOut, "Recording session %s (%s)\n", id, version)
-		fmt.Fprintln(errOut, "Phase 1 records events only; no workspace checkpoints are captured.")
+		fmt.Fprintln(errOut, "Capturing baseline and final workspace state; no guaranteed per-tool checkpoints.")
+		if c.Capture.SnapshotAfterTool {
+			fmt.Fprintln(errOut, "snapshot_after_tool is reserved; this version scans only baseline/final and explicit manual observations.")
+		}
 		start := time.Now()
 		meta := map[string]any{"source": "agenttm", "prompt_bytes": len(task), "prompt_mode": c.Capture.PromptMode, "codex_version": version, "model_override": events.Redact(*model)}
 		if c.Capture.PromptMode == "sanitized" {
@@ -204,6 +229,12 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 			return e, 1
 		}
 		captureFailed := false
+		baseline, snapshotErr := engine.Capture(ctx, id, "baseline")
+		if snapshotErr != nil {
+			_ = s.Finish(id, "recording_failed", 1)
+			return fmt.Errorf("baseline capture failed; Codex was not launched: %w", snapshotErr), 1
+		}
+		printCapture(errOut, baseline)
 		result, runErr := adapter.Run(ctx, root, task, func(r events.Record) error {
 			if e := s.Append(id, r.Kind, r.Tool, r.Call, r.Payload); e != nil {
 				captureFailed = true
@@ -218,6 +249,17 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 			fmt.Fprintln(errOut, "  observed", r.Kind)
 			return nil
 		})
+		// A cancelled run still needs its final observation. Give the capture an
+		// independent, bounded cleanup context rather than the cancelled run context.
+		finalCtx, finishCapture := context.WithTimeout(context.Background(), 2*time.Minute)
+		final, finalErr := engine.Capture(finalCtx, id, "final")
+		finishCapture()
+		if finalErr != nil {
+			captureFailed = true
+			fmt.Fprintln(errOut, "Final snapshot failed:", finalErr)
+		} else {
+			printCapture(errOut, final)
+		}
 		status := "completed"
 		code := result.ExitCode
 		if runErr != nil {
