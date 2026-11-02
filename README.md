@@ -43,6 +43,10 @@ $agenttm = 'C:\dev\AgentTM\bin\agenttm.exe'
 
 AgentTM opens `http://127.0.0.1:7331` in your browser. Keep the terminal running;
 Ctrl+C stops the server. If the port is occupied, use `& $agenttm ui --port 7332`.
+For an installed-app style launch with a Codex readiness check, run
+`& $agenttm desktop`. It opens the same local UI and reports whether Codex is
+installed and authenticated; existing history remains available when Codex is
+not ready.
 Use `--no-browser` to print the URL without opening it. No Node installation is
 needed to run the prebuilt executable; all production assets are embedded.
 

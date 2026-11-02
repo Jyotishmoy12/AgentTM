@@ -41,6 +41,7 @@ const usage = `AgentTM - local Codex history, checkpoints and safe forks
   agenttm cat <checkpoint-id> <repo-relative-path>
   agenttm diff <checkpoint-id>
   agenttm ui [--port 7331] [--no-browser]
+  agenttm desktop [--port 7331] [--no-browser]
   agenttm fork <checkpoint-id> --name <name> [--allow-partial]
   agenttm forks
   agenttm purge --session <session-id> [--yes]
@@ -119,6 +120,8 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 		return listForks(engine, out), 0
 	case "ui":
 		return uiCommand(ctx, args[1:], engine, out, errOut)
+	case "desktop":
+		return desktopCommand(ctx, args[1:], engine, out, errOut)
 	case "checkpoint", "checkpoints", "show", "cat", "diff":
 		return snapshotCommand(ctx, args, engine, out)
 	case "doctor":
