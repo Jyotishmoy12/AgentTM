@@ -7,7 +7,20 @@ native desktop preview, when provided, is a separate desktop ZIP. Archive names,
 installers, and SHA256SUMS must all come from the same release. Download one
 platform archive into an empty folder so older versions cannot be selected accidentally.
 
-## Windows
+## Windows desktop ZIP versus CLI installer
+
+| Download | What to do |
+| --- | --- |
+| `agenttm-desktop_VERSION_windows_amd64.zip` | Verify and extract it, then use the bundled agenttm-cli.exe to initialize a Git project and launch AgentTM.exe from that project. No install.ps1 is needed. |
+| `agenttm_VERSION_windows_amd64.zip` or ARM64 equivalent | Keep the CLI ZIP unextracted beside the separately downloaded install.ps1 and SHA256SUMS, then run the installer. |
+
+If `Unblock-File ./install.ps1` says the file does not exist and your current
+folder is named `agenttm-desktop_...`, you are following CLI instructions in the
+desktop folder. Use the [downloaded desktop walkthrough](desktop-onboarding.md#try-the-downloaded-desktop-app)
+instead. The extracted desktop helper is named agenttm-cli.exe; it is not added
+to PATH as `agenttm` by extraction.
+
+## Windows CLI installation
 
 The default installer destination is `%LOCALAPPDATA%\AgentTM\bin`. It does not
 require administrator access. `-AddToPath` updates the current PowerShell process

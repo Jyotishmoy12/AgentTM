@@ -65,9 +65,10 @@ evidence of a real model execution.
 ### Download the correct archive
 
 Open [Latest release → Assets](https://github.com/Jyotishmoy12/AgentTM/releases/latest).
-Download one archive, [SHA256SUMS](https://github.com/Jyotishmoy12/AgentTM/releases/latest/download/SHA256SUMS),
-and the installer for your OS into a new empty folder. Keep all three files from
-the **same release**. `VERSION` below means the version shown on that release;
+Download your archive and [SHA256SUMS](https://github.com/Jyotishmoy12/AgentTM/releases/latest/download/SHA256SUMS)
+into a new empty folder. For a CLI installation, also download the installer for
+your OS. The native desktop ZIP is portable and does **not** use `install.ps1`.
+Keep the files from the **same release**. `VERSION` below means the version shown on that release;
 match the filename listed in Assets rather than using `VERSION` literally.
 
 | Device | CLI archive filename |
@@ -83,7 +84,35 @@ match the filename listed in Assets rather than using `VERSION` literally.
 CLI archives do not contain the native desktop app. If the selected release
 provides it, download `agenttm-desktop_VERSION_windows_amd64.zip` separately.
 
-### Windows
+### Windows desktop app
+
+Use this section if you downloaded `agenttm-desktop_VERSION_windows_amd64.zip`.
+Verify its hash against the matching entry in SHA256SUMS, then extract it.
+The extracted folder contains **AgentTM.exe** and **agenttm-cli.exe**. It does
+not contain `install.ps1`; do not run the CLI installer instructions below inside it.
+
+Open PowerShell **inside the extracted desktop folder**. Save its location, then
+switch to the Git project you want to use:
+
+~~~powershell
+$appDir = (Get-Location).Path
+Set-Location 'C:\path\to\your\git-project'
+& (Join-Path $appDir 'agenttm-cli.exe') init
+& (Join-Path $appDir 'AgentTM.exe')
+~~~
+
+Replace the example project path with your actual Git working tree. For a first
+test in a new disposable project instead, use the complete example in the
+[desktop setup guide](docs/desktop-onboarding.md#try-the-downloaded-desktop-app).
+WebView2 is required. The app uses the working directory to select a project;
+it does not yet provide a project picker before startup. The helper's command
+name is `agenttm-cli.exe`; extracting this ZIP does not add `agenttm` to PATH.
+
+### Windows CLI and browser dashboard
+
+Use this section for `agenttm_VERSION_windows_amd64.zip` or its ARM64 equivalent,
+**not** the `agenttm-desktop_...zip`. Keep the CLI ZIP unextracted beside the
+separately downloaded installer and SHA256SUMS.
 
 Also download [install.ps1](https://github.com/Jyotishmoy12/AgentTM/releases/latest/download/install.ps1).
 Open PowerShell **in the download folder**. The command below selects the single
@@ -129,6 +158,9 @@ Existing executables are not overwritten; move the old executable aside before
 upgrading. Neither installer downloads Git or Codex.
 
 ## Quick Start
+
+For the native Windows app, follow [desktop launch](#windows-desktop-app) above,
+then use **Chat with Codex**. The commands below use the separately installed CLI.
 
 From the Git project you want to inspect, after installation and Codex login:
 

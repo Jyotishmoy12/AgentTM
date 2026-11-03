@@ -12,6 +12,10 @@ the browser dashboard. A desktop ZIP includes AgentTM.exe and a distinctly named
 agenttm-cli.exe to avoid Windows filename collisions. It is unsigned and is not
 an MSI installer.
 
+The desktop ZIP does not use or include `install.ps1`. That script installs the
+separate CLI archive. Do not search for a CLI ZIP inside the extracted desktop
+folder, and do not expect extraction to add a global `agenttm` command to PATH.
+
 After extracting a desktop ZIP and verifying its checksum, initialize and
 launch from a project using the bundled helper:
 
@@ -21,6 +25,28 @@ Set-Location 'C:\path\to\your\git-project'
 & (Join-Path $appDir 'agenttm-cli.exe') init
 & (Join-Path $appDir 'AgentTM.exe')
 ```
+
+## Try the downloaded desktop app
+
+After checksum verification and extraction, open PowerShell in the folder
+containing AgentTM.exe and agenttm-cli.exe. This creates a fresh demo Git project
+and opens it without requiring the CLI installer:
+
+```powershell
+$appDir = (Get-Location).Path
+$demo = Join-Path $env:TEMP ('agenttm-demo-' + [guid]::NewGuid())
+New-Item -ItemType Directory -Path $demo | Out-Null
+Set-Location $demo
+git init
+& (Join-Path $appDir 'agenttm-cli.exe') init
+& (Join-Path $appDir 'AgentTM.exe')
+```
+
+Git must be installed. Use Setup guide for Codex readiness, then Chat with Codex
+for a first task. This demo is separate from your existing projects. To inspect
+the bundled helper version, use `& (Join-Path $appDir 'agenttm-cli.exe') version`.
+
+## Maintainer build
 
 The maintainer build process is below. Public visibility does not grant general
 source reuse or modification permission; see [licensing details](licensing.md).
