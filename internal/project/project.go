@@ -13,10 +13,12 @@ import (
 	"time"
 
 	"agenttm/internal/config"
+	"agenttm/internal/process"
 )
 
 func Command(ctx context.Context, dir string, args ...string) *exec.Cmd {
 	c := exec.CommandContext(ctx, "git", append([]string{"-C", dir}, args...)...)
+	process.HideWindow(c)
 	// Ambient Git overrides must not redirect an isolated restore to the user's
 	// original index/worktree, nor alter repository discovery during capture.
 	for _, v := range os.Environ() {

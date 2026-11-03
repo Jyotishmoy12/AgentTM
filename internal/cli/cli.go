@@ -19,6 +19,7 @@ import (
 	"agenttm/internal/config"
 	"agenttm/internal/events"
 	"agenttm/internal/operation"
+	"agenttm/internal/process"
 	"agenttm/internal/project"
 	"agenttm/internal/snapshot"
 	"agenttm/internal/storage"
@@ -383,7 +384,9 @@ func codexDoctor(ctx context.Context, out io.Writer) error {
 	fmt.Fprintln(out, codex.Compatibility(version))
 	checkCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
-	if e = exec.CommandContext(checkCtx, "codex", "login", "status").Run(); e != nil {
+	login := exec.CommandContext(checkCtx, "codex", "login", "status")
+	process.HideWindow(login)
+	if e = login.Run(); e != nil {
 		return fmt.Errorf("Codex login readiness could not be confirmed; run codex login, then retry")
 	}
 	fmt.Fprintln(out, "Codex login status: OK (model access and network require a real run)")

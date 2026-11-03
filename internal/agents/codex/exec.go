@@ -38,12 +38,16 @@ func (a Adapter) Available(ctx context.Context) (string, error) {
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
 	// Do not forward arbitrary diagnostic output: CLI configuration may contain secrets.
-	b, e := exec.CommandContext(ctx, a.binary(), "--version").Output()
+	versionCommand := exec.CommandContext(ctx, a.binary(), "--version")
+	process.HideWindow(versionCommand)
+	b, e := versionCommand.Output()
 	if e != nil {
 		return "", fmt.Errorf("Codex unavailable: install Codex CLI and make codex available on PATH")
 	}
 	version := events.Redact(strings.TrimSpace(string(b)))
-	help, e := exec.CommandContext(ctx, a.binary(), "exec", "--help").Output()
+	helpCommand := exec.CommandContext(ctx, a.binary(), "exec", "--help")
+	process.HideWindow(helpCommand)
+	help, e := helpCommand.Output()
 	if e != nil || !strings.Contains(string(help), "--json") {
 		return version, fmt.Errorf("installed Codex does not advertise exec --json support; update Codex")
 	}

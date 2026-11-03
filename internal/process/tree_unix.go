@@ -8,6 +8,9 @@ import (
 	"syscall"
 )
 
+// Console window visibility is a Windows-specific concern.
+func HideWindow(cmd *exec.Cmd) {}
+
 func Configure(cmd *exec.Cmd) {
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	cmd.Cancel = func() error {

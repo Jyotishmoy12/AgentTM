@@ -20,6 +20,7 @@ import (
 	"agenttm/internal/config"
 	"agenttm/internal/interactive"
 	"agenttm/internal/maintenance"
+	"agenttm/internal/process"
 	"agenttm/internal/project"
 	"agenttm/internal/server"
 	"agenttm/internal/snapshot"
@@ -234,6 +235,7 @@ func (d *Desktop) CheckSetup() SetupStatus {
 		return status
 	}
 	login := exec.CommandContext(check, executable, "login", "status")
+	process.HideWindow(login)
 	if err = login.Run(); err != nil {
 		status.State = "login_required"
 		return status
