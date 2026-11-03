@@ -1,8 +1,16 @@
 # Desktop onboarding preview (Windows)
 
-Launch from an initialized AgentTM repository. The native desktop preview opens
-that repository; project selection before startup and installer integration are
-not implemented yet. Microsoft Edge WebView2 Evergreen Runtime is required:
+The current source includes a welcome screen and native Git project picker.
+Double-click AgentTM.exe, choose **Open a Git project**, select an existing Git
+folder, and confirm **Initialize** if it has no AgentTM history. Cancelling leaves
+the welcome screen open. Invalid projects show an error so you can try again;
+existing configuration is never replaced. Close and reopen to choose another
+project. Launches from an initialized Git working directory still open directly.
+
+**Distribution:** this picker is a source change after v0.3.3, not part of that
+published ZIP. v0.3.3 needs the project-directory launch below. A future release
+must include the new build before its download supports the picker. Installer
+integration is not implemented. Microsoft Edge WebView2 Evergreen Runtime is required:
 https://developer.microsoft.com/microsoft-edge/webview2/
 
 Check [Latest release → Assets](https://github.com/Jyotishmoy12/AgentTM/releases/latest)

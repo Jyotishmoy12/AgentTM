@@ -251,8 +251,10 @@ Set-Location 'C:\path\to\your\git-project'
 & (Join-Path $appDir 'AgentTM.exe')
 ```
 
-Replace the example project path with your real Git project. The working directory
-selects the project; double-clicking in Downloads is not a project-selection flow.
+Replace the example project path with your real Git project. In v0.3.3 the working
+directory selects the project. Source builds after v0.3.3 also support a welcome
+screen: double-click the app outside an initialized project, choose **Open a Git
+project**, select your folder, and confirm history initialization if requested.
 See [desktop setup](desktop-onboarding.md) for prerequisites and first-launch help.
 
 In **Chat with Codex**:

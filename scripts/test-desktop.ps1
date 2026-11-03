@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$Archive,
-    [Parameter(Mandatory=$true)][string]$Version
+    [Parameter(Mandatory=$true)][string]$Version,
+    [switch]$ExpectWelcome
 )
 $ErrorActionPreference='Stop'
 $archivePath=(Resolve-Path -LiteralPath $Archive).Path
@@ -38,7 +39,9 @@ public static class AgentTMWindowCheck {
     }
 }
 '@
-$child=Start-Process -FilePath $desktop -WorkingDirectory $repo -WindowStyle Hidden -PassThru
+$launchDirectory=$repo
+if ($ExpectWelcome) { $launchDirectory=$appDir }
+$child=Start-Process -FilePath $desktop -WorkingDirectory $launchDirectory -WindowStyle Hidden -PassThru
 try {
     $deadline=(Get-Date).AddSeconds(20)
     do {
@@ -47,7 +50,9 @@ try {
         if($child.HasExited){throw "Desktop exited during startup: $($child.ExitCode)"}
     } while(-not [AgentTMWindowCheck]::Exists($child.Id) -and (Get-Date) -lt $deadline)
     if(-not [AgentTMWindowCheck]::Exists($child.Id)){throw 'Desktop did not create its native window. Verify WebView2 and desktop-session availability.'}
-    Write-Output "Native desktop extraction, GUI subsystem, bundled CLI version, initialized-project startup: PASS ($taskRoot)"
+    $scenario='initialized-project startup'
+    if ($ExpectWelcome) { $scenario='startup outside a Git project (welcome window smoke only)' }
+    Write-Output "Native desktop extraction, GUI subsystem, bundled CLI version, ${scenario}: PASS ($taskRoot)"
 } finally {
     if(-not $child.HasExited){Stop-Process -Id $child.Id; $child.WaitForExit()}
 }

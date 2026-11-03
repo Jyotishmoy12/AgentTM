@@ -75,7 +75,15 @@ Confirm AgentTM.exe and agenttm-cli.exe are listed. Use a fresh destination if
 If you already extracted the verified ZIP, open PowerShell in that extracted
 folder, run `$appDir = (Get-Location).Path`, and continue below.
 
-For a first test, create a fresh demo Git project and open it:
+**Project picker:** source builds after v0.3.3 open a welcome screen when launched
+outside an initialized project. Double-click AgentTM.exe, choose **Open a Git
+project**, and select your existing Git folder. Confirm **Initialize** to create
+local history if asked. Cancelling keeps the welcome screen open; errors allow
+another selection. Git and WebView2 must be installed. Close and reopen the app
+to choose a different project. Check your release notes: **v0.3.3 does not include
+this picker** and needs the commands below.
+
+For a first test with v0.3.3, create a fresh demo Git project and open it:
 
 ```powershell
 $demo = Join-Path $env:TEMP ('agenttm-demo-' + [guid]::NewGuid())
@@ -99,8 +107,8 @@ Set-Location 'C:\path\to\your\git-project'
 & (Join-Path $appDir 'AgentTM.exe')
 ```
 
-Replace that example project path. The working directory selects the project;
-there is no project picker before startup. On later launches, set `$appDir` to
+Replace that example project path. In v0.3.3 the working directory selects the
+project. On later launches, set `$appDir` to
 the extracted app folder again if using a new terminal. The preview is unsigned;
 Windows reputation warnings may appear. A checksum is not publisher signing.
 

@@ -61,6 +61,7 @@ jobs:
           node scripts/smoke-ui.mjs (Join-Path $cli 'agenttm.exe') $env:RELEASE_VERSION
           if ($LASTEXITCODE -ne 0) { throw 'Packaged UI smoke failed.' }
           ./scripts/test-desktop.ps1 -Archive "dist/native/agenttm-desktop_$($env:RELEASE_VERSION)_windows_amd64.zip" -Version $env:RELEASE_VERSION
+          ./scripts/test-desktop.ps1 -Archive "dist/native/agenttm-desktop_$($env:RELEASE_VERSION)_windows_amd64.zip" -Version $env:RELEASE_VERSION -ExpectWelcome
       - name: Install Unix archive
         if: runner.os != 'Windows'
         shell: bash

@@ -17,14 +17,12 @@ import (
 
 	"agenttm/internal/agents/codex"
 	"agenttm/internal/cli"
-	"agenttm/internal/config"
+	desktopproject "agenttm/internal/desktop"
 	"agenttm/internal/interactive"
 	"agenttm/internal/maintenance"
 	"agenttm/internal/process"
-	"agenttm/internal/project"
 	"agenttm/internal/server"
 	"agenttm/internal/snapshot"
-	"agenttm/internal/storage"
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
@@ -33,38 +31,36 @@ import (
 )
 
 func main() {
-	root, err := project.Root(mustWorkingDirectory())
-	if err != nil {
-		fatal(err)
+	handler := &desktopproject.Launcher{}
+	desktop := &Desktop{chat: &interactive.Manager{}, launcher: handler}
+	// Keep initialized-project launches, without implicitly initializing Explorer's cwd.
+	if directory, err := os.Getwd(); err == nil {
+		if engine, err := desktopproject.Open(directory, nil); err == nil && engine != nil {
+			desktop.attach(engine)
+		}
 	}
-	configPath := root + string(os.PathSeparator) + ".agenttm" + string(os.PathSeparator) + "config.json"
-	c, err := config.Load(configPath)
-	if err != nil {
-		fatal(fmt.Errorf("cannot load AgentTM config; run agenttm init first: %w", err))
-	}
-	s, err := storage.Open(root)
-	if err != nil {
-		fatal(err)
-	}
-	defer s.DB.Close()
-	engine := &snapshot.Engine{Root: root, Store: s, Config: c}
-	handler := server.NewDesktop(engine, cli.Version)
-	desktop := &Desktop{root: root, chat: &interactive.Manager{Engine: engine}, engine: engine}
 	if path := savedCodexPath(); path != "" {
 		_ = desktop.chat.SetExecutable(path)
 	}
 
-	err = wails.Run(&options.App{
-		Title:                    "AgentTM",
-		Width:                    1100,
-		Height:                   740,
-		DisableResize:            false,
-		MinWidth:                 760,
-		MinHeight:                550,
-		AssetServer:              &assetserver.Options{Handler: handler},
-		BackgroundColour:         &options.RGBA{R: 10, G: 16, B: 24, A: 1},
-		OnStartup:                func(ctx context.Context) { desktop.ctx = ctx },
-		OnShutdown:               func(context.Context) { desktop.chat.Shutdown() },
+	err := wails.Run(&options.App{
+		Title:            "AgentTM",
+		Width:            1100,
+		Height:           740,
+		DisableResize:    false,
+		MinWidth:         760,
+		MinHeight:        550,
+		AssetServer:      &assetserver.Options{Handler: handler},
+		BackgroundColour: &options.RGBA{R: 10, G: 16, B: 24, A: 1},
+		OnStartup:        func(ctx context.Context) { desktop.ctx = ctx },
+		OnShutdown: func(context.Context) {
+			desktop.mu.Lock()
+			defer desktop.mu.Unlock()
+			desktop.chat.Shutdown()
+			if desktop.engine != nil {
+				desktop.engine.Store.DB.Close()
+			}
+		},
 		Bind:                     []interface{}{desktop},
 		Windows:                  &windowoptions.Options{WebviewIsTransparent: false, WindowIsTranslucent: false},
 		Frameless:                false,
@@ -75,24 +71,55 @@ func main() {
 	}
 }
 
-func mustWorkingDirectory() string {
-	dir, err := os.Getwd()
-	if err != nil {
-		fatal(err)
-	}
-	return dir
+type Desktop struct {
+	ctx      context.Context
+	root     string
+	mu       sync.Mutex
+	chat     *interactive.Manager
+	engine   *snapshot.Engine
+	launcher *desktopproject.Launcher
 }
 
-type Desktop struct {
-	ctx    context.Context
-	root   string
-	mu     sync.Mutex
-	chat   *interactive.Manager
-	engine *snapshot.Engine
+// Called only before startup or under mu. An open project is never replaced.
+func (d *Desktop) attach(engine *snapshot.Engine) {
+	d.root = engine.Root
+	d.engine = engine
+	d.chat.Engine = engine
+	d.launcher.Set(server.NewDesktop(engine, cli.Version))
+}
+
+func (d *Desktop) ChooseProject() (bool, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.engine != nil {
+		return false, fmt.Errorf("a project is already open; close and reopen AgentTM to choose another")
+	}
+	directory, err := runtime.OpenDirectoryDialog(d.ctx, runtime.OpenDialogOptions{Title: "Choose an existing Git project"})
+	if err != nil || directory == "" {
+		return false, err
+	}
+	engine, err := desktopproject.Open(directory, func(root string) (bool, error) {
+		answer, err := runtime.MessageDialog(d.ctx, runtime.MessageDialogOptions{
+			Type: runtime.QuestionDialog, Title: "Initialize AgentTM history?",
+			Message: "Create local AgentTM history in:\n" + root + "\n\nThis creates .agenttm and adds it to the local Git exclusion file. It does not create a commit or change your tracked files.",
+			Buttons: []string{"Initialize", "Cancel"}, DefaultButton: "Cancel", CancelButton: "Cancel",
+		})
+		return answer == "Initialize", err
+	})
+	if err != nil || engine == nil {
+		return false, err
+	}
+	d.attach(engine)
+	return true, nil
 }
 
 func (d *Desktop) ChatStatus() interactive.State { return d.chat.Status() }
 func (d *Desktop) CodexModels() ([]interactive.Model, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.engine == nil {
+		return nil, fmt.Errorf("open a Git project first")
+	}
 	return interactive.ListModels(d.ctx, d.chat.ExecutablePath(), d.root)
 }
 
@@ -158,14 +185,27 @@ func (d *Desktop) ChooseCodex() (string, error) {
 func (d *Desktop) StartChat(session, prompt, model, sandbox string) (string, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
+	if d.engine == nil {
+		return "", fmt.Errorf("open a Git project first")
+	}
 	return d.chat.Start(d.ctx, session, prompt, model, sandbox)
 }
 func (d *Desktop) StopChat()                              { d.chat.Stop() }
 func (d *Desktop) DecideChat(id string, allow bool) error { return d.chat.Decide(id, allow) }
 func (d *Desktop) GarbageCollect(apply bool, token string) (maintenance.GCReport, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.engine == nil {
+		return maintenance.GCReport{}, fmt.Errorf("open a Git project first")
+	}
 	return maintenance.Collect(d.engine, apply, token, 24*time.Hour)
 }
 func (d *Desktop) CreateBackup(password string) (string, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.engine == nil {
+		return "", fmt.Errorf("open a Git project first")
+	}
 	destination, err := runtime.SaveFileDialog(d.ctx, runtime.SaveDialogOptions{Title: "Save encrypted history backup", DefaultFilename: "agenttm-history.age", Filters: []runtime.FileFilter{{DisplayName: "Encrypted AgentTM backup", Pattern: "*.age"}}})
 	if err != nil {
 		return "", err
@@ -219,6 +259,10 @@ func (d *Desktop) CheckSetup() SetupStatus {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	status := SetupStatus{State: "missing", Project: filepath.Base(d.root), Path: d.root}
+	if d.engine == nil {
+		status.State = "project_required"
+		return status
+	}
 	check, cancel := context.WithTimeout(d.ctx, 20*time.Second)
 	defer cancel()
 	executable := d.chat.ExecutablePath()
