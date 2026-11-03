@@ -55,111 +55,27 @@ evidence of a real model execution.
 
 ## Installation
 
-### Prerequisites
+Choose your operating system for a step-by-step guide:
 
-- **Git 2.42+** and a **Git working tree**. Run `git init` in a new project if needed; an initial commit is not required for recording.
-- An **installed, authenticated Codex CLI** for recording. Follow the [official Codex setup guide](https://developers.openai.com/codex/cli), then run `codex login` and `codex login status`.
-- Prebuilt CLI archives exist for Windows, Linux, and macOS, on amd64 and arm64. Native runtime validation on this audit host covers **Windows amd64**; other platforms require native validation.
-- **Go and Node.js are not required to run the prebuilt CLI or its embedded React dashboard.** Installing Codex has its own prerequisites.
-
-### Download the correct archive
-
-Open [Latest release → Assets](https://github.com/Jyotishmoy12/AgentTM/releases/latest).
-Download your archive and [SHA256SUMS](https://github.com/Jyotishmoy12/AgentTM/releases/latest/download/SHA256SUMS)
-into a new empty folder. For a CLI installation, also download the installer for
-your OS. The native desktop ZIP is portable and does **not** use `install.ps1`.
-Keep the files from the **same release**. `VERSION` below means the version shown on that release;
-match the filename listed in Assets rather than using `VERSION` literally.
-
-| Device | CLI archive filename |
+| Platform | Installation guide |
 | --- | --- |
-| Windows Intel/AMD 64-bit | `agenttm_VERSION_windows_amd64.zip` |
-| Windows ARM64 | `agenttm_VERSION_windows_arm64.zip` |
-| macOS Apple silicon | `agenttm_VERSION_darwin_arm64.tar.gz` |
-| macOS Intel | `agenttm_VERSION_darwin_amd64.tar.gz` |
-| Linux Intel/AMD 64-bit | `agenttm_VERSION_linux_amd64.tar.gz` |
-| Linux ARM64 | `agenttm_VERSION_linux_arm64.tar.gz` |
+| Windows | **[Windows README](docs/install/windows/README.md)** — separate desktop and CLI paths |
+| macOS | **[macOS README](docs/install/macos/README.md)** — Apple silicon and Intel CLI |
+| Linux | **[Linux README](docs/install/linux/README.md)** — amd64 and ARM64 CLI |
 
-**Source code** ZIP/tar downloads contain the repository, not a prebuilt application.
-CLI archives do not contain the native desktop app. If the selected release
-provides it, download `agenttm-desktop_VERSION_windows_amd64.zip` separately.
+Each guide covers the correct downloads, the separate SHA256SUMS file,
+verification, installation, first launch, and troubleshooting. Get all files from
+the same [release](https://github.com/Jyotishmoy12/AgentTM/releases/latest).
+The desktop ZIP does not use the CLI installer.
 
-### Windows desktop app
-
-Use this section if you downloaded `agenttm-desktop_VERSION_windows_amd64.zip`.
-Verify its hash against the matching entry in SHA256SUMS, then extract it.
-The extracted folder contains **AgentTM.exe** and **agenttm-cli.exe**. It does
-not contain `install.ps1`; do not run the CLI installer instructions below inside it.
-
-Open PowerShell **inside the extracted desktop folder**. Save its location, then
-switch to the Git project you want to use:
-
-~~~powershell
-$appDir = (Get-Location).Path
-Set-Location 'C:\path\to\your\git-project'
-& (Join-Path $appDir 'agenttm-cli.exe') init
-& (Join-Path $appDir 'AgentTM.exe')
-~~~
-
-Replace the example project path with your actual Git working tree. For a first
-test in a new disposable project instead, use the complete example in the
-[desktop setup guide](docs/desktop-onboarding.md#try-the-downloaded-desktop-app).
-WebView2 is required. The app uses the working directory to select a project;
-it does not yet provide a project picker before startup. The helper's command
-name is `agenttm-cli.exe`; extracting this ZIP does not add `agenttm` to PATH.
-
-### Windows CLI and browser dashboard
-
-Use this section for `agenttm_VERSION_windows_amd64.zip` or its ARM64 equivalent,
-**not** the `agenttm-desktop_...zip`. Keep the CLI ZIP unextracted beside the
-separately downloaded installer and SHA256SUMS.
-
-Also download [install.ps1](https://github.com/Jyotishmoy12/AgentTM/releases/latest/download/install.ps1).
-Open PowerShell **in the download folder**. The command below selects the single
-downloaded Windows CLI archive, regardless of its version:
-
-~~~powershell
-Unblock-File -LiteralPath ./install.ps1
-$archives = @(Get-ChildItem -File -Filter 'agenttm_*_windows_*.zip')
-if ($archives.Count -ne 1) { throw 'Keep exactly one Windows CLI archive in this folder.' }
-./install.ps1 -Archive $archives[0].FullName -ChecksumFile ./SHA256SUMS -AddToPath
-agenttm version
-~~~
-
-Choose the correct architecture from the table above. The installer verifies the archive checksum
-and installs to `%LOCALAPPDATA%\AgentTM\bin`. Open a new terminal in other apps
-to pick up PATH changes. An existing installation is refused; add `-Force` for
-an explicit upgrade. Close any running AgentTM process before upgrading.
-
-If script execution remains blocked, compare `Get-FileHash ARCHIVE -Algorithm SHA256`
-with its entry in `SHA256SUMS`, extract the ZIP, and invoke `agenttm.exe` by its
-full path. See [installation troubleshooting](docs/installation.md).
-
-### macOS and Linux
-
-Also download [install.sh](https://github.com/Jyotishmoy12/AgentTM/releases/latest/download/install.sh).
-In the download folder, select your platform's archive; this Linux amd64 example
-finds its version automatically. Change the filename pattern for macOS or ARM64:
-
-~~~sh
-set -- ./agenttm_*_linux_amd64.tar.gz
-if [ "$#" -eq 1 ] && [ -f "$1" ]; then
-  sh install.sh "$1" "$HOME/.local/bin" &&
-    export PATH="$HOME/.local/bin:$PATH" &&
-    agenttm version
-else
-  printf '%s\n' 'Keep exactly one matching CLI archive in this folder.' >&2
-fi
-~~~
-
-The installer verifies SHA-256 and sets executable permissions. Add
-`~/.local/bin` to your shell's PATH configuration for future terminals.
-Existing executables are not overwritten; move the old executable aside before
-upgrading. Neither installer downloads Git or Codex.
+Git 2.42+ and a Git working tree are required for project operations. New recordings
+also need an installed, authenticated Codex CLI. **Go and Node.js are not needed
+to run the prebuilt binaries or embedded browser dashboard.** Desktop runtime and
+platform-specific requirements are explained in the corresponding guide.
 
 ## Quick Start
 
-For the native Windows app, follow [desktop launch](#windows-desktop-app) above,
+For the native Windows app, follow [Windows desktop setup](docs/install/windows/README.md#3a-desktop-portable-app),
 then use **Chat with Codex**. The commands below use the separately installed CLI.
 
 From the Git project you want to inspect, after installation and Codex login:

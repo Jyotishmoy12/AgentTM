@@ -1,5 +1,13 @@
 # Installation and first-run troubleshooting
 
+For complete platform-specific installation steps, choose your guide:
+
+- [Windows: desktop app or CLI](install/windows/README.md)
+- [macOS: Apple silicon or Intel CLI](install/macos/README.md)
+- [Linux: amd64 or ARM64 CLI](install/linux/README.md)
+
+This page provides additional troubleshooting after those instructions.
+
 The [README Quick Start](../README.md#quick-start) is the shortest path. The
 [latest release assets](https://github.com/Jyotishmoy12/AgentTM/releases/latest)
 list the available downloads. CLI archives contain the browser dashboard; a
