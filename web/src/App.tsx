@@ -8,7 +8,10 @@ import { ForkDialog } from './components/ForkDialog';
 import { Onboarding } from './components/Onboarding';
 import { NavIcon, navigation, Overview, PageHeading, RestoredWorkspaces, SessionCards, SetupPage } from './components/NavigationPages';
 import type { AppPage } from './components/NavigationPages';
+import { ChatPage } from './components/ChatPage';
+import { StoragePage } from './components/StoragePage';
 import './navigation.css';
+import './features.css';
 
 const short = (id: string) => id.slice(0, 8);
 const time = (value: string) => new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -22,6 +25,7 @@ export function App() {
   const [page, setPage] = useState<AppPage>('overview');
   const [sessionDetail, setSessionDetail] = useState(false);
   const [sessionTab, setSessionTab] = useState<'timeline' | 'file' | 'diff'>('timeline');
+  const [resumeSession, setResumeSession] = useState('');
   const [health, setHealth] = useState<Health | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [sessionCursor, setSessionCursor] = useState<number | null>(null);
@@ -119,12 +123,14 @@ const sessionSelector = (<div className="session-bar">
       <nav aria-label="Main navigation">{navigation.map(item => <button key={item.id} aria-label={item.title} title={item.title} aria-current={page === item.id ? 'page' : undefined} onClick={() => { setPage(item.id); if (item.id === 'sessions') setSessionDetail(false); }}><NavIcon name={item.icon}/><span><strong>{item.title}</strong><small>{item.hint}</small></span></button>)}</nav>
       <div className="sidebar-bottom"><span className="privacy-badge"><span className="status-dot"/>Local · private</span><p>{health?.version || 'AgentTM'} · Stored on this device</p></div>
     </aside>
-    <main className="app-main">
+    <main className={`app-main ${page === 'chat' ? 'chat-layout' : ''}`}>
       <header className="topbar"><span>{health?.project || 'Workspace'} <span aria-hidden="true">/</span> {navigation.find(n => n.id === page)?.title}</span><div><Onboarding/><button onClick={() => setRevision(n => n + 1)} aria-label="Refresh history">Refresh history</button></div></header>
-      <PageHeading page={page}>{page === 'sessions' && sessionDetail && <button onClick={() => setSessionDetail(false)}>← All sessions</button>}</PageHeading>
+      <PageHeading page={page}>{page === 'sessions' && sessionDetail && <><button onClick={() => setSessionDetail(false)}>← All sessions</button>{currentSession?.resumable && <button className="primary-button" onClick={() => { setResumeSession(sessionID); setPage('chat'); }}>Continue in chat</button>}</>}</PageHeading>
       {error && <div className="global-error"><ErrorBox>{error} <button className="text-button" onClick={() => setRevision(n => n + 1)}>Retry</button></ErrorBox></div>}
       {page === 'overview' && <Overview sessions={sessions} health={health} more={sessionCursor !== null} onOpen={openSession} navigate={setPage}/>}
       {page === 'setup' && <SetupPage/>}
+      {page === 'chat' && <ChatPage resume={resumeSession} sessions={sessions} onRecorded={() => setRevision(n => n + 1)}/>}
+      {page === 'storage' && <StoragePage/>}
       {page === 'restores' && <RestoredWorkspaces revision={revision} onCheckpoints={() => setPage('checkpoints')}/>}
       {page === 'sessions' && !sessionDetail && <div className="page-scroll">{loading && !sessions.length ? <Empty title="Loading your history"/> : sessions.length ? <><SessionCards sessions={sessions} onOpen={openSession}/>{sessionCursor !== null && <button className="load-more" onClick={moreSessions}>Load older sessions</button>}</> : <Empty title="Your history starts with a run"><p>Only sessions launched through AgentTM appear here.</p><code>agenttm run codex -- "your task"</code><button onClick={() => setPage('setup')}>Open setup & help</button></Empty>}</div>}
       {(page === 'checkpoints' || page === 'sessions' && sessionDetail) && <>

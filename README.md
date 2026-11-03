@@ -243,10 +243,15 @@ go run ./cmd/release --version 0.1.0 --out dist/0.1.0
 Rebuild the frontend first after UI source edits. The packager creates Windows,
 Linux and macOS archives for amd64/arm64 plus `SHA256SUMS`, notices and restore
 guidance. Existing outputs are refused; use a new output directory for a new build.
-CI runs native tests across all three OSes and browser tests on Linux. A version
-tag or manual release workflow publishes the individual archives to the
+CI runs native tests across all three OSes and browser tests on Linux. The manual
+release workflow publishes the individual archives to the
 repository's GitHub Releases page, so users can download only their platform's
 archive.
 
-Deferred beyond v0.1: interactive Codex capture, additional agents, automatic
-continuation, cloud sync, encrypted backup, and blob garbage collection.
+The Windows desktop preview now includes interactive Codex chat, explicit
+conversation continuation, encrypted history backup/restore, and blob garbage
+collection. See [chat and storage](docs/chat-and-storage.md) for usage, limits,
+and validation. These features are not yet in the previously published v0.1
+archives; rebuild the desktop preview to try them.
+
+Additional agents, unattended continuation loops, and cloud sync remain deferred.

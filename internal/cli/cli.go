@@ -17,6 +17,7 @@ import (
 	"agenttm/internal/agents/codex"
 	"agenttm/internal/config"
 	"agenttm/internal/events"
+	"agenttm/internal/operation"
 	"agenttm/internal/project"
 	"agenttm/internal/snapshot"
 	"agenttm/internal/storage"
@@ -45,6 +46,7 @@ const usage = `AgentTM - local Codex history, checkpoints and safe forks
   agenttm fork <checkpoint-id> --name <name> [--allow-partial]
   agenttm forks
   agenttm purge --session <session-id> [--yes]
+  agenttm gc [--min-age 24h] [--apply --yes]
 
 Only runs launched through AgentTM are recorded. Forks never execute captured code.
 Snapshots observe baseline/final state, not guaranteed per-tool history.
@@ -116,6 +118,8 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 		return forkCommand(ctx, args[1:], engine, out, errOut)
 	case "purge":
 		return purgeCommand(args[1:], engine, out, errOut)
+	case "gc":
+		return gcCommand(args[1:], engine, out, errOut)
 	case "forks":
 		return listForks(engine, out), 0
 	case "ui":
@@ -197,6 +201,11 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 		}
 		return nil, 0
 	case "run":
+		unlockRecording, lockErr := operation.Acquire(root, "recording")
+		if lockErr != nil {
+			return lockErr, 1
+		}
+		defer unlockRecording()
 		if len(args) < 2 || args[1] != "codex" {
 			return fmt.Errorf("usage: agenttm run codex [--model MODEL] -- \"task\""), 2
 		}

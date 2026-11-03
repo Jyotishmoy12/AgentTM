@@ -110,6 +110,6 @@ func Purge(root string, s *storage.Store, id string) (PurgeResult, error) {
 			r.Warnings = append(r.Warnings, "Could not remove an unindexed manifest/log; inspect .agenttm and run doctor.")
 		}
 	}
-	r.Warnings = append(r.Warnings, "Shared file objects are retained; blob garbage collection is deferred. Purge is logical deletion, not secure erasure of SQLite pages, backups or fork contents.")
+	r.Warnings = append(r.Warnings, "Shared file objects are retained. Run agenttm gc to preview unreferenced blobs. Purge is logical deletion, not secure erasure of SQLite pages, backups or fork contents.")
 	return r, nil
 }
