@@ -10,10 +10,11 @@ Third-party licenses and GitHub's public-repository terms remain in force. See
 
 **Watch the 30-second demo — with background music and sound effects:**
 
-[![Play the AgentTM demo: record, inspect changes, and restore a checkpoint](docs/images/launch-video-poster.png)](docs/videos/agenttm-demo.mp4)
+https://github.com/user-attachments/assets/c6453d39-dd26-4190-9db9-36bf6eb95e47
 
-Click the image to open the video. Real UI captures from a disposable demo project,
-edited into a short promo. [Video credits](docs/videos/CREDITS.md).
+Press Play to watch with audio; use the player's controls to pause or mute.
+Real UI captures from a disposable demo project, edited into a short promo.
+[Download the MP4](docs/videos/agenttm-demo.mp4) · [Video credits](docs/videos/CREDITS.md).
 
 ## What AgentTM does
 
