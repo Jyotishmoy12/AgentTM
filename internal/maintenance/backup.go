@@ -35,16 +35,24 @@ func Backup(ctx context.Context, e *snapshot.Engine, destination, password strin
 	if len(password) < 12 || len(password) > 1024 {
 		return fmt.Errorf("use a backup passphrase of 12..1024 characters")
 	}
-	destination, err = filepath.Abs(destination)
+	destination, err = canonicalBackupFile(destination)
 	if err != nil {
 		return err
 	}
-	base := filepath.Join(e.Root, ".agenttm")
+	root, err := filepath.Abs(e.Root)
+	if err != nil {
+		return err
+	}
+	if err = project.SafePath(filepath.Join(root, ".agenttm")); err != nil {
+		return err
+	}
+	root, err = filepath.EvalSymlinks(root)
+	if err != nil {
+		return err
+	}
+	base := filepath.Join(root, ".agenttm")
 	if rel, relErr := filepath.Rel(base, destination); relErr == nil && (rel == "." || rel != ".." && !strings.HasPrefix(rel, ".."+string(os.PathSeparator))) {
 		return fmt.Errorf("save the backup outside .agenttm")
-	}
-	if err = project.SafePath(destination); err != nil {
-		return err
 	}
 	release, err := Quiesce(e.Root, e.Store)
 	if err != nil {
@@ -188,7 +196,8 @@ func RestoreBackup(ctx context.Context, archivePath, destination, password strin
 	if _, err = os.Lstat(target); !os.IsNotExist(err) {
 		return fmt.Errorf("destination already has .agenttm; restore into a clean clone")
 	}
-	if err = project.SafePath(archivePath); err != nil {
+	archivePath, err = canonicalBackupFile(archivePath)
+	if err != nil {
 		return err
 	}
 	input, err := os.Open(archivePath)
@@ -369,6 +378,37 @@ func RestoreBackup(ctx context.Context, archivePath, destination, password strin
 		return fmt.Errorf("destination changed; restore cancelled")
 	}
 	return os.Rename(base, target)
+}
+
+// Selected archive directories can have OS aliases such as macOS /var or /tmp.
+// Resolve the parent only: the archive itself must not be a symlink, and paths
+// explicitly inside protected storage must pass SafePath before any resolution.
+func canonicalBackupFile(name string) (string, error) {
+	p, err := filepath.Abs(name)
+	if err != nil {
+		return "", err
+	}
+	for current := p; ; current = filepath.Dir(current) {
+		base := filepath.Base(current)
+		if strings.EqualFold(base, ".agenttm") || strings.EqualFold(base, ".git") {
+			if err = project.SafePath(p); err != nil {
+				return "", err
+			}
+			break
+		}
+		if filepath.Dir(current) == current {
+			break
+		}
+	}
+	parent, err := filepath.EvalSymlinks(filepath.Dir(p))
+	if err != nil {
+		return "", err
+	}
+	p = filepath.Join(parent, filepath.Base(p))
+	if err = project.SafePath(p); err != nil {
+		return "", err
+	}
+	return p, nil
 }
 
 func allowedBackupPath(name string) bool {
