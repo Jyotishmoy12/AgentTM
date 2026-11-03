@@ -1,57 +1,215 @@
-# Agent Time Machine v0.1
+# Agent Time Machine (AgentTM)
 
-A local Go CLI that records **real, AgentTM-managed noninteractive Codex runs**
-in SQLite, with baseline/final workspace checkpoints and historical file inspection.
-The embedded React/TypeScript UI displays real stored sessions, timelines,
-historical files, parent diffs and isolated worktree forks. This implements Milestones 0–5 in
-[the MVP specification](AGENT_TIME_MACHINE_MVP.md).
+A local workspace history and debugging tool for AI coding agents. AgentTM records
+Codex sessions, captures workspace checkpoints, and lets you inspect earlier files
+or restore them into a separate Git worktree.
 
-**Validation status:** real Windows end-to-end coding, tests, intermediate capture,
-CLI/UI restoration, failure and Ctrl+C cancellation passed. Automated tests,
-selected race checks and five browser tests pass. All six OS/architecture release
-targets build; Windows installation was tested. Remote CI and native Linux/macOS
-execution are configured but not claimed as observed here. See [release evidence](docs/release-checklist.md),
-[Codex compatibility](docs/codex-compatibility.md), [snapshots](docs/snapshots.md),
-[UI/API](docs/ui.md), and [fork safety/recovery](docs/fork-and-recovery.md).
+Use the CLI and embedded browser dashboard, or the native Windows desktop preview
+with interactive Codex chat. History stays on your device; Codex connects to its
+configured service to run your requests.
 
-## Release installation
+![AgentTM overview with sidebar navigation and recorded sessions](docs/images/overview.png)
 
-Local archives are generated under `dist/0.1.0/`. Select the archive for your OS
-and architecture, verify it against the matching `SHA256SUMS`, and extract the
-single executable. Git 2.42+ and an authenticated Codex CLI are required for
-recording. Go and Node are not needed to run the release executable.
+## Features
 
-The local installers verify archive checksums before installing; they do not
-download anything. Windows example:
+| Feature | What you can do |
+| --- | --- |
+| Recorded Codex sessions | Record managed CLI runs and desktop chat turns; inspect events, supported tool output, timestamps, and outcomes. |
+| Operation checkpoints | Capture before/after observations for supported command execution, file change, MCP, and dynamic tool operations. Each supported completion gets a distinct checkpoint, including no-ops. |
+| Capture coverage | Inspect overlaps, missing notifications, partial snapshots, interruptions, and failures in **Sessions → Operations**. |
+| Historical files | Browse captured files in a read-only Monaco editor without changing the current workspace. |
+| Checkpoint diffs | Inspect additions, deletions, modifications, and file mode changes against a checkpoint's parent. |
+| Isolated restoration | Restore checkpoint files into a separate Git worktree while preserving the original workspace, index, and HEAD. |
+| Interactive chat | Chat with Codex inside the Windows desktop app, discover models, choose permissions, and review supported tool approvals. |
+| Conversation continuation | Explicitly continue a recorded Codex conversation using its saved upstream thread. |
+| Setup guidance | Check Codex readiness and select its executable when discovery fails. |
+| Encrypted history backups | Create and restore passphrase-encrypted `.age` history backups through the desktop app. |
+| Blob garbage collection | Preview unreferenced file blobs and explicitly remove eligible objects without deleting referenced history. |
+| Content deduplication | Share identical SHA-256 file objects across checkpoints and sessions. |
+| Local storage and diagnostics | Store history in SQLite and immutable manifests; verify stored objects and links with `doctor`. |
+
+**Availability:** this list describes the current source checkout. Previously
+published v0.1 archives may contain an earlier feature set. The release workflow
+currently packages the **CLI and browser dashboard**, not the native desktop
+executable. Build the Windows desktop preview from source for desktop chat and
+backup tools.
+
+Checkpoints are notification-time workspace observations, not atomic snapshots or
+proof that one action authored a change. Codex and other writers are not paused.
+See [operation checkpoints](docs/granular-checkpoints.md) for coverage limits.
+Code provenance and checkpoint-based conversation forking remain future work;
+continuing a conversation does not rewind its context to a selected checkpoint.
+
+## Screenshots
+
+These screenshots show the current UI using demo/test data. They illustrate the
+interface rather than evidence of a real model execution.
+
+<details>
+<summary>Session timeline and recorded tool activity</summary>
+
+![AgentTM session timeline with event filters and tool activity details](docs/images/session-timeline.png)
+
+Browse recorded events and inspect the workspace checkpoint observed near an event.
+
+</details>
+
+<details>
+<summary>Interactive Codex chat</summary>
+
+![AgentTM chat with conversation, model, permissions, and message controls](docs/images/codex-chat.png)
+
+Start a conversation or continue a recorded one from the Windows desktop app.
+
+</details>
+
+<details>
+<summary>Encrypted backups and blob cleanup</summary>
+
+![AgentTM storage page with encrypted backup controls and unused blob preview](docs/images/storage-backups.png)
+
+Protect recorded history with an encrypted backup and preview unused blobs before cleanup.
+
+</details>
+
+## Install from GitHub
+
+### Choose your download
+
+1. Open [GitHub Releases](https://github.com/Jyotishmoy12/AgentTM-demo/releases).
+2. Select a release and expand **Assets**.
+3. Download **one** archive for your device, plus `SHA256SUMS` and your platform's installer.
+4. Keep those files together in one folder. `VERSION` below means the version shown on that release.
+
+| Device | Archive | Installer |
+| --- | --- | --- |
+| Windows, Intel/AMD 64-bit | `agenttm_VERSION_windows_amd64.zip` | `install.ps1` |
+| Windows, ARM64 | `agenttm_VERSION_windows_arm64.zip` | `install.ps1` |
+| macOS, Apple silicon | `agenttm_VERSION_darwin_arm64.tar.gz` | `install.sh` |
+| macOS, Intel | `agenttm_VERSION_darwin_amd64.tar.gz` | `install.sh` |
+| Linux, Intel/AMD 64-bit | `agenttm_VERSION_linux_amd64.tar.gz` | `install.sh` |
+| Linux, ARM64 | `agenttm_VERSION_linux_arm64.tar.gz` | `install.sh` |
+
+The **Source code** downloads contain the repository, not a prebuilt application.
+If no release is listed, a maintainer must run **Actions → Release archives → Run
+workflow** to publish one. Passing CI alone does not publish a release.
+
+Git 2.42+ is required for project operations. Recording also requires an installed,
+authenticated Codex CLI. Go and Node.js are not needed to run the prebuilt CLI.
+
+### Windows (PowerShell)
+
+Open PowerShell **in the folder containing the downloaded files**. For version
+`0.1.0` on an Intel/AMD Windows device:
 
 ```powershell
-.\scripts\install.ps1 -Archive .\dist\0.1.0\agenttm_0.1.0_windows_amd64.zip -AddToPath
+# Change this to the release version you downloaded.
+$version = '0.1.0'
+Unblock-File -LiteralPath .\install.ps1
+.\install.ps1 -Archive ".\agenttm_${version}_windows_amd64.zip" -ChecksumFile .\SHA256SUMS -AddToPath
+agenttm version
 ```
 
-PATH changes require `-AddToPath`; upgrades require `-Force`. If script execution
-is disabled, extract the ZIP and invoke `agenttm.exe` directly. On Unix use
-`sh scripts/install.sh archive.tar.gz [install-directory]`.
+Use `windows_arm64` for an ARM64 device. The installer verifies SHA-256 before
+installing to `%LOCALAPPDATA%\AgentTM\bin`. `-AddToPath` updates your user PATH and
+the current terminal; open a new terminal in other apps to pick up the change.
+Add `-Force` to explicitly replace an existing installation.
+
+If your execution policy still blocks the installer, verify the archive's hash
+against its matching entry in `SHA256SUMS`, then extract and run it directly:
+
+```powershell
+Get-FileHash -LiteralPath ".\agenttm_${version}_windows_amd64.zip" -Algorithm SHA256
+Get-Content -LiteralPath .\SHA256SUMS
+# After confirming the hashes match:
+Expand-Archive -LiteralPath ".\agenttm_${version}_windows_amd64.zip" -DestinationPath .\agenttm-windows
+& .\agenttm-windows\agenttm.exe version
+```
+
+Use the executable's full path for later commands if you did not add it to PATH.
+For example, assign it to `$agenttm` and invoke it with `& $agenttm version`.
+
+### macOS and Linux
+
+Open a terminal in the download folder and use the matching archive from the table.
+For example, on Linux amd64:
+
+```sh
+sh install.sh agenttm_0.1.0_linux_amd64.tar.gz "$HOME/.local/bin"
+export PATH="$HOME/.local/bin:$PATH"
+agenttm version
+```
+
+Change the version and platform to match your download. The installer verifies
+SHA-256 before installing. Add `~/.local/bin` to your shell's PATH configuration
+to keep the command available in future terminals. The Unix installer refuses to
+overwrite an existing executable; move the old one aside before upgrading.
+Neither installer downloads dependencies or Codex for you.
+
+### First recording
+
+Open the Git project you want to record. For a new disposable folder, run `git init`
+first; an initial commit is not required.
+
+```powershell
+agenttm init
+agenttm codex doctor
+agenttm doctor
+agenttm run codex -- "Explain this project. Do not change files."
+agenttm sessions
+agenttm ui
+```
+
+If Codex reports a model access error, pass `--model MODEL_ID` with a model available
+to your account. AgentTM does not change your global model configuration.
+
+### Native Windows desktop preview from GitHub source
+
+Requires Go 1.25+, Node.js 24+, Git, and the Microsoft Edge WebView2 runtime. Codex
+is needed to chat; the desktop setup guide checks its readiness.
+
+```powershell
+git clone https://github.com/Jyotishmoy12/AgentTM-demo.git
+Set-Location AgentTM-demo
+Set-Location web
+npm.cmd ci
+npm.cmd run build
+Set-Location ..
+go build -o .\bin\agenttm.exe .\cmd\agenttm
+.\bin\agenttm.exe init
+.\scripts\desktop.ps1
+```
+
+The script builds and opens `bin\desktop\AgentTM.exe`. For later launches, run that
+executable from an initialized Git project's working directory. Use
+`scripts\desktop.ps1 -BuildOnly` to build without opening a window.
+
+In **Chat with Codex**, start with **Read only**, then choose **Allow project edits**
+when needed. **Model settings** lets you refresh models or choose `codex.exe`
+directly. **Storage & backups** provides encrypted history backups and cleanup
+previews. See [desktop chat and storage](docs/chat-and-storage.md) for details.
 
 ## Open your recorded history
 
 From your initialized Git repository:
 
 ```powershell
-$agenttm = 'C:\dev\AgentTM\bin\agenttm.exe'
+$agenttm = Join-Path $env:LOCALAPPDATA 'AgentTM\bin\agenttm.exe'
 & $agenttm ui
 ```
 
 AgentTM opens `http://127.0.0.1:7331` in your browser. Keep the terminal running;
 Ctrl+C stops the server. If the port is occupied, use `& $agenttm ui --port 7332`.
-For an installed-app style launch with a Codex readiness check, run
+For a browser launch with a Codex readiness check, run
 `& $agenttm desktop`. It opens the same local UI and reports whether Codex is
 installed and authenticated; existing history remains available when Codex is
-not ready.
+not ready. This CLI command opens a browser; the native Windows app is the separate
+`bin\desktop\AgentTM.exe` described above.
 Use `--no-browser` to print the URL without opening it. No Node installation is
 needed to run the prebuilt executable; all production assets are embedded.
 
 Select a session, then a timeline event or checkpoint. **Files** shows the
-historical tree and read-only Monaco viewer. **Compare with parent** shows changed
+historical tree and read-only Monaco viewer. **Changes** shows changed
 paths and unified patches. Activity shows sanitized event input/output and the
 observed checkpoint. An event without a checkpoint displays the last known
 workspace with an explicit label; events preceding the baseline show no state.
@@ -161,15 +319,21 @@ Codex is only bundled with VS Code, add its executable directory to that termina
 
 ## Available commands
 
+Run these from your Git project. Prefix each command with `agenttm`, or use
+`& $agenttm` when invoking a PowerShell executable-path variable. This table
+describes the current source; older release binaries may expose fewer commands.
+
 | Command | Behavior |
 | --- | --- |
+| `help` | Show CLI usage |
 | `init` | Idempotent config, directories, SQLite migrations and local Git exclusion |
 | `version` | Version and build commit |
 | `codex doctor` | Version, JSON capability and observable login readiness |
-| `doctor` | Repository/config/database checks and Codex readiness |
-| `run codex [--model MODEL] -- "task"` | Supervise real Codex and persist sanitized JSONL observations |
+| `doctor` | Repository/config/database, checkpoint/object integrity, operation links, and Codex readiness |
+| `run codex [--model MODEL] [--sandbox read-only\|workspace-write] [--snapshot-after-tool=true] -- "task"` | Supervise Codex and persist sanitized events and workspace observations |
 | `sessions` | List sessions, UTC timestamps, status and exit code |
 | `events <id> [--after N] [--limit N]` | JSONL events ordered by per-session sequence; default 100, maximum 1000 |
+| `operations <session-id> [--after N] [--limit N]` | JSONL operation coverage, before/after checkpoint IDs, and observed changed paths; default 50, maximum 100 |
 | `checkpoints <session-id>` | Checkpoint IDs, kind, time, files and partial flags |
 | `checkpoint <session-id>` | Manually observe the current workspace; reuse unchanged state |
 | `show <checkpoint-id>` | Versioned manifest, file tree, hashes, modes and omissions as JSON |
@@ -179,11 +343,52 @@ Codex is only bundled with VS Code, add its executable directory to that termina
 | `forks` | List ready, restoring or failed fork records |
 | `purge --session ID [--yes]` | Confirm logical deletion of an ended, unforked session; retain shared blobs |
 | `ui [--port N] [--no-browser]` | Serve embedded read-only history on loopback and open your browser |
+| `desktop [--port N] [--no-browser]` | Check Codex readiness and open the browser dashboard |
+| `gc [--min-age 24h]` | Preview eligible unreferenced blobs without deleting them |
+| `gc [--min-age 24h] --apply --yes` | Explicitly remove eligible unreferenced blobs |
+
+Interactive chat, explicit conversation continuation, and encrypted backup/restore
+are desktop actions, not CLI subcommands. Unattended continuation loops are not
+implemented. Event and operation pagination use exclusive cursors.
 
 Unknown commands return exit code 2; operational failures return 1. Normal child
 failure codes are forwarded; cancellation returns 130. Recording/protocol failure
 returns nonzero even if the child exits zero. JSONL goes to stdout, recording status
 to stderr. No executable or fixture simulates Codex during ordinary CLI usage.
+
+## AgentTM compared with Git
+
+AgentTM works alongside Git. Keep using Git for reviewed commits, branches,
+collaboration, and durable project history.
+
+This table describes the current source, including the Windows desktop preview.
+Older published release binaries may contain fewer features.
+
+| Feature | Git | AgentTM |
+| --- | --- | --- |
+| 1. Track source code changes | ✅ | ✅ |
+| 2. View historical file versions | ✅ | ✅ |
+| 3. Compare code differences | ✅ | ✅ |
+| 4. Restore previous code states | ✅ | ✅ |
+| 5. Record execution history for AgentTM-managed Codex sessions | ❌ | ✅ |
+| 6. Capture supported tool-call events reported by Codex | ❌ | ✅ Sanitized, bounded records |
+| 7. Track commands reported in supported Codex execution events | ❌ | ✅ Managed recordings only |
+| 8. Record supported Codex session events | ❌ | ✅ Managed CLI runs and desktop chat |
+| 9. Associate checkpoints with received agent activity | ❌ | ✅ Observational links, not causal attribution |
+| 10. Capture eligible workspace files without commits | Not automatically | ✅ When capture is enabled; scan-time observations, not atomic snapshots |
+| 11. Visualize recorded agent event timelines | ❌ | ✅ |
+| 12. Restore checkpoints into isolated worktrees | ✅ Manually | ✅ Integrated |
+| 13. Record reported agent failures and recording interruptions | ❌ | ✅ Events and status; no automatic root-cause diagnosis |
+| 14. Identify which agent action introduced a specific line | ❌ | 🔜 Planned |
+| 15. Fork and continue an agent session from a checkpoint | ❌ | 🔜 Planned |
+| 16. Support multiple AI coding agents | N/A | 🔜 Planned |
+| 17. Analyze agent retries and performance | ❌ | 🔜 Planned |
+| 18. Reproduce identical AI reasoning | ❌ | ❌ |
+
+Agent-related comparisons refer to built-in agent execution recording. Git's
+`blame` provides commit/line history, not causal attribution to an agent tool call.
+AgentTM coverage applies to supported operations in managed recordings; checkpoints
+remain workspace observations, and planned features are not currently implemented.
 
 ## Storage and privacy
 
@@ -219,9 +424,9 @@ telemetry or uploads are implemented; Codex itself uses its configured service.
 
 ## Current limits
 
-- Only runs launched through `agenttm run codex` are captured. Existing interactive
-  sessions are not observed.
-- Baseline/final/manual scans and optional completed-tool observations capture
+- Only runs launched through `agenttm run codex` and AgentTM desktop chat turns
+  are captured. External interactive sessions are not passively monitored.
+- Baseline/final/manual scans and supported operation-boundary observations capture
   scan-time state; continuous or deterministic per-tool history is not claimed.
   Failed restore directories are retained for diagnosis.
 - Events are observations, not a complete tool trace or proof of file authorship.
