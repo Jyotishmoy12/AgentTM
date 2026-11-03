@@ -101,6 +101,11 @@ func verifyArchive(path string, desktop bool) error {
 		binary = "AgentTM.exe"
 	}
 	expected := map[string]bool{binary: false, "README.md": false, "RESTORE.md": false, "THIRD_PARTY_NOTICES.txt": false}
+	// Preserve verification of historical published archives. New package
+	// versions must carry the proprietary terms alongside dependency notices.
+	expected["LICENSE"] = false
+	expected["NOTICE"] = false
+	historical := historicalUnlicensedVersion(filepath.Base(path))
 	if desktop {
 		expected["agenttm-cli.exe"] = false
 	}
@@ -171,8 +176,15 @@ func verifyArchive(path string, desktop bool) error {
 	}
 	for name, present := range expected {
 		if !present {
+			if historical && !expected["LICENSE"] && !expected["NOTICE"] && (name == "LICENSE" || name == "NOTICE") {
+				continue
+			}
 			return fmt.Errorf("missing expected entry %s", name)
 		}
 	}
 	return nil
+}
+
+func historicalUnlicensedVersion(name string) bool {
+	return strings.HasPrefix(name, "agenttm_0.1.0_") || strings.HasPrefix(name, "agenttm_0.3.0_")
 }

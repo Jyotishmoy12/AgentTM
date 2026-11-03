@@ -10,6 +10,11 @@ func releaseReadme(version string, desktop bool) []byte {
 Documentation: https://github.com/Jyotishmoy12/AgentTM#readme
 Releases: https://github.com/Jyotishmoy12/AgentTM/releases
 
+AgentTM is proprietary, not open source. See LICENSE for permission to use these
+official binaries and NOTICE for ownership information. Original implementation
+reuse or redistribution requires written permission. Third-party components
+remain under the separate terms in THIRD_PARTY_NOTICES.txt.
+
 Requires Git 2.42+ and a Git working tree. Recording requires an installed,
 authenticated Codex CLI. Go and Node.js are not required to run these binaries.
 Verify this archive against SHA256SUMS from the same release before extraction.

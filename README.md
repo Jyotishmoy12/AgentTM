@@ -2,6 +2,12 @@
 
 A local debugging tool that records managed Codex sessions and workspace checkpoints so you can inspect changes and restore earlier files into an isolated Git worktree.
 
+**Public source, proprietary license.** This repository remains public, but
+AgentTM is not offered under an open-source license. See [LICENSE](LICENSE) for
+official binary-use permissions and restrictions on original implementation reuse.
+Third-party licenses and GitHub's public-repository terms remain in force. See
+[licensing details](docs/licensing.md).
+
 ![AgentTM overview with recorded sessions and sidebar navigation](docs/images/overview.png)
 
 ## What AgentTM does
@@ -11,11 +17,12 @@ restore a checkpoint into a separate working copy when needed. AgentTM complemen
 Git; it does not replace commits, branches, or code review.
 
 **Start here:** [install the CLI](#installation), then follow the [Quick Start](#quick-start).
-The current published release is [v0.3.0](https://github.com/Jyotishmoy12/AgentTM/releases/tag/v0.3.0).
+For a complete walkthrough, read the **[User guide: record, inspect, and restore](docs/user-guide.md)**.
+Get the [latest release](https://github.com/Jyotishmoy12/AgentTM/releases/latest).
 
 ## Current features
 
-| Feature | Published v0.3.0 CLI/browser | Windows desktop from source |
+| Feature | CLI / browser dashboard | Native Windows desktop preview |
 | --- | --- | --- |
 | Managed Codex execution, sanitized supported events, session timeline | ✅ | ✅ |
 | Baseline/final and supported operation-boundary workspace observations | ✅ | ✅ |
@@ -26,10 +33,11 @@ The current published release is [v0.3.0](https://github.com/Jyotishmoy12/AgentT
 | Explicit continuation of a saved Codex conversation | — | ✅ |
 | Passphrase-encrypted history backup and restore | — | ✅ |
 
-The desktop source and portable ZIP packaging were built and startup-tested locally;
-the desktop ZIP is **not an asset of the published v0.3.0 release**. Source tests
-and distribution availability are different checks. See the [launch audit](docs/launch-audit.md)
-for verified results and platform gaps.
+This table describes the current implementation. Check the selected release's
+notes and Assets for the features and binaries it includes. The native desktop
+preview uses a separate ZIP when provided; CLI archives contain the browser
+dashboard. See the dated [launch audit](docs/launch-audit.md) for verified results
+and platform gaps; historical audit results do not describe every later release.
 
 <details>
 <summary>More screenshots: timeline, desktop chat, and storage</summary>
@@ -56,34 +64,40 @@ evidence of a real model execution.
 
 ### Download the correct archive
 
-Open [v0.3.0 → Assets](https://github.com/Jyotishmoy12/AgentTM/releases/tag/v0.3.0).
-Download one archive, [SHA256SUMS](https://github.com/Jyotishmoy12/AgentTM/releases/download/v0.3.0/SHA256SUMS),
-and the installer for your OS into the same folder.
+Open [Latest release → Assets](https://github.com/Jyotishmoy12/AgentTM/releases/latest).
+Download one archive, [SHA256SUMS](https://github.com/Jyotishmoy12/AgentTM/releases/latest/download/SHA256SUMS),
+and the installer for your OS into a new empty folder. Keep all three files from
+the **same release**. `VERSION` below means the version shown on that release;
+match the filename listed in Assets rather than using `VERSION` literally.
 
-| Device | Published archive |
+| Device | CLI archive filename |
 | --- | --- |
-| Windows Intel/AMD 64-bit | [agenttm_0.3.0_windows_amd64.zip](https://github.com/Jyotishmoy12/AgentTM/releases/download/v0.3.0/agenttm_0.3.0_windows_amd64.zip) |
-| Windows ARM64 | [agenttm_0.3.0_windows_arm64.zip](https://github.com/Jyotishmoy12/AgentTM/releases/download/v0.3.0/agenttm_0.3.0_windows_arm64.zip) |
-| macOS Apple silicon | [agenttm_0.3.0_darwin_arm64.tar.gz](https://github.com/Jyotishmoy12/AgentTM/releases/download/v0.3.0/agenttm_0.3.0_darwin_arm64.tar.gz) |
-| macOS Intel | [agenttm_0.3.0_darwin_amd64.tar.gz](https://github.com/Jyotishmoy12/AgentTM/releases/download/v0.3.0/agenttm_0.3.0_darwin_amd64.tar.gz) |
-| Linux Intel/AMD 64-bit | [agenttm_0.3.0_linux_amd64.tar.gz](https://github.com/Jyotishmoy12/AgentTM/releases/download/v0.3.0/agenttm_0.3.0_linux_amd64.tar.gz) |
-| Linux ARM64 | [agenttm_0.3.0_linux_arm64.tar.gz](https://github.com/Jyotishmoy12/AgentTM/releases/download/v0.3.0/agenttm_0.3.0_linux_arm64.tar.gz) |
+| Windows Intel/AMD 64-bit | `agenttm_VERSION_windows_amd64.zip` |
+| Windows ARM64 | `agenttm_VERSION_windows_arm64.zip` |
+| macOS Apple silicon | `agenttm_VERSION_darwin_arm64.tar.gz` |
+| macOS Intel | `agenttm_VERSION_darwin_amd64.tar.gz` |
+| Linux Intel/AMD 64-bit | `agenttm_VERSION_linux_amd64.tar.gz` |
+| Linux ARM64 | `agenttm_VERSION_linux_arm64.tar.gz` |
 
 **Source code** ZIP/tar downloads contain the repository, not a prebuilt application.
-The six CLI archives do not contain the native desktop app.
+CLI archives do not contain the native desktop app. If the selected release
+provides it, download `agenttm-desktop_VERSION_windows_amd64.zip` separately.
 
 ### Windows
 
-Also download [install.ps1](https://github.com/Jyotishmoy12/AgentTM/releases/download/v0.3.0/install.ps1).
-Open PowerShell **in the download folder**:
+Also download [install.ps1](https://github.com/Jyotishmoy12/AgentTM/releases/latest/download/install.ps1).
+Open PowerShell **in the download folder**. The command below selects the single
+downloaded Windows CLI archive, regardless of its version:
 
 ~~~powershell
 Unblock-File -LiteralPath ./install.ps1
-./install.ps1 -Archive ./agenttm_0.3.0_windows_amd64.zip -ChecksumFile ./SHA256SUMS -AddToPath
+$archives = @(Get-ChildItem -File -Filter 'agenttm_*_windows_*.zip')
+if ($archives.Count -ne 1) { throw 'Keep exactly one Windows CLI archive in this folder.' }
+./install.ps1 -Archive $archives[0].FullName -ChecksumFile ./SHA256SUMS -AddToPath
 agenttm version
 ~~~
 
-For ARM64, use its archive instead. The installer verifies the archive checksum
+Choose the correct architecture from the table above. The installer verifies the archive checksum
 and installs to `%LOCALAPPDATA%\AgentTM\bin`. Open a new terminal in other apps
 to pick up PATH changes. An existing installation is refused; add `-Force` for
 an explicit upgrade. Close any running AgentTM process before upgrading.
@@ -94,13 +108,19 @@ full path. See [installation troubleshooting](docs/installation.md).
 
 ### macOS and Linux
 
-Also download [install.sh](https://github.com/Jyotishmoy12/AgentTM/releases/download/v0.3.0/install.sh).
-In the download folder, use your platform's archive; for example:
+Also download [install.sh](https://github.com/Jyotishmoy12/AgentTM/releases/latest/download/install.sh).
+In the download folder, select your platform's archive; this Linux amd64 example
+finds its version automatically. Change the filename pattern for macOS or ARM64:
 
 ~~~sh
-sh install.sh agenttm_0.3.0_linux_amd64.tar.gz "$HOME/.local/bin"
-export PATH="$HOME/.local/bin:$PATH"
-agenttm version
+set -- ./agenttm_*_linux_amd64.tar.gz
+if [ "$#" -eq 1 ] && [ -f "$1" ]; then
+  sh install.sh "$1" "$HOME/.local/bin" &&
+    export PATH="$HOME/.local/bin:$PATH" &&
+    agenttm version
+else
+  printf '%s\n' 'Keep exactly one matching CLI archive in this folder.' >&2
+fi
 ~~~
 
 The installer verifies SHA-256 and sets executable permissions. Add
@@ -145,7 +165,9 @@ The greeting/explanation workflow may produce no file changes.
 | Windows command not found after install | Open a fresh terminal, or invoke `$env:LOCALAPPDATA\AgentTM\bin\agenttm.exe` with PowerShell's `&` operator. |
 | Checksum mismatch | Stop installation. Re-download the archive and `SHA256SUMS` from the same release; do not bypass the check. |
 
-More examples and all commands: [CLI reference](docs/cli.md).
+Next: **[follow the user guide](docs/user-guide.md)** for a hands-on example,
+dashboard navigation, checkpoint inspection, restoration, and desktop chat.
+All commands and flags: [CLI reference](docs/cli.md).
 Recovery and installation details: [installation guide](docs/installation.md).
 
 ## How checkpoint recording works
@@ -172,12 +194,12 @@ and [restore safety](docs/fork-and-recovery.md).
 
 ## CLI and desktop availability
 
-- **Published v0.3.0:** six CLI archives with the React dashboard embedded in the Go
+- **CLI releases:** platform archives with the React dashboard embedded in the Go
   executable. `agenttm ui` serves it locally; `agenttm desktop` also opens a browser.
 - **Native Windows desktop preview:** Wails/WebView2 app built from source. Requires
   the [Microsoft Edge WebView2 Evergreen Runtime](https://developer.microsoft.com/microsoft-edge/webview2/).
-  A separate portable desktop ZIP was validated locally for a future manual release;
-  there is no native desktop download in v0.3.0.
+  Look for `agenttm-desktop_VERSION_windows_amd64.zip` in the selected release's
+  Assets. If it is absent, that release does not provide a native desktop binary.
 - **Desktop first-run limitation:** launch from an already initialized Git working
   directory. A project picker before startup is not implemented. Double-clicking
   the executable in Downloads is not a complete onboarding flow.
@@ -231,6 +253,9 @@ Git remains the source of repository identity and isolated worktree support.
 
 Go 1.25+ and Git are required to build the CLI. Node.js 24+ is needed to rebuild
 frontend assets; checked-in embedded assets permit a Go-only CLI build.
+Public visibility does not grant general source reuse or modification permission;
+the commands below document the maintainer build process. Obtain permission for
+source uses not already allowed by applicable law or GitHub's terms.
 
 ~~~powershell
 git clone https://github.com/Jyotishmoy12/AgentTM.git
@@ -288,12 +313,25 @@ Agent-related comparisons refer to built-in agent execution recording. Git's
 AgentTM coverage applies to supported operations in managed recordings; checkpoints
 remain workspace observations, and planned features are not currently implemented.
 
-## License and contributing
+## License and feedback
 
-No project-level `LICENSE` file is currently included. Dependency notices are
-included in release archives; they do not establish the project's license.
-The project owner needs to choose licensing terms before presenting it as open source.
+AgentTM's original implementation is proprietary, not open source. The
+[proprietary license](LICENSE) permits personal and internal business use of
+official binaries and installation/backup copies. Original source reuse,
+redistribution, resale, and third-party hosted services require separate written
+permission, subject to applicable law and existing rights. [NOTICE](NOTICE) and
+the release archives preserve third-party licensing; these terms do not claim
+ownership of dependencies or user project data.
 
-For contributions, open an [issue](https://github.com/Jyotishmoy12/AgentTM/issues)
-or pull request with reproduction steps and relevant test results. Keep changes
-focused and never include credentials, private recordings, or raw model streams.
+Licensing does not make publicly exposed code or bundled frontend JavaScript
+impossible to copy. The repository remains public, including its implementation
+history and GitHub-generated source archives. GitHub users can view and fork it
+under GitHub's terms. A proprietary notice restricts reuse permissions subject to
+those terms and applicable law; it does not provide technical copy protection or
+revoke existing rights.
+
+Report bugs and feature requests through
+[Issues](https://github.com/Jyotishmoy12/AgentTM/issues) with sanitized reproduction
+steps. Original implementation contributions require a separate agreement with
+the owner; public source-code pull requests are not the contribution model.
+Do not include credentials, private recordings, or raw model streams.

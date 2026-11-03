@@ -81,7 +81,7 @@ func TestReleaseVerificationRejectsCorruptionAndMissingChecksums(t *testing.T) {
 	root := t.TempDir()
 	name := "agenttm_0.3.1_linux_amd64.tar.gz"
 	p := filepath.Join(root, name)
-	if err := archive(p, "agenttm", map[string][]byte{"agenttm": []byte("executable"), "README.md": []byte("guide"), "RESTORE.md": []byte("restore"), "THIRD_PARTY_NOTICES.txt": []byte("notices")}); err != nil {
+	if err := archive(p, "agenttm", map[string][]byte{"agenttm": []byte("executable"), "README.md": []byte("guide"), "RESTORE.md": []byte("restore"), "THIRD_PARTY_NOTICES.txt": []byte("notices"), "LICENSE": []byte("terms"), "NOTICE": []byte("ownership")}); err != nil {
 		t.Fatal(err)
 	}
 	b, _ := os.ReadFile(p)
@@ -111,5 +111,29 @@ func TestReleaseVerificationRejectsCorruptionAndMissingChecksums(t *testing.T) {
 	os.WriteFile(p, b, 0600)
 	if err := verifyRelease(root, "0.3.1"); err == nil {
 		t.Fatal("corrupt archive accepted")
+	}
+}
+
+func TestProjectLicenseRequiredExceptForHistoricalPackages(t *testing.T) {
+	for _, version := range []string{"0.3.0", "0.3.1"} {
+		p := filepath.Join(t.TempDir(), "agenttm_"+version+"_linux_amd64.tar.gz")
+		files := map[string][]byte{"agenttm": []byte("binary"), "README.md": []byte("guide"), "RESTORE.md": []byte("restore"), "THIRD_PARTY_NOTICES.txt": []byte("dependency terms")}
+		if err := archive(p, "agenttm", files); err != nil {
+			t.Fatal(err)
+		}
+		err := verifyArchive(p, false)
+		if version == "0.3.0" && err != nil {
+			t.Fatal("historical release verification broke", err)
+		}
+		if version == "0.3.1" && err == nil {
+			t.Fatal("new release accepted without project notices")
+		}
+	}
+	p := filepath.Join(t.TempDir(), "agenttm_0.3.0_linux_amd64.tar.gz")
+	if err := archive(p, "agenttm", map[string][]byte{"agenttm": []byte("binary"), "README.md": []byte("guide"), "RESTORE.md": []byte("restore"), "THIRD_PARTY_NOTICES.txt": []byte("dependency terms"), "LICENSE": []byte("partial terms")}); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifyArchive(p, false); err == nil {
+		t.Fatal("partial project notices accepted")
 	}
 }

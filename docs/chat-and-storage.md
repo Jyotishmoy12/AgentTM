@@ -1,9 +1,10 @@
 # Desktop chat, continuation, backups, and blob cleanup
 
-Chat, continuation, and encrypted backups are available in the Windows desktop
-source preview, not the published v0.3.0 CLI archives. CLI garbage collection is
-available in v0.3.0. The native desktop ZIP packaging is tested locally but has not
-been published. Existing release assets are not changed by a local build.
+Chat, continuation, and encrypted backups require the native Windows desktop
+preview; they are not features of the CLI/browser dashboard. CLI garbage
+collection is implemented separately. Check the selected
+[release's Assets](https://github.com/Jyotishmoy12/AgentTM/releases/latest) for
+desktop binary availability. A local build does not publish or change release assets.
 
 Build the frontend, then launch the native app from the AgentTM repository:
 

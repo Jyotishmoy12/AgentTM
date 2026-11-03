@@ -1,9 +1,11 @@
 # Installation and first-run troubleshooting
 
 The [README Quick Start](../README.md#quick-start) is the shortest path. The
-published [v0.3.0 assets](https://github.com/Jyotishmoy12/AgentTM/releases/tag/v0.3.0)
-are CLI archives, not native desktop installers. Archive names, installers, and
-SHA256SUMS must all come from the same release. Download one platform archive.
+[latest release assets](https://github.com/Jyotishmoy12/AgentTM/releases/latest)
+list the available downloads. CLI archives contain the browser dashboard; a
+native desktop preview, when provided, is a separate desktop ZIP. Archive names,
+installers, and SHA256SUMS must all come from the same release. Download one
+platform archive into an empty folder so older versions cannot be selected accidentally.
 
 ## Windows
 
@@ -27,7 +29,9 @@ a signed installer. Do not change machine-wide policy for this tool; use manual
 extraction if permitted by your organization:
 
 ```powershell
-$archive = '.\agenttm_0.3.0_windows_amd64.zip'
+$archives = @(Get-ChildItem -File -Filter 'agenttm_*_windows_*.zip')
+if ($archives.Count -ne 1) { throw 'Keep exactly one Windows CLI archive in this folder.' }
+$archive = $archives[0].FullName
 Get-FileHash -LiteralPath $archive -Algorithm SHA256
 Get-Content -LiteralPath .\SHA256SUMS
 # Compare the hash with this archive's exact manifest entry before continuing.

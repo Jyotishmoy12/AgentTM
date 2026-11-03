@@ -1,5 +1,9 @@
 # Development and release validation
 
+Maintainer build documentation for the public AgentTM repository. Original
+AgentTM source is proprietary; public visibility is not an open-source license.
+See [licensing details](licensing.md) for reuse and contribution permissions.
+
 ## Build and test (PowerShell)
 
 Requires Go 1.25+ and Git. An installed/authenticated Codex CLI is needed for real
@@ -47,8 +51,9 @@ archive.
 The Windows desktop preview now includes interactive Codex chat, explicit
 conversation continuation, encrypted history backup/restore, and blob garbage
 collection. See [chat and storage](chat-and-storage.md) for usage, limits,
-and validation. Desktop chat/backup controls are not included in published v0.3.0
-CLI archives. CLI garbage collection is included in v0.3.0.
+and validation. Desktop chat/backup controls require the native application;
+CLI archives include the browser dashboard and CLI garbage collection. Check
+each release's notes and assets for its available features and binaries.
 
 Additional agents, unattended continuation loops, and cloud sync remain deferred.
 
@@ -70,4 +75,9 @@ Use a fresh output directory for each build. Native GUI startup needs WebView2
 and a usable Windows desktop session. The packager does not sign binaries or
 publish anything. A portable desktop ZIP is not an installed project picker.
 
-The manually dispatched release workflow calls the native Windows/Linux/macOS validation matrix before publishing. No release was published by the launch audit. GitHub-hosted results must be checked after pushing these changes.
+The manually dispatched release workflow calls native Windows/Linux/macOS
+validation before publishing to this same public repository using its GitHub
+token. No separate repository, private-source gate, or cross-repository token is
+required. New application archives include LICENSE, NOTICE, and dependency
+notices. GitHub-generated source archives still expose this public source tree.
+No release is published by local build commands.

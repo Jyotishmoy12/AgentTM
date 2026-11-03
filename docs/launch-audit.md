@@ -1,5 +1,12 @@
 # Pre-launch audit — 2026-11-03
 
+**Licensing follow-up:** after this audit, the owner selected proprietary terms
+while keeping the implementation repository public. LICENSE/NOTICE are now
+included in new packages. The original missing-license finding below is
+historical; legal review of the prepared terms and publication remain separate
+actions. See [licensing details](licensing.md). No visibility or repository
+migration was performed.
+
 This audit separates published v0.3.0, locally built preview packages, and native
 platform tests. It does not publish releases or change product behavior.
 

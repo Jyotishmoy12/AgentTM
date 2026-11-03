@@ -90,6 +90,14 @@ func release() error {
 		return fmt.Errorf("build the frontend first: %w", err)
 	}
 	readme := releaseReadme(*version, false)
+	license, err := os.ReadFile(filepath.Join(root, "LICENSE"))
+	if err != nil {
+		return fmt.Errorf("release license is required: %w", err)
+	}
+	ownership, err := os.ReadFile(filepath.Join(root, "NOTICE"))
+	if err != nil {
+		return fmt.Errorf("release ownership notice is required: %w", err)
+	}
 	guide, err := os.ReadFile(filepath.Join(root, "docs", "fork-and-recovery.md"))
 	if err != nil {
 		return err
@@ -125,7 +133,7 @@ func release() error {
 		if target == "windows/amd64" {
 			windowsCLI = executable
 		}
-		files := map[string][]byte{binary: executable, "README.md": readme, "RESTORE.md": guide, "THIRD_PARTY_NOTICES.txt": notices}
+		files := map[string][]byte{binary: executable, "README.md": readme, "RESTORE.md": guide, "THIRD_PARTY_NOTICES.txt": notices, "LICENSE": license, "NOTICE": ownership}
 		extension := ".tar.gz"
 		if parts[0] == "windows" {
 			extension = ".zip"
@@ -157,7 +165,7 @@ func release() error {
 			return err
 		}
 		name := "agenttm-desktop_" + *version + "_windows_amd64.zip"
-		if err = archive(filepath.Join(out, name), "AgentTM.exe", map[string][]byte{"AgentTM.exe": binary, "agenttm-cli.exe": windowsCLI, "README.md": releaseReadme(*version, true), "RESTORE.md": guide, "THIRD_PARTY_NOTICES.txt": notices}); err != nil {
+		if err = archive(filepath.Join(out, name), "AgentTM.exe", map[string][]byte{"AgentTM.exe": binary, "agenttm-cli.exe": windowsCLI, "README.md": releaseReadme(*version, true), "RESTORE.md": guide, "THIRD_PARTY_NOTICES.txt": notices, "LICENSE": license, "NOTICE": ownership}); err != nil {
 			return err
 		}
 		b, err := os.ReadFile(filepath.Join(out, name))

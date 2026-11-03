@@ -1,6 +1,11 @@
 # CLI reference
 
-Commands below describe the current source. Published v0.3.0 exposes these CLI commands; native chat and backup controls require the desktop preview.
+For a first recording and a step-by-step inspection/restore walkthrough, start
+with the [user guide](user-guide.md).
+
+Commands below describe the current implementation. Run `agenttm help` to check
+the commands in your installed release; native chat and backup controls require
+the desktop preview.
 
 ## Available commands
 
