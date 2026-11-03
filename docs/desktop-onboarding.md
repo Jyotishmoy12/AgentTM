@@ -2,7 +2,23 @@
 
 Launch from an initialized AgentTM repository. The native desktop preview opens
 that repository; project selection before startup and installer integration are
-not implemented yet.
+not implemented yet. Microsoft Edge WebView2 Evergreen Runtime is required:
+https://developer.microsoft.com/microsoft-edge/webview2/
+
+The published v0.3.0 release contains CLI/browser archives only. A separate native
+Windows amd64 portable ZIP can now be built by the release packager; it is not yet
+published. It includes AgentTM.exe and a distinctly named agenttm-cli.exe to avoid
+Windows filename collisions. It is unsigned and is not an MSI installer.
+
+After extracting a future desktop ZIP and verifying its checksum, initialize and
+launch from a project using the bundled helper:
+
+```powershell
+$appDir = (Get-Location).Path # the extracted desktop ZIP folder
+Set-Location 'C:\path\to\your\git-project'
+& (Join-Path $appDir 'agenttm-cli.exe') init
+& (Join-Path $appDir 'AgentTM.exe')
+```
 
 To build and run from source:
 

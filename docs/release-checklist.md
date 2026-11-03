@@ -1,5 +1,9 @@
 # v0.1 release evidence and remaining platform validation
 
+**Historical evidence:** this document records v0.1 validation. Its feature limits
+and remote-release status are not current. For v0.3.0 downloads and the latest
+local packaging audit, use [the pre-launch audit](launch-audit.md).
+
 Implementation milestones 0–5 are present. This checklist distinguishes observed
 results from CI configuration and future features; it is not a claim that every
 OS/environment has been exercised locally.

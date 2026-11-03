@@ -15,6 +15,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
@@ -32,6 +33,9 @@ func release() error {
 	version := flag.String("version", "0.1.0", "release semantic version")
 	output := flag.String("out", "dist", "new archive output directory")
 	targets := flag.String("targets", "windows/amd64,windows/arm64,linux/amd64,linux/arm64,darwin/amd64,darwin/arm64", "comma-separated GOOS/GOARCH targets")
+	desktop := flag.Bool("desktop-windows", false, "also package the native Windows amd64 desktop preview (Windows amd64 host required)")
+	verifyOnly := flag.Bool("verify-only", false, "verify existing archive checksums, contents, and executable modes without building")
+	requireAll := flag.Bool("require-all-targets", false, "verification also requires all six CLI platform archives")
 	flag.Parse()
 	if !regexp.MustCompile(`^[0-9]+\.[0-9]+\.[0-9]+(?:-[A-Za-z0-9.-]+)?$`).MatchString(*version) {
 		return fmt.Errorf("invalid release version")
@@ -46,6 +50,18 @@ func release() error {
 	}
 	if err = project.SafePath(out); err != nil {
 		return err
+	}
+	if *verifyOnly {
+		if err = verifyRelease(out, *version); err != nil {
+			return err
+		}
+		if *requireAll {
+			return verifyExpectedTargets(out, *version, *desktop)
+		}
+		return nil
+	}
+	if *desktop && (runtime.GOOS != "windows" || runtime.GOARCH != "amd64" || !strings.Contains(","+*targets+",", ",windows/amd64,")) {
+		return fmt.Errorf("--desktop-windows requires a Windows amd64 host and windows/amd64 in --targets")
 	}
 	if err = os.MkdirAll(out, 0700); err != nil {
 		return err
@@ -73,15 +89,13 @@ func release() error {
 	if err != nil {
 		return fmt.Errorf("build the frontend first: %w", err)
 	}
-	readme, err := os.ReadFile(filepath.Join(root, "README.md"))
-	if err != nil {
-		return err
-	}
+	readme := releaseReadme(*version, false)
 	guide, err := os.ReadFile(filepath.Join(root, "docs", "fork-and-recovery.md"))
 	if err != nil {
 		return err
 	}
 	checksums := map[string]string{}
+	var windowsCLI []byte
 	for _, target := range strings.Split(*targets, ",") {
 		parts := strings.Split(target, "/")
 		if len(parts) != 2 || parts[0] != "windows" && parts[0] != "linux" && parts[0] != "darwin" || parts[1] != "amd64" && parts[1] != "arm64" {
@@ -108,6 +122,9 @@ func release() error {
 		if err != nil {
 			return err
 		}
+		if target == "windows/amd64" {
+			windowsCLI = executable
+		}
 		files := map[string][]byte{binary: executable, "README.md": readme, "RESTORE.md": guide, "THIRD_PARTY_NOTICES.txt": notices}
 		extension := ".tar.gz"
 		if parts[0] == "windows" {
@@ -119,6 +136,31 @@ func release() error {
 			return err
 		}
 		b, err := os.ReadFile(p)
+		if err != nil {
+			return err
+		}
+		sum := sha256.Sum256(b)
+		checksums[name] = hex.EncodeToString(sum[:])
+	}
+	if *desktop {
+		binaryPath := filepath.Join(temp, "AgentTM.exe")
+		cmd := exec.Command("go", "build", "-trimpath", "-tags", "production", "-ldflags", "-H windowsgui -s -w -X agenttm/internal/cli.Version="+*version+" -X agenttm/internal/cli.Commit="+commit+" -X agenttm/internal/cli.BuildDate="+date, "-o", binaryPath, "./cmd/agenttm-desktop")
+		cmd.Dir = root
+		cmd.Env = append(os.Environ(), "CGO_ENABLED=0")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err = cmd.Run(); err != nil {
+			return err
+		}
+		binary, err := os.ReadFile(binaryPath)
+		if err != nil {
+			return err
+		}
+		name := "agenttm-desktop_" + *version + "_windows_amd64.zip"
+		if err = archive(filepath.Join(out, name), "AgentTM.exe", map[string][]byte{"AgentTM.exe": binary, "agenttm-cli.exe": windowsCLI, "README.md": releaseReadme(*version, true), "RESTORE.md": guide, "THIRD_PARTY_NOTICES.txt": notices}); err != nil {
+			return err
+		}
+		b, err := os.ReadFile(filepath.Join(out, name))
 		if err != nil {
 			return err
 		}
@@ -147,7 +189,7 @@ func release() error {
 		return closeErr
 	}
 	fmt.Println("Archives and SHA256SUMS:", out)
-	return nil
+	return verifyRelease(out, *version)
 }
 func archive(p, binary string, files map[string][]byte) (err error) {
 	f, err := os.OpenFile(p, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)

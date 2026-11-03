@@ -1,7 +1,9 @@
 # Desktop chat, continuation, backups, and blob cleanup
 
-These features are available in the Windows desktop source preview. Existing
-published archives are not updated until a new release is built and published.
+Chat, continuation, and encrypted backups are available in the Windows desktop
+source preview, not the published v0.3.0 CLI archives. CLI garbage collection is
+available in v0.3.0. The native desktop ZIP packaging is tested locally but has not
+been published. Existing release assets are not changed by a local build.
 
 Build the frontend, then launch the native app from the AgentTM repository:
 
@@ -35,7 +37,8 @@ PATH changes. If an editor update moves the executable, choose the new file.
 Each message starts one turn. AgentTM records observable item/lifecycle events
 and workspace checkpoints. The first turn captures a baseline; continued turns
 capture a manual starting observation, followed by a final observation. Optional
-observations near completed tools follow the project's capture setting.
+operation-boundary observations follow the project's capture setting. See
+[operation checkpoints](granular-checkpoints.md) for before/after coverage limits.
 
 **Continue in chat** on a resumable session, or the Conversation selector in Chat,
 resumes the exact saved Codex thread ID. Follow-ups use the same AgentTM session.

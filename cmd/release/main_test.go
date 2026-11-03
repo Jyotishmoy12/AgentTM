@@ -4,6 +4,8 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"compress/gzip"
+	"crypto/sha256"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -72,5 +74,42 @@ func TestArchivesHaveOnlyExpectedFiles(t *testing.T) {
 		if len(got) != 2 || got["agenttm"] != "binary" || got["README.md"] != "instructions" {
 			t.Fatalf("bad archive %+v", got)
 		}
+	}
+}
+
+func TestReleaseVerificationRejectsCorruptionAndMissingChecksums(t *testing.T) {
+	root := t.TempDir()
+	name := "agenttm_0.3.1_linux_amd64.tar.gz"
+	p := filepath.Join(root, name)
+	if err := archive(p, "agenttm", map[string][]byte{"agenttm": []byte("executable"), "README.md": []byte("guide"), "RESTORE.md": []byte("restore"), "THIRD_PARTY_NOTICES.txt": []byte("notices")}); err != nil {
+		t.Fatal(err)
+	}
+	b, _ := os.ReadFile(p)
+	hash := sha256.Sum256(b)
+	if err := os.WriteFile(filepath.Join(root, "SHA256SUMS"), []byte(fmt.Sprintf("%x  %s\n", hash, name)), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifyRelease(root, "0.3.1"); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifyExpectedTargets(root, "0.3.1", false); err == nil {
+		t.Fatal("missing platform archives accepted")
+	}
+	if err := verifyRelease(root, "0.3.2"); err == nil {
+		t.Fatal("wrong version accepted")
+	}
+	if err := os.WriteFile(filepath.Join(root, "unlisted.zip"), []byte("bad"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := verifyRelease(root, "0.3.1"); err == nil {
+		t.Fatal("unlisted archive accepted")
+	}
+	if err := os.Remove(filepath.Join(root, "unlisted.zip")); err != nil {
+		t.Fatal(err)
+	}
+	b[0] ^= 1
+	os.WriteFile(p, b, 0600)
+	if err := verifyRelease(root, "0.3.1"); err == nil {
+		t.Fatal("corrupt archive accepted")
 	}
 }

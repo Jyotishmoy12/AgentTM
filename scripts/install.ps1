@@ -22,12 +22,24 @@ $destination = Join-Path $installPath 'agenttm.exe'
 if ((Test-Path -LiteralPath $destination) -and -not $Force) { throw 'agenttm.exe already exists. Use -Force for an explicit upgrade.' }
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::OpenRead($archivePath)
+$staged = Join-Path $installPath ('.agenttm-install-' + [guid]::NewGuid() + '.tmp')
 try {
     $entries = @($zip.Entries | Where-Object { $_.FullName -ceq 'agenttm.exe' })
     if ($entries.Count -ne 1 -or $entries[0].Length -gt 104857600) { throw 'Archive must contain one bounded agenttm.exe at its root.' }
     # Extract only this literal entry; never expand arbitrary archive paths.
-    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entries[0], $destination, [bool]$Force)
-} finally { $zip.Dispose() }
+    # Extract fully before replacing an older executable.
+    [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entries[0], $staged, $false)
+    if (Test-Path -LiteralPath $destination) {
+        if (-not $Force) { throw 'agenttm.exe already exists. Use -Force for an explicit upgrade.' }
+        # PowerShell 5 converts $null to an empty string for this overload.
+        [System.IO.File]::Replace($staged, $destination, [System.Management.Automation.Language.NullString]::Value)
+    } else {
+        [System.IO.File]::Move($staged, $destination)
+    }
+} finally {
+    $zip.Dispose()
+    if (Test-Path -LiteralPath $staged) { Remove-Item -LiteralPath $staged }
+}
 if ($AddToPath) {
     $userPath = [Environment]::GetEnvironmentVariable('Path', 'User')
     if (@($userPath -split ';') -notcontains $installPath) { [Environment]::SetEnvironmentVariable('Path', "$installPath;$userPath", 'User') }

@@ -15,10 +15,11 @@ states and never falls back to the live workspace.
 
 ## Navigation and scope
 
-- The sidebar separates Overview, Sessions, Checkpoints, Restored workspaces,
-  and Setup & help. Overview explains the workflow and links to recent recordings.
+- The sidebar separates Overview, Chat with Codex, Sessions, Checkpoints, Restored
+  workspaces, Storage & backups, and Setup & help. Chat and backup controls require
+  the native Windows desktop preview. Overview links to recent recordings.
 - Sessions starts with a recording list. Open a recording to switch between
-  Timeline, Files, and Changes. The timeline shows event details without placing
+  Timeline, Operations, Files, and Changes. The timeline shows event details without placing
   the file browser on the same screen. Session/event/checkpoint selection stays
   in memory when moving between pages.
 - Checkpoints provides a session selector, historical files, parent comparisons,

@@ -95,7 +95,8 @@ are rejected. Power-loss durability still depends on the filesystem and OS.
 
 `agenttm doctor` reports missing/corrupt objects/manifests as errors. It also reports
 orphan manifests, unreferenced objects and `.tmp-*` remnants left by interruptions.
-These are retained; automatic blob GC is deferred. Do not delete the object store
+These are retained until explicit cleanup; `agenttm gc` previews unreferenced
+blobs and `agenttm gc --apply --yes` removes eligible ones. Do not delete the object store
 to repair one checkpoint. Recover damaged referenced files from a trusted backup.
 
 Capture uses `.agenttm/data/snapshot.lock` to serialize writes. If a process was

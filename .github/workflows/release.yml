@@ -5,11 +5,16 @@ on:
       version:
         description: Semantic version without v
         required: true
-        default: '0.1.0'
+        default: '0.3.1'
 permissions:
   contents: write
 jobs:
+  validate:
+    uses: ./.github/workflows/ci.yml
+    with:
+      version: ${{ inputs.version }}
   package:
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +42,17 @@ jobs:
           version="${REQUESTED_VERSION:-${GITHUB_REF_NAME#v}}"
           go run ./cmd/release --version "$version"
           cp scripts/install.ps1 scripts/install.sh dist/
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-desktop-preview
+          path: dist/
+      - name: Verify combined release
+        env:
+          REQUESTED_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          sha256sum dist/agenttm-desktop_*.zip | sed 's|  dist/|  |' >> dist/SHA256SUMS
+          go run ./cmd/release --verify-only --require-all-targets --desktop-windows --version "$REQUESTED_VERSION" --out dist
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -44,10 +60,8 @@ jobs:
         run: |
           set -euo pipefail
           version="${REQUESTED_VERSION:-${GITHUB_REF_NAME#v}}"
-          tag="${GITHUB_REF_NAME}"
-          if [[ "$tag" != v* ]]; then
-            tag="v$version"
-          fi
+          tag="v$version"
           gh release create "$tag" dist/* \
+            --target "$GITHUB_SHA" \
             --title "AgentTM $version" \
             --generate-notes
