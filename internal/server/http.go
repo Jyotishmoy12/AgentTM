@@ -189,6 +189,9 @@ func (s *Server) api(w http.ResponseWriter, r *http.Request) {
 		case "sessions":
 			s.sessions(w, r)
 			return
+		case "forks":
+			s.restoredWorkspaces(w, r)
+			return
 		}
 	}
 	if len(parts) == 4 && parts[1] == "sessions" {

@@ -6,6 +6,9 @@ import { CodeViewer } from './components/CodeViewer';
 import { FileTree } from './components/FileTree';
 import { ForkDialog } from './components/ForkDialog';
 import { Onboarding } from './components/Onboarding';
+import { NavIcon, navigation, Overview, PageHeading, RestoredWorkspaces, SessionCards, SetupPage } from './components/NavigationPages';
+import type { AppPage } from './components/NavigationPages';
+import './navigation.css';
 
 const short = (id: string) => id.slice(0, 8);
 const time = (value: string) => new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -16,6 +19,9 @@ function ErrorBox({ children }: { children: React.ReactNode }) { return <div cla
 function Empty({ title, children }: { title: string; children?: React.ReactNode }) { return <div className="empty"><span className="empty-orbit" aria-hidden="true">◷</span><h2>{title}</h2><div>{children}</div></div>; }
 
 export function App() {
+  const [page, setPage] = useState<AppPage>('overview');
+  const [sessionDetail, setSessionDetail] = useState(false);
+  const [sessionTab, setSessionTab] = useState<'timeline' | 'file' | 'diff'>('timeline');
   const [health, setHealth] = useState<Health | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [sessionCursor, setSessionCursor] = useState<number | null>(null);
@@ -96,29 +102,40 @@ export function App() {
   const tools = [...new Set(events.map(e => e.tool_name).filter((s): s is string => !!s))];
   const selectedIndex = filtered.findIndex(e => e.id === selectedID);
   const selectEvent = (id: string) => { setSelectedID(id); setOverrideCP(''); };
+  const openSession = (id: string) => { setSessionID(id); setPage('sessions'); setSessionDetail(true); setSessionTab('timeline'); };
   async function moreSessions() { try { const page = await get<Page<Session>>(`/sessions?cursor=${sessionCursor}`); setSessions(previous => [...previous, ...page.items.filter(s => !previous.some(p => p.id === s.id))]); setSessionCursor(page.next_cursor); } catch (e) { setError(message(e)); } }
   async function moreCheckpoints() { try { const page = await get<Page<Checkpoint>>(`/sessions/${sessionID}/checkpoints?cursor=${checkpointCursor}`); if (activeSession.current !== sessionID) return; setCheckpoints(previous => [...previous, ...page.items.filter(cp => !previous.some(p => p.id === cp.id))]); setCheckpointCursor(page.next_cursor); if (page.last_cursor) setCheckpointTail(previous => Math.max(previous, page.last_cursor!)); } catch (e) { setError(message(e)); } }
 
-  return <div className="app-shell">
-    <header className="app-header">
-      <a className="brand" href="/" aria-label="AgentTM home"><span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M6 9a10 10 0 1 1-1 9M6 3v7H1M14 8v7l4 2" /></svg></span><span>Agent<span className="brand-light">TM</span><small>WORKSPACE HISTORY</small></span></a>
-      <div className="header-divider" />
-      <div className="project-label"><span className="muted">PROJECT</span><strong>{health?.project ?? 'Loading project…'}</strong></div>
-      <div className="header-spacer" />
-      <Onboarding />
-      <span className="privacy-badge"><span className="status-dot" /> Local · private</span>
-      <button className="icon-button" onClick={() => setRevision(n => n + 1)} title="Refresh history" aria-label="Refresh history">↻</button>
-    </header>
-    <div className="session-bar">
+const sessionSelector = (<div className="session-bar">
       <div className="session-select"><label htmlFor="session">Session</label><select id="session" value={sessionID} onChange={e => setSessionID(e.target.value)} disabled={!sessions.length}><option value="" disabled>Select a session</option>{sessions.map(s => <option key={s.id} value={s.id}>{new Date(s.started_at).toLocaleString()} · {short(s.id)} · {s.status}</option>)}</select>{sessionCursor !== null && <button className="text-button" onClick={moreSessions}>Older sessions</button>}</div>
       {currentSession && <span className={`status-pill ${currentSession.status}`}>{currentSession.status.replaceAll('_', ' ')}</span>}
       <span className="session-meta">{currentSession?.agent ?? 'Codex'}<span> / </span>{health?.prompt_mode === 'sanitized' ? 'Sanitized prompts enabled' : 'Prompt text capture off'}</span>
-    </div>
-    <div className="capture-note"><span aria-hidden="true">◈</span> Workspace observations, not proof of per-tool causality. Only runs launched through AgentTM are recorded.</div>
-    {error && <div className="global-error"><ErrorBox>{error} <button className="text-button" onClick={() => setRevision(n => n + 1)}>Retry</button></ErrorBox></div>}
-    {!sessionID ? <Empty title={loading ? 'Loading your history' : 'Your history starts with a run'}><p>Record a real Codex session from this repository, then refresh.</p><code>agenttm run codex --model gpt-6.1-sol -- "your task"</code><p className="muted">Existing interactive Codex sessions are not captured.</p></Empty> : <main className="workspace">
-      <aside className="timeline-panel" aria-label="Recorded timeline">
-        <div className="panel-heading"><h1>Timeline</h1><span className="count">{events.length}</span></div>
+    </div>);
+  const checkpointControls = <><div className="checkpoint-controls"><div className="checkpoint-bar"><span className="eyebrow">WORKSPACE</span><select aria-label="Select checkpoint" value={cpID} onChange={e => setOverrideCP(e.target.value)}><option value="" disabled>No known checkpoint</option>{cpID && !checkpoints.some(cp => cp.id === cpID) && <option value={cpID}>{short(cpID)}</option>}{checkpoints.map(cp => <option key={cp.id} value={cp.id}>{cp.kind} · {short(cp.id)}{cp.partial ? ' · partial' : ''}</option>)}</select>{checkpointCursor !== null && <button className="text-button" onClick={moreCheckpoints}>More</button>}</div><button className="fork-action" disabled={!cpID || !health?.csrf_token} onClick={() => setForkID(cpID)}>Fork checkpoint</button></div>        <div className={`state-note ${overrideCP ? '' : near && !near.exact ? 'last-known' : ''}`}>{overrideCP ? 'Manually selected checkpoint' : near ? near.exact ? 'Checkpoint linked to this observation' : 'Last known workspace · this event has no checkpoint' : 'No checkpoint observed at or before this event'}</div></>;
+  return <div className="app-shell navigation-shell">
+    <aside className="app-sidebar">
+      <a className="brand" href="#" onClick={e => { e.preventDefault(); setPage('overview'); }} aria-label="AgentTM home"><span className="brand-mark" aria-hidden="true"><svg viewBox="0 0 28 28"><path d="M6 9a10 10 0 1 1-1 9M6 3v7H1M14 8v7l4 2" /></svg></span><span>Agent<span className="brand-light">TM</span><small>WORKSPACE HISTORY</small></span></a>
+      <div className="sidebar-project"><span className="eyebrow">CURRENT PROJECT</span><strong>{health?.project ?? 'Loading project…'}</strong></div>
+      <nav aria-label="Main navigation">{navigation.map(item => <button key={item.id} aria-label={item.title} title={item.title} aria-current={page === item.id ? 'page' : undefined} onClick={() => { setPage(item.id); if (item.id === 'sessions') setSessionDetail(false); }}><NavIcon name={item.icon}/><span><strong>{item.title}</strong><small>{item.hint}</small></span></button>)}</nav>
+      <div className="sidebar-bottom"><span className="privacy-badge"><span className="status-dot"/>Local · private</span><p>{health?.version || 'AgentTM'} · Stored on this device</p></div>
+    </aside>
+    <main className="app-main">
+      <header className="topbar"><span>{health?.project || 'Workspace'} <span aria-hidden="true">/</span> {navigation.find(n => n.id === page)?.title}</span><div><Onboarding/><button onClick={() => setRevision(n => n + 1)} aria-label="Refresh history">Refresh history</button></div></header>
+      <PageHeading page={page}>{page === 'sessions' && sessionDetail && <button onClick={() => setSessionDetail(false)}>← All sessions</button>}</PageHeading>
+      {error && <div className="global-error"><ErrorBox>{error} <button className="text-button" onClick={() => setRevision(n => n + 1)}>Retry</button></ErrorBox></div>}
+      {page === 'overview' && <Overview sessions={sessions} health={health} more={sessionCursor !== null} onOpen={openSession} navigate={setPage}/>}
+      {page === 'setup' && <SetupPage/>}
+      {page === 'restores' && <RestoredWorkspaces revision={revision} onCheckpoints={() => setPage('checkpoints')}/>}
+      {page === 'sessions' && !sessionDetail && <div className="page-scroll">{loading && !sessions.length ? <Empty title="Loading your history"/> : sessions.length ? <><SessionCards sessions={sessions} onOpen={openSession}/>{sessionCursor !== null && <button className="load-more" onClick={moreSessions}>Load older sessions</button>}</> : <Empty title="Your history starts with a run"><p>Only sessions launched through AgentTM appear here.</p><code>agenttm run codex -- "your task"</code><button onClick={() => setPage('setup')}>Open setup & help</button></Empty>}</div>}
+      {(page === 'checkpoints' || page === 'sessions' && sessionDetail) && <>
+        {sessionSelector}
+        {!sessionID ? <Empty title="No recording selected"><p>Record a session first, then choose it to explore captured workspace states.</p><button onClick={() => setPage('setup')}>Learn how to record</button></Empty> : <>
+          {page === 'sessions' && <div className="session-tabs" role="tablist" aria-label="Session view">{(['timeline', 'file', 'diff'] as const).map(tab => <button key={tab} role="tab" aria-selected={sessionTab === tab} onClick={() => setSessionTab(tab)}>{tab === 'timeline' ? 'Timeline' : tab === 'file' ? 'Files' : 'Changes'}</button>)}</div>}
+          {page === 'sessions' && sessionTab === 'timeline' ? <>
+            <p className="view-explanation">Select an event to see what was recorded. Open Files or Changes to inspect the workspace observed near that event.</p>
+            <div className="timeline-workspace">
+              <aside className="timeline-panel" aria-label="Recorded timeline">
+        <div className="panel-heading"><h2>Timeline</h2><span className="count">{events.length}</span></div>
         <div className="timeline-filters"><input aria-label="Search event kinds, tools or file paths" placeholder="Search events or file paths…" value={query} onChange={e => setQuery(e.target.value)} /><div className="filter-row"><select aria-label="Filter by event kind" value={kind} onChange={e => setKind(e.target.value)}><option value="">All events</option>{kinds.map(k => <option key={k} value={k}>{label(k)}</option>)}</select><select aria-label="Filter by tool" value={tool} onChange={e => setTool(e.target.value)}><option value="">All tools</option>{tools.map(t => <option key={t} value={t}>{t.replaceAll('_', ' ')}</option>)}</select></div></div>
         <div className="timeline-list" role="list" aria-label="Events in receipt order">
           {loading && <p className="loading-inline">Loading events…</p>}
@@ -128,15 +145,18 @@ export function App() {
         </div>
         <div className="timeline-footer">Receipt order · {eventCursor !== null ? 'more events available' : 'refreshes every 4s'}</div>
       </aside>
-      <section className="history-panel" aria-label="Historical workspace">
-        <div className="checkpoint-bar"><span className="eyebrow">WORKSPACE</span><select aria-label="Select checkpoint" value={cpID} onChange={e => setOverrideCP(e.target.value)}><option value="" disabled>No known checkpoint</option>{cpID && !checkpoints.some(cp => cp.id === cpID) && <option value={cpID}>{short(cpID)}</option>}{checkpoints.map(cp => <option key={cp.id} value={cp.id}>{cp.kind} · {short(cp.id)}{cp.partial ? ' · partial' : ''}</option>)}</select>{checkpointCursor !== null && <button className="text-button" onClick={moreCheckpoints}>More</button>}</div>
-        <div className={`state-note ${overrideCP ? '' : near && !near.exact ? 'last-known' : ''}`}>{overrideCP ? 'Manually selected checkpoint' : near ? near.exact ? 'Checkpoint linked to this observation' : 'Last known workspace · this event has no checkpoint' : 'No checkpoint observed at or before this event'}</div>
-        <History key={`${sessionID}:${cpID}`} id={cpID} />
-      </section>
-      <Activity event={selected} checkpointID={cpID} override={!!overrideCP} />
-    </main>}
-    <footer className="app-footer"><span><span className="status-dot" /> {health?.version ?? 'AgentTM'} <span className="footer-scope">· local history</span></span><div className="event-navigation"><button onClick={() => selectEvent(filtered[Math.max(0, selectedIndex - 1)].id)} disabled={selectedIndex <= 0}>← Previous event</button><button onClick={() => selectEvent(filtered[selectedIndex + 1].id)} disabled={selectedIndex < 0 || selectedIndex >= filtered.length - 1}>Next event →</button></div><button className="fork-action" disabled={!cpID||!health?.csrf_token} onClick={()=>setForkID(cpID)}>Fork checkpoint</button></footer>
-    {forkID&&health&&<ForkDialog key={forkID} id={forkID} token={health.csrf_token} onClose={()=>setForkID('')}/>}
+              <div className="event-inspector"><Activity event={selected} checkpointID={cpID} override={!!overrideCP}/>{selected && <button className="inspect-files" disabled={!cpID} onClick={() => setSessionTab('file')}>Inspect observed files →</button>}</div>
+            </div>
+            <div className="event-navigation"><button onClick={() => selectEvent(filtered[Math.max(0, selectedIndex - 1)].id)} disabled={selectedIndex <= 0}>← Previous event</button><button onClick={() => selectEvent(filtered[selectedIndex + 1].id)} disabled={selectedIndex < 0 || selectedIndex >= filtered.length - 1}>Next event →</button></div>
+          </> : <section className="checkpoint-view">
+            {page === 'checkpoints' && <p className="view-explanation">Choose a recording above, then a checkpoint below. “Fork checkpoint” restores its captured files into a separate folder.</p>}
+            {checkpointControls}
+            <History key={sessionID + ':' + cpID} id={cpID} view={page === 'sessions' ? sessionTab === 'diff' ? 'diff' : 'file' : undefined}/>
+          </section>}
+        </>}
+      </>}
+    </main>
+    {forkID && health && <ForkDialog key={forkID} id={forkID} token={health.csrf_token} onClose={() => { setForkID(''); setRevision(n => n + 1); }}/>}
   </div>;
 }
 
@@ -157,7 +177,7 @@ function Activity({ event, checkpointID, override }: { event?: RecordedEvent; ch
   </div>}</aside>;
 }
 
-function History({ id }: { id: string }) {
+function History({ id, view }: { id: string; view?: 'file' | 'diff' }) {
   const [checkpoint, setCheckpoint] = useState<Checkpoint | null>(null);
   const [files, setFiles] = useState<SnapshotFile[]>([]);
   const [fileCursor, setFileCursor] = useState<number | null>(null);
@@ -166,7 +186,8 @@ function History({ id }: { id: string }) {
   const [changes, setChanges] = useState<Change[]>([]);
   const [diffCursor, setDiffCursor] = useState<number | null>(null);
   const [diffTotal, setDiffTotal] = useState(0);
-  const [tab, setTab] = useState<'file' | 'diff'>('file');
+  const [localTab, setTab] = useState<'file' | 'diff'>('file');
+  const tab = view ?? localTab;
   const [error, setError] = useState('');
   const [fileError, setFileError] = useState('');
   const [diffError, setDiffError] = useState('');
@@ -204,7 +225,7 @@ function History({ id }: { id: string }) {
   if (error) return <div className="panel-padding"><ErrorBox>{error}</ErrorBox><button onClick={() => setRetry(n => n + 1)}>Retry checkpoint</button></div>;
   return <>
     {checkpoint?.partial && <div className="partial-notice"><strong>Partial snapshot</strong><span>{checkpoint.omission_count} omitted paths{checkpoint.potentially_inconsistent ? ' · scan may be inconsistent' : ''}</span><details><summary>View omissions</summary><ul>{checkpoint.omissions?.map((v, i) => <li key={i}><code>{v.path}</code> — {v.reason}</li>)}</ul>{checkpoint.omissions_truncated && <p>Showing the first 100 omissions. Use agenttm show for the full manifest.</p>}</details></div>}
-    <div className="view-tabs" role="tablist" aria-label="Workspace view"><button role="tab" aria-selected={tab === 'file'} onClick={() => setTab('file')}>Files <span>{checkpoint?.file_count}</span></button><button role="tab" aria-selected={tab === 'diff'} onClick={() => setTab('diff')}>Compare with parent</button><span className="readonly-label">READ ONLY</span></div>
+    {!view && <div className="view-tabs" role="tablist" aria-label="Workspace view"><button role="tab" aria-selected={tab === 'file'} onClick={() => setTab('file')}>Files <span>{checkpoint?.file_count}</span></button><button role="tab" aria-selected={tab === 'diff'} onClick={() => setTab('diff')}>Compare with parent</button><span className="readonly-label">READ ONLY</span></div>}
     {tab === 'file' ? <div className="file-layout"><nav className="file-tree" aria-label="Historical file tree"><input aria-label="Filter loaded file paths" placeholder="Find a file…" value={search} onChange={e => setSearch(e.target.value)} /><div className="tree-list"><FileTree files={files.filter(f => f.path.toLowerCase().includes(search.toLowerCase()))} selected={path} onSelect={setPath} />{fileCursor !== null && <button className="load-more" onClick={moreFiles}>Load more files</button>}{!files.length && <p className="muted panel-padding">No eligible files captured.</p>}</div></nav><section className="editor-panel" aria-label="Historical file contents"><div className="file-heading"><span>{path || 'No file selected'}</span><span>{content ? bytes(content.size) : ''}</span></div>{fileLoading ? <Empty title="Loading historical file…" /> : fileError ? <div className="panel-padding"><ErrorBox>{fileError}</ErrorBox><button onClick={() => setRetry(n => n + 1)}>Retry file</button></div> : content ? <CodeViewer content={content.content} path={path} /> : <Empty title="Select a file" />}</section></div> : <div className="diff-layout"><div className="diff-heading"><strong>{diffTotal} changed paths</strong><span>{checkpoint?.parent_id ? `Compared with ${short(checkpoint.parent_id)}` : 'Baseline compared with empty tree'}</span></div>{diffError && <ErrorBox>{diffError} <button onClick={() => setRetry(n => n + 1)}>Retry diff</button></ErrorBox>}{changes.map(change => <section className="change" key={change.path}><div className="change-heading"><span className={`change-kind ${change.kind}`}>{change.kind === 'added' ? '+' : change.kind === 'removed' ? '−' : '~'}</span><strong>{change.path}</strong><span>{change.kind}</span></div>{change.binary ? <p className="diff-message">Binary file changed; contents are not displayed.</p> : change.truncated ? <p className="diff-message">Patch omitted because it exceeds the display limit.</p> : change.patch ? <pre className="patch" tabIndex={0} aria-label={`Unified diff for ${change.path}`}>{change.patch.split('\n').map((line, i) => <span key={i} className={line.startsWith('+') && !line.startsWith('+++') ? 'line-add' : line.startsWith('-') && !line.startsWith('---') ? 'line-remove' : line.startsWith('@@') ? 'line-hunk' : ''}>{line}{'\n'}</span>)}</pre> : <p className="diff-message">{change.old_mode !== change.new_mode ? `File mode: ${change.old_mode?.toString(8) ?? '—'} → ${change.new_mode?.toString(8) ?? '—'}` : 'Empty file change.'}</p>}</section>)}{diffLoading && <p className="loading-inline">Loading changes…</p>}{!diffLoading && !changes.length && !diffError && <Empty title="No file changes" />}{diffCursor !== null && <button className="load-more" onClick={moreChanges} disabled={diffLoading}>Load more changes</button>}</div>}
   </>;
 }

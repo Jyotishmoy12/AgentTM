@@ -15,7 +15,20 @@ states and never falls back to the live workspace.
 
 ## Navigation and scope
 
-- Select a session in the header. Older sessions are paginated. Phase 1 sessions
+- The sidebar separates Overview, Sessions, Checkpoints, Restored workspaces,
+  and Setup & help. Overview explains the workflow and links to recent recordings.
+- Sessions starts with a recording list. Open a recording to switch between
+  Timeline, Files, and Changes. The timeline shows event details without placing
+  the file browser on the same screen. Session/event/checkpoint selection stays
+  in memory when moving between pages.
+- Checkpoints provides a session selector, historical files, parent comparisons,
+  and the explicit fork action. Restored workspaces lists actual recorded restore
+  results for this project, with folder location, branch, checkpoint, and status.
+  This list does not verify whether a worktree still exists.
+- Setup & help explains sessions, events, checkpoints, and restores. The desktop
+  can check Codex readiness; browser users get the equivalent terminal diagnostic.
+  The step-by-step Setup guide is available in both desktop and browser modes.
+- Select a session above its timeline or checkpoint browser. Older sessions are paginated. Phase 1 sessions
   have events but no file history; the UI explains how to start a new recording.
 - Select events in receipt order, using event buttons or Previous/Next. Filtering
   by event kind, tool and path applies to loaded events; Load next events extends
@@ -61,6 +74,7 @@ local programs/users who already have access to the repository's local files.
 | --- | --- |
 | `/api/health` | Version, project basename, privacy and capture mode |
 | `/api/sessions` | `cursor`, `limit` (default 50, max 100); newest first |
+| `/api/forks` | Exclusive `cursor`; pages of 100 recorded restore results scoped to this project |
 | `/api/sessions/{id}/events` | `cursor` exclusive sequence; default 50, max 200 |
 | `/api/sessions/{id}/checkpoints` | `cursor`, `limit` (default 50, max 100) |
 | `/api/checkpoints/{id}` | Validated summary and bounded omissions |
