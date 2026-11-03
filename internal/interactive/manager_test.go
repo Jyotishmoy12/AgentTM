@@ -24,6 +24,9 @@ func TestMain(m *testing.M) {
 		waiting := false
 		emit := func(v any) { b, _ := json.Marshal(v); fmt.Println(string(b)) }
 		finish := func() {
+			for _, method := range []string{"item/started", "item/completed"} {
+				emit(map[string]any{"method": method, "params": map[string]any{"item": map[string]any{"id": "same-tool-id-each-turn", "type": "commandExecution", "status": "completed", "command": "synthetic no-op"}}})
+			}
 			emit(map[string]any{"method": "item/completed", "params": map[string]any{"item": map[string]any{"id": "reply", "type": "agentMessage", "text": "Hello from synthetic Codex"}}})
 			emit(map[string]any{"method": "turn/completed", "params": map[string]any{"turn": map[string]any{"status": "completed"}}})
 		}
@@ -156,6 +159,10 @@ func TestInteractiveResumeApprovalAndCancellation(t *testing.T) {
 	records, err := m.Engine.Store.Events(id, 0, 100)
 	if err != nil {
 		t.Fatal(err)
+	}
+	ops, err := m.Engine.Store.Operations(id, 0, 100)
+	if err != nil || len(ops) != 2 || ops[0].After == "" || ops[1].After == "" || ops[0].After == ops[1].After {
+		t.Fatalf("operation boundaries not recorded across resumed turns: %+v %v", ops, err)
 	}
 	for _, r := range records {
 		if strings.Contains(string(r.Payload), `"text":"hello"`) {

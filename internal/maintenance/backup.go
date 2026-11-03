@@ -293,7 +293,7 @@ func RestoreBackup(ctx context.Context, archivePath, destination, password strin
 			return fmt.Errorf("backup database integrity failed")
 		}
 		var version int
-		if err := db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 3 {
+		if err := db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version < 3 || version > storage.SchemaVersion {
 			return fmt.Errorf("unsupported backup database version")
 		}
 		violations, err := db.Query("PRAGMA foreign_key_check")

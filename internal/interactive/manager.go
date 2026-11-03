@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"agenttm/internal/capture"
 	"agenttm/internal/events"
 	"agenttm/internal/operation"
 	"agenttm/internal/snapshot"
@@ -124,7 +125,12 @@ func (m *Manager) Start(ctx context.Context, session, prompt, model, sandbox str
 func (m *Manager) run(ctx context.Context, session, thread, prompt, model, sandbox string) {
 	var runErr error
 	finalStatus := "completed"
+	observer := capture.New(m.Engine, session, m.Engine.Config.Capture.SnapshotAfterTool)
 	defer func() {
+		if err := observer.Finish(); err != nil && finalStatus == "completed" && ctx.Err() == nil {
+			runErr = err
+			finalStatus = "recording_failed"
+		}
 		cleanup, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		defer cancel()
 		if _, err := m.Engine.Capture(cleanup, session, "final"); err != nil {
@@ -237,10 +243,8 @@ func (m *Manager) run(ctx context.Context, session, thread, prompt, model, sandb
 		if err != nil {
 			return err
 		}
-		if r.Kind == "item.completed" && r.Tool != "" && m.Engine.Config.Capture.SnapshotAfterTool {
-			if _, err = m.Engine.CaptureNear(ctx, session, eventID); err != nil {
-				return err
-			}
+		if err = observer.Observe(ctx, r, eventID); err != nil {
+			return err
 		}
 		if message.Method == "item/completed" {
 			if item, ok := params["item"].(map[string]any); ok && item["type"] == "agentMessage" {

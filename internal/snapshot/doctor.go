@@ -19,6 +19,21 @@ type Report struct {
 
 func (e *Engine) Doctor() Report {
 	r := Report{Problems: []string{}, Warnings: []string{}}
+	var uncertain, invalid int
+	if err := e.Store.DB.QueryRow(`SELECT count(*) FROM operations o JOIN sessions s ON s.id=o.session_id WHERE s.project_id=? AND (o.capture_status NOT IN ('complete','disabled') OR o.overlapping=1)`, e.Store.ProjectID).Scan(&uncertain); err != nil {
+		r.Problems = append(r.Problems, err.Error())
+	} else if uncertain > 0 {
+		r.Warnings = append(r.Warnings, fmt.Sprintf("%d operations have incomplete or uncertain checkpoint coverage; inspect session Operations", uncertain))
+	}
+	if err := e.Store.DB.QueryRow(`SELECT count(*) FROM operations o JOIN sessions s ON s.id=o.session_id WHERE s.project_id=? AND (
+	(o.before_checkpoint_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM checkpoints c WHERE c.id=o.before_checkpoint_id AND c.session_id=o.session_id)) OR
+	(o.after_checkpoint_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM checkpoints c WHERE c.id=o.after_checkpoint_id AND c.session_id=o.session_id)) OR
+	(o.start_event_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM events v WHERE v.id=o.start_event_id AND v.session_id=o.session_id)) OR
+	(o.completion_event_id IS NOT NULL AND NOT EXISTS(SELECT 1 FROM events v WHERE v.id=o.completion_event_id AND v.session_id=o.session_id)))`, e.Store.ProjectID).Scan(&invalid); err != nil {
+		r.Problems = append(r.Problems, err.Error())
+	} else if invalid > 0 {
+		r.Problems = append(r.Problems, fmt.Sprintf("%d operations have invalid session links", invalid))
+	}
 	rows, err := e.Store.DB.Query("SELECT c.id FROM checkpoints c JOIN sessions s ON s.id=c.session_id WHERE s.project_id=?", e.Store.ProjectID)
 	if err != nil {
 		r.Problems = append(r.Problems, err.Error())

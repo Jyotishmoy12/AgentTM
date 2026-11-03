@@ -19,6 +19,9 @@ func normalize(message wireMessage, max int, omit string) events.Record {
 		}
 	case "turn/started":
 		raw["type"] = "turn.started"
+		if turn, ok := params["turn"].(map[string]any); ok {
+			raw["turn_id"] = turn["id"]
+		}
 	case "turn/completed":
 		raw["type"] = "turn.completed"
 		if turn, ok := params["turn"].(map[string]any); ok && turn["status"] != "completed" {
@@ -49,6 +52,13 @@ func normalize(message wireMessage, max int, omit string) events.Record {
 				}
 			}
 			q["changes"] = changes
+		case "mcpToolCall":
+			q["type"] = "mcp_tool_call"
+			q["name"] = item["tool"]
+			q["server"] = item["server"]
+		case "dynamicToolCall":
+			q["type"] = "dynamic_tool_call"
+			q["name"] = item["tool"]
 		default:
 			q["type"] = "omitted"
 		}

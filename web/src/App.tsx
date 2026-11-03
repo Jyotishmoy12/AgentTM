@@ -10,6 +10,7 @@ import { NavIcon, navigation, Overview, PageHeading, RestoredWorkspaces, Session
 import type { AppPage } from './components/NavigationPages';
 import { ChatPage } from './components/ChatPage';
 import { StoragePage } from './components/StoragePage';
+import { Operations } from './components/Operations';
 import './navigation.css';
 import './features.css';
 
@@ -24,7 +25,7 @@ function Empty({ title, children }: { title: string; children?: React.ReactNode 
 export function App() {
   const [page, setPage] = useState<AppPage>('overview');
   const [sessionDetail, setSessionDetail] = useState(false);
-  const [sessionTab, setSessionTab] = useState<'timeline' | 'file' | 'diff'>('timeline');
+  const [sessionTab, setSessionTab] = useState<'timeline' | 'operations' | 'file' | 'diff'>('timeline');
   const [resumeSession, setResumeSession] = useState('');
   const [health, setHealth] = useState<Health | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -136,7 +137,7 @@ const sessionSelector = (<div className="session-bar">
       {(page === 'checkpoints' || page === 'sessions' && sessionDetail) && <>
         {sessionSelector}
         {!sessionID ? <Empty title="No recording selected"><p>Record a session first, then choose it to explore captured workspace states.</p><button onClick={() => setPage('setup')}>Learn how to record</button></Empty> : <>
-          {page === 'sessions' && <div className="session-tabs" role="tablist" aria-label="Session view">{(['timeline', 'file', 'diff'] as const).map(tab => <button key={tab} role="tab" aria-selected={sessionTab === tab} onClick={() => setSessionTab(tab)}>{tab === 'timeline' ? 'Timeline' : tab === 'file' ? 'Files' : 'Changes'}</button>)}</div>}
+          {page === 'sessions' && <div className="session-tabs" role="tablist" aria-label="Session view">{(['timeline', 'operations', 'file', 'diff'] as const).map(tab => <button key={tab} role="tab" aria-selected={sessionTab === tab} onClick={() => setSessionTab(tab)}>{tab === 'timeline' ? 'Timeline' : tab === 'operations' ? 'Operations' : tab === 'file' ? 'Files' : 'Changes'}</button>)}</div>}
           {page === 'sessions' && sessionTab === 'timeline' ? <>
             <p className="view-explanation">Select an event to see what was recorded. Open Files or Changes to inspect the workspace observed near that event.</p>
             <div className="timeline-workspace">
@@ -154,7 +155,7 @@ const sessionSelector = (<div className="session-bar">
               <div className="event-inspector"><Activity event={selected} checkpointID={cpID} override={!!overrideCP}/>{selected && <button className="inspect-files" disabled={!cpID} onClick={() => setSessionTab('file')}>Inspect observed files →</button>}</div>
             </div>
             <div className="event-navigation"><button onClick={() => selectEvent(filtered[Math.max(0, selectedIndex - 1)].id)} disabled={selectedIndex <= 0}>← Previous event</button><button onClick={() => selectEvent(filtered[selectedIndex + 1].id)} disabled={selectedIndex < 0 || selectedIndex >= filtered.length - 1}>Next event →</button></div>
-          </> : <section className="checkpoint-view">
+          </> : page === 'sessions' && sessionTab === 'operations' ? <Operations key={sessionID} session={sessionID} inspect={id => { setOverrideCP(id); setSessionTab('file'); }}/> : <section className="checkpoint-view">
             {page === 'checkpoints' && <p className="view-explanation">Choose a recording above, then a checkpoint below. “Fork checkpoint” restores its captured files into a separate folder.</p>}
             {checkpointControls}
             <History key={sessionID + ':' + cpID} id={cpID} view={page === 'sessions' ? sessionTab === 'diff' ? 'diff' : 'file' : undefined}/>

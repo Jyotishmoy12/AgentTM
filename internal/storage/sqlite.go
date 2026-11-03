@@ -23,6 +23,11 @@ var snapshotMigration string
 //go:embed migrations/003_fork_status.sql
 var forkMigration string
 
+//go:embed migrations/004_operation_checkpoints.sql
+var operationMigration string
+
+const SchemaVersion = 4
+
 type Store struct {
 	DB        *sql.DB
 	ProjectID string
@@ -104,8 +109,8 @@ func Open(root string) (*Store, error) {
 	if e = tx.QueryRow("PRAGMA user_version").Scan(&v); e != nil {
 		return fail(e)
 	}
-	if v > 3 {
-		return fail(fmt.Errorf("database schema %d is newer than supported version 3", v))
+	if v > SchemaVersion {
+		return fail(fmt.Errorf("database schema %d is newer than supported version %d", v, SchemaVersion))
 	}
 	if v == 0 {
 		if _, e = tx.Exec(initial); e != nil {
@@ -128,6 +133,14 @@ func Open(root string) (*Store, error) {
 			return fail(e)
 		}
 		if _, e = tx.Exec("PRAGMA user_version=3"); e != nil {
+			return fail(e)
+		}
+	}
+	if v < 4 {
+		if _, e = tx.Exec(operationMigration); e != nil {
+			return fail(e)
+		}
+		if _, e = tx.Exec("PRAGMA user_version=4"); e != nil {
 			return fail(e)
 		}
 	}

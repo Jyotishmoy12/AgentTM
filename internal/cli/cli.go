@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"agenttm/internal/agents/codex"
+	"agenttm/internal/capture"
 	"agenttm/internal/config"
 	"agenttm/internal/events"
 	"agenttm/internal/operation"
@@ -36,6 +37,7 @@ const usage = `AgentTM - local Codex history, checkpoints and safe forks
   agenttm run codex [--model MODEL] -- "task"
   agenttm sessions
   agenttm events <session-id> [--after N] [--limit N]
+  agenttm operations <session-id> [--after N] [--limit N]
   agenttm checkpoints <session-id>
   agenttm checkpoint <session-id>
   agenttm show <checkpoint-id>
@@ -114,6 +116,31 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 	defer s.DB.Close()
 	engine := &snapshot.Engine{Root: root, Store: s, Config: c}
 	switch args[0] {
+	case "operations":
+		if len(args) < 2 {
+			return fmt.Errorf("usage: agenttm operations <session-id> [--after N] [--limit N]"), 2
+		}
+		fs := flag.NewFlagSet("operations", flag.ContinueOnError)
+		fs.SetOutput(errOut)
+		after := fs.Int64("after", 0, "Exclusive operation cursor")
+		limit := fs.Int("limit", 50, "Maximum operations (1..100)")
+		if err := fs.Parse(args[2:]); err != nil {
+			return err, 2
+		}
+		if fs.NArg() != 0 {
+			return fmt.Errorf("unexpected arguments"), 2
+		}
+		items, err := s.Operations(args[1], *after, *limit)
+		if err != nil {
+			return err, 1
+		}
+		enc := json.NewEncoder(out)
+		for _, item := range items {
+			if err = enc.Encode(item); err != nil {
+				return err, 1
+			}
+		}
+		return nil, 0
 	case "fork":
 		return forkCommand(ctx, args[1:], engine, out, errOut)
 	case "purge":
@@ -213,7 +240,7 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 		fs.SetOutput(errOut)
 		model := fs.String("model", "", "explicit Codex model override")
 		sandbox := fs.String("sandbox", "", "explicit read-only or workspace-write override; default honors Codex configuration")
-		scanTools := fs.Bool("snapshot-after-tool", c.Capture.SnapshotAfterTool, "observe workspace near completed command/file-change items")
+		scanTools := fs.Bool("snapshot-after-tool", c.Capture.SnapshotAfterTool, "capture workspace observations at supported tool boundaries")
 		if e = fs.Parse(args[2:]); e != nil {
 			return e, 2
 		}
@@ -260,6 +287,7 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 			return e, 1
 		}
 		captureFailed := false
+		observer := capture.New(engine, id, *scanTools)
 		baseline, snapshotErr := engine.Capture(ctx, id, "baseline")
 		if snapshotErr != nil {
 			_ = s.Finish(id, "recording_failed", 1)
@@ -279,19 +307,18 @@ func execute(ctx context.Context, args []string, out, errOut io.Writer) (error, 
 				}
 			}
 			fmt.Fprintln(errOut, "  observed", r.Kind)
-			if *scanTools && r.Kind == "item.completed" && (r.Tool == "command_execution" || r.Tool == "file_change") {
-				observed, err := engine.CaptureNear(ctx, id, eventID)
-				if err != nil {
-					if ctx.Err() != nil {
-						return ctx.Err()
-					}
+			if err := observer.Observe(ctx, r, eventID); err != nil {
+				if ctx.Err() == nil {
 					captureFailed = true
-					return fmt.Errorf("intermediate observation failed: %w", err)
 				}
-				printCapture(errOut, observed)
+				return err
 			}
 			return nil
 		})
+		if err := observer.Finish(); err != nil && ctx.Err() == nil {
+			captureFailed = true
+			fmt.Fprintln(errOut, err)
+		}
 		// A cancelled run still needs its final observation. Give the capture an
 		// independent, bounded cleanup context rather than the cancelled run context.
 		finalCtx, finishCapture := context.WithTimeout(context.Background(), 2*time.Minute)

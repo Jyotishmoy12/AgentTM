@@ -6,9 +6,10 @@ including failure or Ctrl+C. A final scan failure sets `recording_failed`; a
 baseline failure prevents Codex launch. A failed recording is never reported as a
 successful complete recording. Existing Phase 1 sessions and events are preserved.
 With `capture.snapshot_after_tool` or `--snapshot-after-tool=true`, supported
-completed command/file-change items trigger additional best-effort scans. These
-are `observed` checkpoints with an `observed_event_id`; the native tool event
-links to the observed checkpoint. Unchanged scans reuse the previous state.
+command/file-change/MCP/dynamic tool boundaries trigger additional scans. Each
+completion creates its own `operation_after` checkpoint, even for no-op tools.
+Start observations use `operation_before` and may reuse identical state. The
+native tool events link to their checkpoints. See [operation checkpoints](granular-checkpoints.md).
 Codex and background processes are not paused. Attribution is **observed near
 event**, not caused by it or guaranteed atomic post-tool state.
 
@@ -16,7 +17,7 @@ event**, not caused by it or guaranteed atomic post-tool state.
 
 A session's first scan creates a checkpoint, including an empty workspace. Later
 scans compare sorted paths, content hashes, permissions, omissions and consistency
-flags. If unchanged, no new manifest is created; an observation event links to
+flags. Except for operation completions, if unchanged, no new manifest is created; an observation event links to
 the existing checkpoint. Every changed scan creates an immutable manifest whose
 parent is that session's previous checkpoint. Identical blobs are reused across
 files, checkpoints and sessions. Checkpoint IDs are UUIDs.

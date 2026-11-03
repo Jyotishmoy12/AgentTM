@@ -141,8 +141,11 @@ allow a coding task to write inside a disposable repository:
 ```
 
 `read-only` is the other supported explicit sandbox override. No unsafe bypass
-flags are passed. New configs enable best-effort scans near supported completed
-command/file-change items; older config values are preserved. Use the flag above
+flags are passed. New configs enable scans at supported command/file-change/MCP/dynamic
+tool boundaries; older config values are preserved. Each completion gets its own
+checkpoint, including no-op tools. Inspect before/after coverage in **Sessions → Operations**
+or `agenttm operations <session-id>`. See [operation checkpoints](docs/granular-checkpoints.md).
+Use the flag above
 or `capture.snapshot_after_tool` to enable them. They do not pause Codex or prove
 per-tool causality.
 The final workspace scan uses a separate two-minute cleanup context, including

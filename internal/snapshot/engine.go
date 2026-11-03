@@ -134,9 +134,29 @@ func (e *Engine) CaptureNear(ctx context.Context, session, event string) (Captur
 	}
 	return e.capture(ctx, session, "observed", event)
 }
+
+// CaptureBoundary observes a received operation boundary. Completion always
+// creates its own manifest, including no-op operations; blobs remain deduplicated.
+// Notifications are not execution barriers and do not guarantee exclusive writes.
+func (e *Engine) CaptureBoundary(ctx context.Context, session, event, kind string) (CaptureResult, error) {
+	expected := "item.started"
+	if kind == "operation_after" {
+		expected = "item.completed"
+	} else if kind != "operation_before" {
+		return CaptureResult{}, fmt.Errorf("invalid operation boundary")
+	}
+	var count int
+	if err := e.Store.DB.QueryRow("SELECT count(*) FROM events WHERE id=? AND session_id=? AND kind=? AND tool_name!=''", event, session, expected).Scan(&count); err != nil {
+		return CaptureResult{}, err
+	}
+	if count != 1 {
+		return CaptureResult{}, fmt.Errorf("event does not match operation boundary")
+	}
+	return e.capture(ctx, session, kind, event)
+}
 func (e *Engine) capture(ctx context.Context, session, kind, observedEvent string) (CaptureResult, error) {
 	var result CaptureResult
-	if kind != "baseline" && kind != "final" && kind != "manual" && kind != "observed" {
+	if kind != "baseline" && kind != "final" && kind != "manual" && kind != "observed" && kind != "operation_before" && kind != "operation_after" {
 		return result, fmt.Errorf("invalid capture kind")
 	}
 	if err := e.session(session); err != nil {
@@ -171,6 +191,17 @@ func (e *Engine) capture(ctx context.Context, session, kind, observedEvent strin
 	if err != nil {
 		return result, err
 	}
+	if kind == "operation_before" || kind == "operation_after" {
+		verified, scanErr := e.scan(ctx)
+		if scanErr != nil {
+			return result, scanErr
+		}
+		if !sameState(m, verified) {
+			verified.Partial = true
+			verified.PotentiallyInconsistent = true
+		}
+		m = verified
+	}
 	m.Version = 1
 	m.ID = storage.ID()
 	m.ProjectID = e.Store.ProjectID
@@ -189,12 +220,14 @@ func (e *Engine) capture(ctx context.Context, session, kind, observedEvent strin
 	if err = m.Validate(); err != nil {
 		return result, err
 	}
-	changed := parent == nil || !sameState(*parent, m)
+	stateChanged := parent == nil || !sameState(*parent, m)
+	changed := stateChanged || kind == "operation_after"
 	checkpointID := m.ID
 	if !changed {
 		checkpointID = parent.ID
 	}
 	meta := map[string]any{"source": "agenttm", "observation": kind, "checkpoint_id": checkpointID, "created": changed, "partial": m.Partial, "potentially_inconsistent": m.PotentiallyInconsistent, "file_count": len(m.Files), "omission_count": len(m.Omissions), "fidelity": "workspace_scan", "attribution": "workspace_observation"}
+	meta["state_changed"] = stateChanged
 	if observedEvent != "" {
 		meta["observed_event_id"] = observedEvent
 		meta["attribution"] = "observed_near_event"

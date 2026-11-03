@@ -8,7 +8,9 @@ import (
 	"testing"
 	"time"
 
+	"agenttm/internal/capture"
 	"agenttm/internal/config"
+	"agenttm/internal/events"
 	"agenttm/internal/project"
 	"agenttm/internal/snapshot"
 	"agenttm/internal/storage"
@@ -86,7 +88,18 @@ func TestGCSharedObjectsAndPreview(t *testing.T) {
 func TestEncryptedBackupRoundTripAndAuthentication(t *testing.T) {
 	ctx := context.Background()
 	e := historyFixture(t)
-	_, cp := captureFile(t, e, "private historical content")
+	session, cp := captureFile(t, e, "private historical content")
+	observer := capture.New(e, session, true)
+	for _, kind := range []string{"item.started", "item.completed"} {
+		r := events.Record{Kind: kind, Tool: "command_execution", Call: "backup-operation", Payload: []byte(`{"item":{"status":"completed"}}`)}
+		id, err := e.Store.AppendID(session, r.Kind, r.Tool, r.Call, r.Payload)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err = observer.Observe(ctx, r, id); err != nil {
+			t.Fatal(err)
+		}
+	}
 	password := "a long passphrase for testing"
 	archive := filepath.Join(t.TempDir(), "history.age")
 	if err := Backup(ctx, e, archive, password); err != nil {
@@ -120,6 +133,10 @@ func TestEncryptedBackupRoundTripAndAuthentication(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer restored.DB.Close()
+	operations, err := restored.Operations(session, 0, 100)
+	if err != nil || len(operations) != 1 || operations[0].After == "" {
+		t.Fatalf("operation history lost on restore: %+v %v", operations, err)
+	}
 	engine := snapshot.Engine{Root: target, Store: restored, Config: e.Config}
 	text, err := engine.File(cp.ID, "note.txt")
 	if err != nil || string(text) != "private historical content" {
@@ -135,5 +152,12 @@ func TestEncryptedBackupRoundTripAndAuthentication(t *testing.T) {
 		if allowedBackupPath(p) {
 			t.Fatal("unsafe path accepted", p)
 		}
+	}
+	if _, err = Purge(e.Root, e.Store, session); err != nil {
+		t.Fatalf("operation references blocked purge: %v", err)
+	}
+	var count int
+	if err = e.Store.DB.QueryRow("SELECT count(*) FROM operations").Scan(&count); err != nil || count != 0 {
+		t.Fatal("operation ledger not purged", err)
 	}
 }

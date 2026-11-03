@@ -98,7 +98,7 @@ func Normalize(line []byte, max int, omitTask string) Record {
 		r.Kind = typ
 		r.Failed = typ == "turn.failed"
 		r.Completed = typ == "turn.completed"
-		for _, k := range []string{"usage", "message", "error"} {
+		for _, k := range []string{"usage", "message", "error", "turn_id"} {
 			if v, ok := raw[k]; ok {
 				p[k] = v
 			}
@@ -121,6 +121,11 @@ func Normalize(line []byte, max int, omitTask string) Record {
 			r.Tool = it
 			q["changes"] = item["changes"]
 			q["status"] = item["status"]
+		case "mcp_tool_call", "dynamic_tool_call":
+			r.Tool = it
+			q["status"] = item["status"]
+			q["name"] = item["name"]
+			q["server"] = item["server"]
 		case "agent_message":
 			q["text"] = item["text"]
 		case "error":

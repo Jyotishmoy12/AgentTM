@@ -50,7 +50,43 @@ func TestPhaseOneMigrationPreservesHistory(t *testing.T) {
 		t.Fatalf("migration lost events: %+v %v", records, err)
 	}
 	var v int
-	if err = store.DB.QueryRow("PRAGMA user_version").Scan(&v); err != nil || v != 3 {
+	if err = store.DB.QueryRow("PRAGMA user_version").Scan(&v); err != nil || v != SchemaVersion {
 		t.Fatalf("schema version %d %v", v, err)
+	}
+}
+
+func TestVersionThreeOperationMigration(t *testing.T) {
+	root := t.TempDir()
+	if b, err := exec.Command("git", "init", root).CombinedOutput(); err != nil {
+		t.Fatalf("%s %v", b, err)
+	}
+	if err := project.Init(root); err != nil {
+		t.Fatal(err)
+	}
+	s, err := Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	id, err := s.Start()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = s.Append(id, "turn.completed", "", "", []byte(`{}`)); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = s.DB.Exec("DROP TABLE operations; PRAGMA user_version=3"); err != nil {
+		t.Fatal(err)
+	}
+	s.DB.Close()
+	s, err = Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer s.DB.Close()
+	if records, err := s.Events(id, 0, 10); err != nil || len(records) != 1 {
+		t.Fatal("history lost", err)
+	}
+	if operations, err := s.Operations(id, 0, 10); err != nil || len(operations) != 0 {
+		t.Fatal("migration fabricated operations", err)
 	}
 }

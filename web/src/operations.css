@@ -1,0 +1,6 @@
+.operations-view { padding: 20px 28px; }
+.operation-card { border: 1px solid var(--border, #29323e); border-radius: 10px; padding: 18px; margin: 16px 0; background: #101720; }
+.operation-card h3 { margin: 0 0 10px; }
+.operation-card small { font-weight: normal; }
+.operation-card details { margin-top: 14px; }
+.operation-card li { overflow-wrap: anywhere; }

@@ -200,6 +200,9 @@ func (s *Server) api(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		switch parts[3] {
+		case "operations":
+			s.operations(w, r, id)
+			return
 		case "events":
 			s.events(w, r, id)
 			return

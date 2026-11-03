@@ -94,7 +94,7 @@ func (m Manifest) Validate() error {
 	if m.Version != 1 || !ValidID(m.ID) || !ValidID(m.ProjectID) || !ValidID(m.SessionID) || !ValidID(m.EventID) || m.ParentID != "" && !ValidID(m.ParentID) {
 		return fmt.Errorf("unsupported or invalid manifest identity")
 	}
-	if m.Kind != "baseline" && m.Kind != "final" && m.Kind != "manual" && m.Kind != "observed" {
+	if m.Kind != "baseline" && m.Kind != "final" && m.Kind != "manual" && m.Kind != "observed" && m.Kind != "operation_before" && m.Kind != "operation_after" {
 		return fmt.Errorf("invalid checkpoint kind")
 	}
 	if m.ObservedEventID != "" && !ValidID(m.ObservedEventID) {

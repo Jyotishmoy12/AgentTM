@@ -85,6 +85,9 @@ func Purge(root string, s *storage.Store, id string) (PurgeResult, error) {
 		return r, err
 	}
 	defer tx.Rollback()
+	if _, err = tx.Exec("DELETE FROM operations WHERE session_id=?", id); err != nil {
+		return r, err
+	}
 	result, err := tx.Exec("DELETE FROM events WHERE session_id=?", id)
 	if err != nil {
 		return r, err
