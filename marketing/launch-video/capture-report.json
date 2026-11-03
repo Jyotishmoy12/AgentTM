@@ -1,0 +1,10 @@
+{
+  "session": "21c05021-8fa3-4272-bb26-95c59135f4f2",
+  "baseline": "33f8daee-a6f5-4497-af97-01207c3f9fc1",
+  "changed": "e1898a98-75eb-4d99-a95e-a667309b923b",
+  "checkpoints": 6,
+  "originalPreserved": true,
+  "integrity": "Repository, config and SQLite integrity: OK\nSnapshot integrity: 6 checkpoints, 6 objects\nCodex: codex-cli 0.164.0-alpha.11.1; exec --json advertised\nObserved JSONL integration version: 0.164.0-alpha.11.1\nCodex login status: OK (model access and network require a real run)\n",
+  "browserErrors": [],
+  "demo": "C:\\dev\\AgentTM\\.test-work\\launch-film-27cbe606-6e67-4aef-abe2-1b264c98bc0c\\demo-checkout"
+}

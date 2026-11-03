@@ -8,7 +8,12 @@ official binary-use permissions and restrictions on original implementation reus
 Third-party licenses and GitHub's public-repository terms remain in force. See
 [licensing details](docs/licensing.md).
 
-![AgentTM overview with recorded sessions and sidebar navigation](docs/images/overview.png)
+**Watch the 30-second demo — with background music and sound effects:**
+
+[![Play the AgentTM demo: record, inspect changes, and restore a checkpoint](docs/images/launch-video-poster.png)](docs/videos/agenttm-demo.mp4)
+
+Click the image to open the video. Real UI captures from a disposable demo project,
+edited into a short promo. [Video credits](docs/videos/CREDITS.md).
 
 ## What AgentTM does
 

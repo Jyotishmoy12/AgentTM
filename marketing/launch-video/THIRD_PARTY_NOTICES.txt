@@ -1,0 +1,20 @@
+AgentTM launch film motion source
+
+src/PageCam.tsx is adapted from video-shotcraft assets/lib/PageCam.tsx,
+commit 1266a3ec4831289c4d893d42dd5102723658039a.
+Project: https://github.com/Vincentwei1021/video-shotcraft
+Licensed under Apache License 2.0; see SHOTCRAFT-LICENSE.txt.
+Modification: the camera's canvas background follows AgentTM's dark palette.
+The film's original composition and copy are specific to AgentTM.
+No upstream product screenshots, logos or template sound effects are included.
+
+Remotion and its dependencies retain their own licenses. This project uses
+Remotion 4.0.484; Remotion's separate license governs use of that renderer.
+
+Freesound audio: CC0-1.0 MP3 previews, not original lossless recordings.
+See public/audio/sfx/FREESOUND-CREDITS.md and audio-manifest.json for authors,
+source pages, exact licenses, SHA-256 hashes and measurement records.
+
+Background music incorporated in the current completed video: Cat Walk by Arulo,
+Mixkit Stock Music Free License. See public/audio/music/CREDITS.md for source and
+license links. Standalone music/bed files are not distributed with source.

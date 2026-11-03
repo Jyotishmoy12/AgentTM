@@ -1,0 +1,10 @@
+AgentTM is proprietary software.
+Copyright (c) 2026 Jyotishmoy12 (AgentTM). All rights reserved.
+
+See LICENSE for permission to use official binaries and restrictions concerning
+original AgentTM source code and distribution.
+
+AgentTM incorporates third-party components under their own licenses. The
+proprietary terms do not replace those licenses or assert ownership of those
+components. Release archives include THIRD_PARTY_NOTICES.txt. The application
+also serves bundled third-party notices at /third-party-notices.txt.

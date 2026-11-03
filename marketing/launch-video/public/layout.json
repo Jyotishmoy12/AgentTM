@@ -1,0 +1,93 @@
+{
+  "overview": {
+    "viewport": {
+      "width": 1600,
+      "height": 1000
+    },
+    "focus": {
+      "x": 256,
+      "y": 226.796875,
+      "width": 1312,
+      "height": 247.59375
+    },
+    "source": "unmodified production UI, disposable demo project"
+  },
+  "timeline": {
+    "viewport": {
+      "width": 1600,
+      "height": 1000
+    },
+    "focus": {
+      "x": 224,
+      "y": 342.796875,
+      "width": 1376,
+      "height": 614.203125
+    },
+    "source": "unmodified production UI, disposable demo project"
+  },
+  "changes": {
+    "viewport": {
+      "width": 1600,
+      "height": 1000
+    },
+    "focus": {
+      "x": 224,
+      "y": 387.796875,
+      "width": 1376,
+      "height": 612.203125
+    },
+    "source": "unmodified production UI, disposable demo project"
+  },
+  "baseline": {
+    "viewport": {
+      "width": 1600,
+      "height": 1000
+    },
+    "focus": {
+      "x": 444,
+      "y": 387.796875,
+      "width": 1156,
+      "height": 612.203125
+    },
+    "source": "unmodified production UI, disposable demo project"
+  },
+  "restore": {
+    "viewport": {
+      "width": 1600,
+      "height": 1000
+    },
+    "focus": {
+      "x": 520,
+      "y": 262.515625,
+      "width": 560,
+      "height": 474.96875
+    },
+    "source": "unmodified production UI, disposable demo project"
+  },
+  "restored": {
+    "viewport": {
+      "width": 1600,
+      "height": 1000
+    },
+    "focus": {
+      "x": 520,
+      "y": 282.515625,
+      "width": 560,
+      "height": 434.96875
+    },
+    "source": "unmodified production UI, disposable demo project"
+  },
+  "workspaces": {
+    "viewport": {
+      "width": 1600,
+      "height": 1000
+    },
+    "focus": {
+      "x": 256,
+      "y": 226.796875,
+      "width": 1312,
+      "height": 246.390625
+    },
+    "source": "unmodified production UI, disposable demo project"
+  }
+}

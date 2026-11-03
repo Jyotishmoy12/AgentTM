@@ -1,0 +1,49 @@
+AgentTM Proprietary License
+
+Copyright (c) 2026 Jyotishmoy12 (AgentTM). All rights reserved.
+
+1. Original AgentTM source and materials
+
+Original AgentTM source code and materials are proprietary. No permission is
+granted to reuse, modify, distribute, sublicense, sell, or incorporate that source
+or those materials into another product without the copyright holder's prior
+written permission, except as expressly permitted below or by applicable law.
+Access to source code is not an open-source license or an assignment of copyright.
+The repository may remain public. This notice does not restrict rights granted
+by GitHub's applicable terms to view or fork content using its service.
+
+2. Permission to use official binaries
+
+You may download, install, and run official AgentTM binaries made available by
+the copyright holder for your own personal use or your organization's internal
+business use. You may make copies needed for installation and backup. You may
+read the accompanying documentation and run its command examples for those uses.
+
+This permission does not authorize redistribution, sublicensing, resale,
+incorporation into another distributed product, or providing AgentTM's features
+to third parties as a hosted or managed service. Those uses require separate
+written permission. It does not grant permission to modify or extract and reuse
+the original AgentTM implementation, except where applicable law permits it.
+
+3. Third-party components and existing rights
+
+Third-party components remain under their own licenses. Their notices and terms
+are provided in THIRD_PARTY_NOTICES.txt in release archives and in the bundled
+application notices. Nothing in this license restricts rights granted by those
+licenses, overrides applicable law, or retroactively revokes previously granted
+rights. It does not assert ownership of third-party code or others' contributions.
+It does not grant AgentTM ownership of your project files, prompts, recordings,
+or agent outputs. Their respective owners' rights and service terms still apply.
+
+4. Disclaimer
+
+To the extent permitted by applicable law, AgentTM is provided as is, without
+warranties of any kind, and the copyright holder is not liable for damages
+arising from its use. You are responsible for appropriate backups and for
+reviewing what your configured coding agent is authorized to execute.
+
+5. Permissions
+
+For permissions beyond this license, contact the owner through
+https://github.com/Jyotishmoy12/AgentTM/issues . Do not include private source,
+credentials, or recorded project data in a public issue.

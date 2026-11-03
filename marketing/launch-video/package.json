@@ -1,0 +1,22 @@
+{
+  "name": "agenttm-launch-video",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "remotion studio src/index.ts",
+    "check": "tsc --noEmit",
+    "render": "remotion render src/index.ts AgentTMLaunch out/AgentTM-launch-30s.mp4 --concurrency=2",
+    "render:silent": "remotion render src/index.ts AgentTMLaunch out/AgentTM-launch-30s-silent.mp4 --props=props-silent.json --concurrency=2",
+    "render:sfx-only": "remotion render src/index.ts AgentTMLaunch out/AgentTM-launch-30s-sfx-only.mp4 --props=props-sfx-only.json --concurrency=2"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.484",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "remotion": "4.0.484"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "typescript": "6.0.3"
+  }
+}
