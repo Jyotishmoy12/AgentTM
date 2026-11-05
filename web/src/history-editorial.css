@@ -224,7 +224,7 @@
   background: transparent;
 }
 .density-bar:hover:not(:disabled) > span,
-.density-bar[aria-pressed="true"] > span {
+.density-bar[aria-pressed='true'] > span {
   background: #b0c897;
 }
 .density-bar:focus-visible {
@@ -360,13 +360,13 @@
   position: relative;
 }
 .history-event-group > summary:after {
-  content: "+";
+  content: '+';
   position: absolute;
   right: 0;
   color: #a2a3a1;
 }
 .history-event-group[open] > summary:after {
-  content: "−";
+  content: '−';
 }
 .history-event-group > summary > strong {
   font-size: 12px;
@@ -457,7 +457,7 @@
   padding: 8px 13px;
   color: #b2b2b1;
 }
-.history-filters button[aria-pressed="true"] {
+.history-filters button[aria-pressed='true'] {
   background: #333532;
   color: #e5e5e4;
 }
@@ -519,7 +519,7 @@
   position: relative;
 }
 .timeline-marker:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 30px;
   bottom: -20px;
@@ -608,7 +608,7 @@
   padding-right: 20px;
 }
 .history-event > summary:after {
-  content: "+";
+  content: '+';
   position: absolute;
   right: 2px;
   color: #8f8f8e;
@@ -616,7 +616,7 @@
   font-size: 14px;
 }
 .history-event[open] > summary:after {
-  content: "−";
+  content: '−';
 }
 .event-kind-label {
   font-size: 9px;
@@ -783,8 +783,8 @@
   min-height: 43px;
   flex-shrink: 0;
 }
-.explorer-mode [role="tablist"],
-.explorer-mode [role="group"] {
+.explorer-mode [role='tablist'],
+.explorer-mode [role='group'] {
   display: flex;
   gap: 8px;
 }
@@ -794,11 +794,11 @@
   color: #b1b2b0;
   border-radius: 0;
 }
-.explorer-mode [aria-selected="true"] {
+.explorer-mode [aria-selected='true'] {
   color: #e0e1df;
   border-bottom: 2px solid #b2b4b0;
 }
-.explorer-mode [aria-pressed="true"] {
+.explorer-mode [aria-pressed='true'] {
   background: #343732;
   border-radius: 5px;
 }
@@ -821,10 +821,7 @@
 }
 .checkpoint-explorer .file-layout {
   display: grid;
-  grid-template-columns: clamp(120px, var(--file-panel-width), 35%) 5px minmax(
-      0,
-      1fr
-    );
+  grid-template-columns: clamp(120px, var(--file-panel-width), 35%) 5px minmax(0, 1fr);
   min-width: 0;
 }
 .checkpoint-explorer .file-tree {

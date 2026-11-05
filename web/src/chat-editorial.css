@@ -72,7 +72,7 @@
   color: #cfd0ce;
 }
 .chat-header-actions button:disabled,
-.chat-conversation-menu > summary[aria-disabled="true"] {
+.chat-conversation-menu > summary[aria-disabled='true'] {
   opacity: 0.4;
   cursor: default;
 }
@@ -222,7 +222,7 @@
   color: #e4e4e3;
 }
 .chat-prose p code {
-  font-family: "Cascadia Code", Consolas, monospace;
+  font-family: 'Cascadia Code', Consolas, monospace;
   font-size: 0.9em;
   color: #cccdcb;
   background: #323231;
@@ -260,7 +260,7 @@
   max-height: 400px;
   overflow: auto;
   font:
-    12px/1.8 "Cascadia Code",
+    12px/1.8 'Cascadia Code',
     Consolas,
     monospace;
   color: #d0d1cf;
@@ -294,7 +294,7 @@
   display: none;
 }
 .chat-tool > summary::after {
-  content: "›";
+  content: '›';
   font-size: 17px;
   transform: rotate(90deg);
   color: #818281;
@@ -320,7 +320,7 @@
   background: #1d1d1d;
   border-radius: 5px;
   font:
-    11px/1.8 "Cascadia Code",
+    11px/1.8 'Cascadia Code',
     Consolas,
     monospace;
   white-space: pre-wrap;

@@ -171,7 +171,7 @@
   min-height: 78px;
   font-size: 10px;
 }
-.restore-manager .restores-row[aria-selected="true"] {
+.restore-manager .restores-row[aria-selected='true'] {
   background: #2d2f2b;
   border-radius: 7px;
   border-bottom-color: transparent;

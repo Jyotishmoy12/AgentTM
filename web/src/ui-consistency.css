@@ -9,21 +9,14 @@
   --ui-focus: #acbf91;
 }
 .library-shell
-  :is(
-    .home-heading,
-    .restores-heading,
-    .settings-heading,
-    .storage-editorial-heading
-  )
+  :is(.home-heading, .restores-heading, .settings-heading, .storage-editorial-heading)
   h1 {
   font-size: var(--ui-title-size);
   font-weight: 550;
   line-height: 1.3;
   letter-spacing: -0.7px;
 }
-.library-shell
-  :is(.restores-heading, .settings-heading, .storage-editorial-heading)
-  > p,
+.library-shell :is(.restores-heading, .settings-heading, .storage-editorial-heading) > p,
 .library-shell .settings-heading > div > p {
   font-size: var(--ui-body-size);
   line-height: 1.8;
@@ -82,8 +75,7 @@
   outline-offset: 2px;
   background: #303630;
 }
-.app-shell
-  :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible,
+.app-shell :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible,
 dialog :is(button, input, select, textarea, summary, [tabindex]):focus-visible {
   outline-color: var(--ui-focus);
   outline-width: 2px;
@@ -214,7 +206,7 @@ dialog .app-dialog-close.app-dialog-close:disabled {
     11px/1.6 Inter,
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
+    'Segoe UI',
     sans-serif;
   overflow-wrap: anywhere;
 }

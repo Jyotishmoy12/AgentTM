@@ -1,7 +1,7 @@
-import { DialogClose } from "./DialogClose";
-import { useEffect, useRef, useState } from "react";
-import { message, post } from "../api";
-import type { Session } from "../types";
+import { DialogClose } from './DialogClose';
+import { useEffect, useRef, useState } from 'react';
+import { message, post } from '../api';
+import type { Session } from '../types';
 
 export function SessionNameDialog({
   session,
@@ -16,9 +16,9 @@ export function SessionNameDialog({
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const nameInput = useRef<HTMLInputElement>(null);
-  const [title, setTitle] = useState(session.title || "");
+  const [title, setTitle] = useState(session.title || '');
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   useEffect(() => {
     const node = dialog.current;
     node?.showModal();
@@ -29,7 +29,7 @@ export function SessionNameDialog({
   async function save() {
     if (busy || tooLong) return;
     setBusy(true);
-    setError("");
+    setError('');
     try {
       const result = await post<{ id: string; title: string }>(
         `/sessions/${session.id}/title`,
@@ -59,11 +59,7 @@ export function SessionNameDialog({
           void save();
         }}
       >
-        <DialogClose
-          label="Close session name dialog"
-          onClick={onClose}
-          disabled={busy}
-        />
+        <DialogClose label="Close session name dialog" onClick={onClose} disabled={busy} />
         <h2 id="session-name-title">Name this session</h2>
         <p>Give this recording a name you can recognize later.</p>
         <label htmlFor="session-name-input">Session name</label>
@@ -79,8 +75,8 @@ export function SessionNameDialog({
           disabled={busy}
         />
         <small>
-          Stored locally in project history. This does not enable prompt
-          capture. Leave empty to restore the automatic heading.
+          Stored locally in project history. This does not enable prompt capture. Leave empty to
+          restore the automatic heading.
         </small>
         {tooLong && <p role="alert">Use at most 120 characters.</p>}
         {error && (
@@ -92,11 +88,8 @@ export function SessionNameDialog({
           <button type="button" disabled={busy} onClick={onClose}>
             Cancel
           </button>
-          <button
-            className="primary-button"
-            disabled={busy || tooLong || !token}
-          >
-            {busy ? "Saving…" : "Save name"}
+          <button className="primary-button" disabled={busy || tooLong || !token}>
+            {busy ? 'Saving…' : 'Save name'}
           </button>
         </div>
       </form>

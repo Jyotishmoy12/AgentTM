@@ -1,14 +1,30 @@
 import { test, expect } from '@playwright/test';
 
-test('desktop setup guides installation, rechecks readiness, and can be reopened', async ({ page }) => {
+test('desktop setup guides installation, rechecks readiness, and can be reopened', async ({
+  page,
+}) => {
   // Exercise native bridge states without installing or authenticating Codex.
   await page.addInitScript(() => {
     let checks = 0;
-    (window as any).go = { main: { Desktop: {
-      CheckSetup: async () => ({ state: ++checks > 1 || localStorage.getItem('agenttm:onboarding:v1') === 'done' ? 'ready' : 'missing', version: checks > 1 ? 'codex-cli test' : '', project: 'demo', path: 'C:\\projects\\demo' }),
-      CopyText: async (text: string) => { (window as any).copiedCommand = text; },
-      OpenCodexDocs: async () => {},
-    } } };
+    (window as any).go = {
+      main: {
+        Desktop: {
+          CheckSetup: async () => ({
+            state:
+              ++checks > 1 || localStorage.getItem('agenttm:onboarding:v1') === 'done'
+                ? 'ready'
+                : 'missing',
+            version: checks > 1 ? 'codex-cli test' : '',
+            project: 'demo',
+            path: 'C:\\projects\\demo',
+          }),
+          CopyText: async (text: string) => {
+            (window as any).copiedCommand = text;
+          },
+          OpenCodexDocs: async () => {},
+        },
+      },
+    };
   });
   await page.goto('/');
   const guide = page.getByRole('dialog', { name: 'Welcome' });
@@ -18,8 +34,14 @@ test('desktop setup guides installation, rechecks readiness, and can be reopened
   await expect(page.getByText('C:\\projects\\demo', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Install Codex', exact: true })).toBeVisible();
-  await page.locator('.setup-command').filter({ hasText: 'npm.cmd install' }).getByRole('button').click();
-  expect(await page.evaluate(() => (window as any).copiedCommand)).toBe('npm.cmd install -g @openai/codex');
+  await page
+    .locator('.setup-command')
+    .filter({ hasText: 'npm.cmd install' })
+    .getByRole('button')
+    .click();
+  expect(await page.evaluate(() => (window as any).copiedCommand)).toBe(
+    'npm.cmd install -g @openai/codex',
+  );
   await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('Codex is not available');
   await page.getByRole('button', { name: 'Check again', exact: true }).click();

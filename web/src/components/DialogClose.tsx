@@ -1,8 +1,8 @@
-﻿import type { ButtonHTMLAttributes } from "react";
+﻿import type { ButtonHTMLAttributes } from 'react';
 
 export function DialogClose({
   label,
-  className = "",
+  className = '',
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & { label: string }) {
   return (

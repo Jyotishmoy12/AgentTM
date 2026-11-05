@@ -1,13 +1,6 @@
-import {
-  memo,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { eventTitle, filterEvents, record } from "../state";
-import type { Checkpoint, RecordedEvent } from "../types";
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { eventTitle, filterEvents, record } from '../state';
+import type { Checkpoint, RecordedEvent } from '../types';
 
 type Item = {
   id: string;
@@ -34,23 +27,19 @@ const Row = memo(function Row({
     <div role="listitem" className="history-row" style={{ height: rowHeight }}>
       <button
         data-history-index={index}
-        className={"event-card " + (selected ? "selected" : "")}
+        className={'event-card ' + (selected ? 'selected' : '')}
         aria-pressed={selected}
         tabIndex={selected || index === 0 ? 0 : -1}
         onClick={() => select(item.id)}
       >
         <span
-          className={
-            "history-node " + (item.checkpoint ? "has-checkpoint" : "")
-          }
+          className={'history-node ' + (item.checkpoint ? 'has-checkpoint' : '')}
           aria-hidden="true"
         />
         <span className="event-content">
           <span className="event-topline">
             <span className="event-kind">{item.kind}</span>
-            <span className={"history-status " + item.status.toLowerCase()}>
-              {item.status}
-            </span>
+            <span className={'history-status ' + item.status.toLowerCase()}>{item.status}</span>
           </span>
           <span className="event-title" title={item.title}>
             {item.title}
@@ -58,17 +47,17 @@ const Row = memo(function Row({
           <span className="event-bottom">
             <time dateTime={item.time}>
               {new Date(item.time).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
               })}
             </time>
             <span>
               {item.checkpoint
                 ? item.checkpoint.slice(0, 8)
                 : item.sequence
-                  ? "#" + item.sequence
-                  : "—"}
+                  ? '#' + item.sequence
+                  : '—'}
             </span>
           </span>
         </span>
@@ -97,8 +86,8 @@ export const HistoryRail = memo(function HistoryRail({
   checkpoints: Checkpoint[];
   selectedEvent: string;
   selectedCheckpoint: string;
-  mode: "events" | "checkpoints";
-  onMode: (mode: "events" | "checkpoints") => void;
+  mode: 'events' | 'checkpoints';
+  onMode: (mode: 'events' | 'checkpoints') => void;
   onEvent: (id: string) => void;
   onCheckpoint: (id: string) => void;
   loading: boolean;
@@ -108,15 +97,15 @@ export const HistoryRail = memo(function HistoryRail({
   loadEvents: () => void;
   loadCheckpoints: () => void;
 }) {
-  const [query, setQuery] = useState("");
-  const [kind, setKind] = useState("");
-  const [tool, setTool] = useState("");
+  const [query, setQuery] = useState('');
+  const [kind, setKind] = useState('');
+  const [tool, setTool] = useState('');
   const list = useRef<HTMLDivElement>(null);
   const [scroll, setScroll] = useState(0);
   const [height, setHeight] = useState(450);
   const positions = useRef({ events: 0, checkpoints: 0 });
   const pendingFocus = useRef<number | null>(null);
-  const previousSelection = useRef("");
+  const previousSelection = useRef('');
   useEffect(() => {
     if (!list.current) return;
     const observer = new ResizeObserver((entries) => {
@@ -138,61 +127,56 @@ export const HistoryRail = memo(function HistoryRail({
   );
   const items = useMemo<Item[]>(
     () =>
-      mode === "events"
+      mode === 'events'
         ? filterEvents(events, query, kind, tool).map((event) => {
-            const checkpoint = checkpointIndex.get(event.checkpoint_id || "");
+            const checkpoint = checkpointIndex.get(event.checkpoint_id || '');
             const payload = record(event.payload);
             const item = record(payload.item);
             return {
               id: event.id,
               title: eventTitle(event),
-              kind: event.kind
-                .replace("agenttm.", "")
-                .replaceAll(".", " / ")
-                .replaceAll("_", " "),
+              kind: event.kind.replace('agenttm.', '').replaceAll('.', ' / ').replaceAll('_', ' '),
               time: event.received_at,
-              checkpoint: event.checkpoint_id || "",
+              checkpoint: event.checkpoint_id || '',
               sequence: event.sequence,
               status: checkpoint?.partial
-                ? "Partial"
-                : event.kind.includes("failed") ||
-                    event.kind === "error" ||
-                    item.status === "failed"
-                  ? "Failed"
+                ? 'Partial'
+                : event.kind.includes('failed') ||
+                    event.kind === 'error' ||
+                    item.status === 'failed'
+                  ? 'Failed'
                   : payload.error
-                    ? "Warning"
-                    : "Recorded",
+                    ? 'Warning'
+                    : 'Recorded',
             };
           })
         : checkpoints
             .filter((cp) =>
-              [cp.kind, cp.id].some((value) =>
-                value.toLowerCase().includes(query.toLowerCase()),
-              ),
+              [cp.kind, cp.id].some((value) => value.toLowerCase().includes(query.toLowerCase())),
             )
             .map((cp) => ({
               id: cp.id,
-              title: cp.kind.replaceAll("_", " ") + " workspace",
-              kind: "CHECKPOINT · " + cp.id.slice(0, 8),
+              title: cp.kind.replaceAll('_', ' ') + ' workspace',
+              kind: 'CHECKPOINT · ' + cp.id.slice(0, 8),
               time: cp.created_at,
               checkpoint: cp.id,
               status: cp.partial
-                ? "Partial"
+                ? 'Partial'
                 : cp.potentially_inconsistent
-                  ? "Observed"
-                  : "Captured",
+                  ? 'Observed'
+                  : 'Captured',
             })),
     [events, checkpoints, checkpointIndex, mode, query, kind, tool],
   );
-  const selected = mode === "events" ? selectedEvent : selectedCheckpoint;
-  const select = mode === "events" ? onEvent : onCheckpoint;
+  const selected = mode === 'events' ? selectedEvent : selectedCheckpoint;
+  const select = mode === 'events' ? onEvent : onCheckpoint;
   const virtual = items.length > 150;
   const start = virtual ? Math.max(0, Math.floor(scroll / rowHeight) - 5) : 0;
   const end = virtual
     ? Math.min(items.length, Math.ceil((scroll + height) / rowHeight) + 5)
     : items.length;
   useLayoutEffect(() => {
-    const key = mode + ":" + selected;
+    const key = mode + ':' + selected;
     if (previousSelection.current === key || !list.current) return;
     previousSelection.current = key;
     const index = items.findIndex((item) => item.id === selected);
@@ -221,12 +205,9 @@ export const HistoryRail = memo(function HistoryRail({
     positions.current[mode] = 0;
   };
   return (
-    <aside
-      className="timeline-panel history-rail"
-      aria-label="History navigation"
-    >
+    <aside className="timeline-panel history-rail" aria-label="History navigation">
       <div className="panel-heading">
-        <h2>{mode === "events" ? "Timeline" : "Checkpoints"}</h2>
+        <h2>{mode === 'events' ? 'Timeline' : 'Checkpoints'}</h2>
         <span className="count">{items.length}</span>
       </div>
       <div
@@ -234,28 +215,28 @@ export const HistoryRail = memo(function HistoryRail({
         role="tablist"
         aria-label="History type"
         onKeyDown={(event) => {
-          if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+          if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
           event.preventDefault();
-          const next = mode === "events" ? "checkpoints" : "events";
+          const next = mode === 'events' ? 'checkpoints' : 'events';
           onMode(next);
           event.currentTarget
-            .querySelectorAll<HTMLButtonElement>("button")
-            [next === "events" ? 0 : 1].focus();
+            .querySelectorAll<HTMLButtonElement>('button')
+            [next === 'events' ? 0 : 1].focus();
         }}
       >
         <button
           role="tab"
-          aria-selected={mode === "events"}
-          tabIndex={mode === "events" ? 0 : -1}
-          onClick={() => onMode("events")}
+          aria-selected={mode === 'events'}
+          tabIndex={mode === 'events' ? 0 : -1}
+          onClick={() => onMode('events')}
         >
           Timeline
         </button>
         <button
           role="tab"
-          aria-selected={mode === "checkpoints"}
-          tabIndex={mode === "checkpoints" ? 0 : -1}
-          onClick={() => onMode("checkpoints")}
+          aria-selected={mode === 'checkpoints'}
+          tabIndex={mode === 'checkpoints' ? 0 : -1}
+          onClick={() => onMode('checkpoints')}
         >
           Checkpoints
         </button>
@@ -263,18 +244,14 @@ export const HistoryRail = memo(function HistoryRail({
       <div className="timeline-filters">
         <input
           aria-label="Search event kinds, tools or file paths"
-          placeholder={
-            mode === "events"
-              ? "Search activity or files…"
-              : "Find a checkpoint…"
-          }
+          placeholder={mode === 'events' ? 'Search activity or files…' : 'Find a checkpoint…'}
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
             reset();
           }}
         />
-        {mode === "events" && (
+        {mode === 'events' && (
           <div className="filter-row">
             <select
               aria-label="Filter by event kind"
@@ -298,11 +275,7 @@ export const HistoryRail = memo(function HistoryRail({
               }}
             >
               <option value="">All tools</option>
-              {[
-                ...new Set(
-                  events.map((event) => event.tool_name).filter(Boolean),
-                ),
-              ].map((value) => (
+              {[...new Set(events.map((event) => event.tool_name).filter(Boolean))].map((value) => (
                 <option key={value}>{value}</option>
               ))}
             </select>
@@ -321,16 +294,15 @@ export const HistoryRail = memo(function HistoryRail({
         onKeyDown={(event) => {
           if (
             !(event.target instanceof HTMLElement) ||
-            !event.target.closest("[data-history-index]")
+            !event.target.closest('[data-history-index]')
           )
             return;
           const current = items.findIndex((item) => item.id === selected);
           let index: number;
-          if (event.key === "ArrowDown")
-            index = Math.min(items.length - 1, current + 1);
-          else if (event.key === "ArrowUp") index = Math.max(0, current - 1);
-          else if (event.key === "Home") index = 0;
-          else if (event.key === "End") index = items.length - 1;
+          if (event.key === 'ArrowDown') index = Math.min(items.length - 1, current + 1);
+          else if (event.key === 'ArrowUp') index = Math.max(0, current - 1);
+          else if (event.key === 'Home') index = 0;
+          else if (event.key === 'End') index = items.length - 1;
           else return;
           event.preventDefault();
           const item = items[index];
@@ -358,9 +330,7 @@ export const HistoryRail = memo(function HistoryRail({
           <p className="loading-inline">Loading history…</p>
         ) : !items.length ? (
           <p className="panel-padding muted">
-            {query
-              ? "No history matches this filter."
-              : "No recorded items available."}
+            {query ? 'No history matches this filter.' : 'No recorded items available.'}
           </p>
         ) : (
           <>
@@ -374,27 +344,21 @@ export const HistoryRail = memo(function HistoryRail({
                 select={select}
               />
             ))}
-            <div
-              role="presentation"
-              style={{ height: (items.length - end) * rowHeight }}
-            />
+            <div role="presentation" style={{ height: (items.length - end) * rowHeight }} />
           </>
         )}
       </div>
       <div className="history-load">
-        {(mode === "events" ? moreEvents : moreCheckpoints) && (
-          <button
-            onClick={mode === "events" ? loadEvents : loadCheckpoints}
-            disabled={busy}
-          >
-            {busy ? "Loading…" : "Load more " + mode}
+        {(mode === 'events' ? moreEvents : moreCheckpoints) && (
+          <button onClick={mode === 'events' ? loadEvents : loadCheckpoints} disabled={busy}>
+            {busy ? 'Loading…' : 'Load more ' + mode}
           </button>
         )}
       </div>
       <div className="timeline-footer">
-        {mode === "events"
-          ? "Receipt order · workspace observations"
-          : "Captured states · not atomic snapshots"}
+        {mode === 'events'
+          ? 'Receipt order · workspace observations'
+          : 'Captured states · not atomic snapshots'}
         <span>↑ ↓ to select</span>
       </div>
     </aside>

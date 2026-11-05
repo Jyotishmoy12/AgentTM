@@ -1,11 +1,11 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { get, message } from "../api";
-import { desktopFeatures, type ChatState } from "../desktop";
-import type { Page, RecordedEvent, Session } from "../types";
-import { record } from "../state";
-import { ModelPicker } from "./ModelPicker";
-import { codexError } from "../codexErrors";
-import { ChatContent, ChatIcon } from "./ChatContent";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { get, message } from '../api';
+import { desktopFeatures, type ChatState } from '../desktop';
+import type { Page, RecordedEvent, Session } from '../types';
+import { record } from '../state';
+import { ModelPicker } from './ModelPicker';
+import { codexError } from '../codexErrors';
+import { ChatContent, ChatIcon } from './ChatContent';
 
 export function ChatPage({
   resume,
@@ -28,13 +28,13 @@ export function ChatPage({
   const [events, setEvents] = useState<RecordedEvent[]>([]);
   const [cursor, setCursor] = useState<number | null>(null);
   const after = useRef(0);
-  const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState("");
-  const [sandbox, setSandbox] = useState("read-only");
-  const [error, setError] = useState("");
+  const [prompt, setPrompt] = useState('');
+  const [model, setModel] = useState('');
+  const [sandbox, setSandbox] = useState('read-only');
+  const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [stopping, setStopping] = useState(false);
-  const [deciding, setDeciding] = useState("");
+  const [deciding, setDeciding] = useState('');
   const [revision, setRevision] = useState(0);
   const [loading, setLoading] = useState(!!resume);
   const [pending, setPending] = useState<{
@@ -72,8 +72,7 @@ export function ChatPage({
         const current = await bridge!.ChatStatus();
         if (!disposed) {
           setState(current);
-          if (current.running && current.session_id)
-            setSession(current.session_id);
+          if (current.running && current.session_id) setSession(current.session_id);
           if (!current.running) setStopping(false);
           setRevision((n) => n + 1);
         }
@@ -144,14 +143,14 @@ export function ChatPage({
   async function send() {
     if (!bridge || !prompt.trim() || busy || state?.running) return;
     if (!model.trim()) {
-      setError("Choose a Codex model before sending your message.");
+      setError('Choose a Codex model before sending your message.');
       return;
     }
     const text = prompt;
     const sequence = after.current;
     const sentAt = Date.now();
     setBusy(true);
-    setError("");
+    setError('');
     follow.current = true;
     try {
       const id = await bridge.StartChat(session, text, model, sandbox);
@@ -162,12 +161,12 @@ export function ChatPage({
         sentAt,
       });
       setSession(id);
-      setPrompt("");
+      setPrompt('');
       setState({
         session_id: id,
         running: true,
-        draft: "",
-        error: "",
+        draft: '',
+        error: '',
         approvals: [],
       });
       onRecorded();
@@ -199,7 +198,7 @@ export function ChatPage({
     } catch (e) {
       setError(message(e));
     } finally {
-      setDeciding("");
+      setDeciding('');
     }
   }
   function choose(id: string) {
@@ -209,8 +208,8 @@ export function ChatPage({
     setEvents([]);
     setPending(null);
     setLocalPrompts(new Map());
-    setError("");
-    setPrompt("");
+    setError('');
+    setPrompt('');
     follow.current = true;
     if (conversationMenu.current) conversationMenu.current.open = false;
   }
@@ -224,7 +223,7 @@ export function ChatPage({
       pending?.session === session
         ? events.find(
             (e) =>
-              e.kind === "agenttm.chat.prompt" &&
+              e.kind === 'agenttm.chat.prompt' &&
               e.sequence > pending.after &&
               Date.parse(e.received_at) >= pending.sentAt,
           )
@@ -246,7 +245,7 @@ export function ChatPage({
     () =>
       new Set(
         events
-          .filter((e) => e.kind === "item.completed" && e.tool_call_id)
+          .filter((e) => e.kind === 'item.completed' && e.tool_call_id)
           .map((e) => e.tool_call_id),
       ),
     [events],
@@ -262,9 +261,7 @@ export function ChatPage({
     if (node)
       node.scrollTo({
         top: node.scrollHeight,
-        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches
-          ? "auto"
-          : "smooth",
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
       });
   }
   if (!bridge)
@@ -273,8 +270,8 @@ export function ChatPage({
         <div className="page-empty">
           <h2>Chat is available in the desktop app</h2>
           <p>
-            Open the native AgentTM app to chat with Codex, answer approval
-            requests, and continue recorded conversations.
+            Open the native AgentTM app to chat with Codex, answer approval requests, and continue
+            recorded conversations.
           </p>
           <code>agenttm run codex -- "your task"</code>
           <p>The browser can still inspect recordings started from the CLI.</p>
@@ -283,10 +280,7 @@ export function ChatPage({
     );
   return (
     <section
-      className={
-        "chat-page editorial-chat " +
-        (empty ? "chat-empty-state" : "chat-active-state")
-      }
+      className={'chat-page editorial-chat ' + (empty ? 'chat-empty-state' : 'chat-active-state')}
       aria-label="Codex workspace"
     >
       <header className="chat-conversation-header">
@@ -296,9 +290,7 @@ export function ChatPage({
             {project}
             <span>/</span>
             {selected?.title ||
-              (session
-                ? "Conversation · " + session.slice(0, 8)
-                : "New conversation")}
+              (session ? 'Conversation · ' + session.slice(0, 8) : 'New conversation')}
           </p>
         </div>
         <div className="chat-header-actions">
@@ -317,9 +309,9 @@ export function ChatPage({
             className="chat-conversation-menu"
             ref={conversationMenu}
             onKeyDown={(event) => {
-              if (event.key === "Escape") {
+              if (event.key === 'Escape') {
                 event.currentTarget.open = false;
-                event.currentTarget.querySelector("summary")?.focus();
+                event.currentTarget.querySelector('summary')?.focus();
               }
             }}
           >
@@ -347,9 +339,8 @@ export function ChatPage({
                     .filter((s) => s.resumable || s.id === session)
                     .map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.title ? s.title + " · " : ""}
-                        {s.id.slice(0, 8)} ·{" "}
-                        {new Date(s.started_at).toLocaleString()}
+                        {s.title ? s.title + ' · ' : ''}
+                        {s.id.slice(0, 8)} · {new Date(s.started_at).toLocaleString()}
                       </option>
                     ))}
                   {session && !sessions.some((s) => s.id === session) && (
@@ -357,11 +348,7 @@ export function ChatPage({
                   )}
                 </select>
               </label>
-              <button
-                type="button"
-                disabled={locked}
-                onClick={() => choose("")}
-              >
+              <button type="button" disabled={locked} onClick={() => choose('')}>
                 <ChatIcon name="plus" />
                 New conversation
               </button>
@@ -373,7 +360,7 @@ export function ChatPage({
             aria-label="New conversation"
             title="New conversation"
             disabled={locked}
-            onClick={() => choose("")}
+            onClick={() => choose('')}
           >
             <ChatIcon name="plus" />
           </button>
@@ -389,8 +376,7 @@ export function ChatPage({
           aria-relevant="additions text"
           onScroll={(event) => {
             const el = event.currentTarget;
-            follow.current =
-              el.scrollHeight - el.clientHeight - el.scrollTop < 80;
+            follow.current = el.scrollHeight - el.clientHeight - el.scrollTop < 80;
             setJump(!follow.current);
           }}
         >
@@ -411,7 +397,7 @@ export function ChatPage({
                 {events.map((event) => {
                   const p = record(event.payload),
                     item = record(p.item);
-                  if (event.kind === "agenttm.chat.prompt")
+                  if (event.kind === 'agenttm.chat.prompt')
                     return (
                       <article className="chat-message user" key={event.id}>
                         <div className="chat-message-heading">You</div>
@@ -420,76 +406,63 @@ export function ChatPage({
                             localPrompts.get(event.id) ||
                             (pendingEvent?.id === event.id && pending
                               ? pending.text
-                              : String(
-                                  p.text ?? "[Prompt text capture is off]",
-                                ))
+                              : String(p.text ?? '[Prompt text capture is off]'))
                           }
                         />
                       </article>
                     );
-                  if (
-                    event.kind === "item.completed" &&
-                    item.type === "agent_message"
-                  )
+                  if (event.kind === 'item.completed' && item.type === 'agent_message')
                     return (
-                      <article
-                        className="chat-message assistant"
-                        key={event.id}
-                      >
+                      <article className="chat-message assistant" key={event.id}>
                         <div className="chat-message-heading">
                           <ChatIcon name="spark" />
                           Codex
                         </div>
-                        <ChatContent text={String(item.text ?? "")} />
+                        <ChatContent text={String(item.text ?? '')} />
                       </article>
                     );
                   if (
                     event.tool_name &&
-                    (event.kind === "item.completed" ||
-                      (event.kind === "item.started" &&
+                    (event.kind === 'item.completed' ||
+                      (event.kind === 'item.started' &&
                         current?.running &&
                         !!event.tool_call_id &&
                         !completedCalls.has(event.tool_call_id)))
                   ) {
                     const failed =
-                      item.status === "failed" ||
-                      (typeof item.exit_code === "number" &&
-                        item.exit_code !== 0);
+                      item.status === 'failed' ||
+                      (typeof item.exit_code === 'number' && item.exit_code !== 0);
                     const status = failed
-                      ? "Failed"
-                      : event.kind === "item.started"
-                        ? "Started"
-                        : String(item.status ?? "Observed");
+                      ? 'Failed'
+                      : event.kind === 'item.started'
+                        ? 'Started'
+                        : String(item.status ?? 'Observed');
                     return (
                       <details
-                        className={
-                          "chat-tool " + (failed ? "chat-tool-failed" : "")
-                        }
+                        className={'chat-tool ' + (failed ? 'chat-tool-failed' : '')}
                         key={event.id}
                         open={failed ? true : undefined}
                       >
                         <summary>
                           <ChatIcon name="tool" />
-                          <span>{event.tool_name.replaceAll("_", " ")}</span>
+                          <span>{event.tool_name.replaceAll('_', ' ')}</span>
                           <span className="chat-tool-state">{status}</span>
                         </summary>
                         {failed && (
                           <p className="chat-tool-failure" role="alert">
                             Tool execution failed
-                            {typeof item.exit_code === "number"
-                              ? " (exit " + item.exit_code + ")"
-                              : ""}
+                            {typeof item.exit_code === 'number'
+                              ? ' (exit ' + item.exit_code + ')'
+                              : ''}
                             . Review the recorded output below.
                           </p>
                         )}
                         <pre tabIndex={0}>
-                          {String(item.command ?? "")}
-                          {item.aggregated_output
-                            ? "\n" + String(item.aggregated_output)
-                            : ""}
+                          {String(item.command ?? '')}
+                          {item.aggregated_output ? '\n' + String(item.aggregated_output) : ''}
                           {!item.command && !item.aggregated_output
                             ? JSON.stringify(item, null, 2)
-                            : ""}
+                            : ''}
                         </pre>
                         {event.checkpoint_id && (
                           <button
@@ -503,17 +476,13 @@ export function ChatPage({
                       </details>
                     );
                   }
-                  if (event.kind === "error" || event.kind.endsWith(".failed"))
+                  if (event.kind === 'error' || event.kind.endsWith('.failed'))
                     return (
-                      <div
-                        className="chat-system-error"
-                        role="alert"
-                        key={event.id}
-                      >
+                      <div className="chat-system-error" role="alert" key={event.id}>
                         {String(
                           p.message ??
                             record(p.error).message ??
-                            "A failure was recorded for this turn. View history for details.",
+                            'A failure was recorded for this turn. View history for details.',
                         )}
                       </div>
                     );
@@ -532,7 +501,7 @@ export function ChatPage({
                     disabled={loading}
                     onClick={more}
                   >
-                    {loading ? "Loading…" : "Load more conversation events"}
+                    {loading ? 'Loading…' : 'Load more conversation events'}
                   </button>
                 )}
                 {current?.draft && (
@@ -555,13 +524,10 @@ export function ChatPage({
                         <h2>Codex needs your approval</h2>
                         <p>{approval.reason || approval.method}</p>
                         <pre tabIndex={0}>
-                          {approval.command ||
-                            "Approve the proposed file changes?"}
+                          {approval.command || 'Approve the proposed file changes?'}
                         </pre>
                         {approval.directory && (
-                          <p className="chat-approval-location">
-                            Location: {approval.directory}
-                          </p>
+                          <p className="chat-approval-location">Location: {approval.directory}</p>
                         )}
                         <div className="chat-approval-actions">
                           <button
@@ -577,9 +543,7 @@ export function ChatPage({
                             disabled={!!deciding}
                             onClick={() => decide(approval.id, true)}
                           >
-                            {deciding === approval.id
-                              ? "Sending decision…"
-                              : "Allow once"}
+                            {deciding === approval.id ? 'Sending decision…' : 'Allow once'}
                           </button>
                         </div>
                       </section>
@@ -589,18 +553,15 @@ export function ChatPage({
                 {current?.running && !current.approvals.length && (
                   <p className="chat-working" role="status">
                     <span />
-                    {stopping ? "Stopping turn…" : "Codex is working…"}
+                    {stopping ? 'Stopping turn…' : 'Codex is working…'}
                   </p>
                 )}
-                {!loading &&
-                  !events.length &&
-                  !pending &&
-                  !current?.running && (
-                    <p className="chat-system-note">
-                      No conversation messages were captured. View history to
-                      inspect recorded activity.
-                    </p>
-                  )}
+                {!loading && !events.length && !pending && !current?.running && (
+                  <p className="chat-system-note">
+                    No conversation messages were captured. View history to inspect recorded
+                    activity.
+                  </p>
+                )}
               </>
             )}
           </div>
@@ -619,13 +580,12 @@ export function ChatPage({
             className="chat-attention-strip"
             onClick={() => {
               follow.current = true;
-              approvals.current?.scrollIntoView({ block: "end" });
+              approvals.current?.scrollIntoView({ block: 'end' });
             }}
           >
             <ChatIcon name="shield" />
             {current.approvals.length} approval
-            {current.approvals.length === 1 ? "" : "s"} waiting for your
-            decision<span>Review</span>
+            {current.approvals.length === 1 ? '' : 's'} waiting for your decision<span>Review</span>
           </button>
         )}
         {friendlyError && (
@@ -643,7 +603,7 @@ export function ChatPage({
           }}
         >
           <label className="sr-only" htmlFor="chat-message">
-            {session ? "Your follow-up" : "Your message"}
+            {session ? 'Your follow-up' : 'Your message'}
           </label>
           <textarea
             id="chat-message"
@@ -652,7 +612,7 @@ export function ChatPage({
             onChange={(event) => setPrompt(event.target.value)}
             onKeyDown={(event) => {
               if (
-                event.key === "Enter" &&
+                event.key === 'Enter' &&
                 (event.ctrlKey || event.metaKey) &&
                 !event.shiftKey &&
                 !event.nativeEvent.isComposing
@@ -667,12 +627,7 @@ export function ChatPage({
           />
           <div className="chat-composer-toolbar">
             <div className="chat-composer-controls">
-              <ModelPicker
-                bridge={bridge}
-                value={model}
-                onChange={setModel}
-                disabled={locked}
-              />
+              <ModelPicker bridge={bridge} value={model} onChange={setModel} disabled={locked} />
               <label className="chat-permission-control">
                 <ChatIcon name="shield" />
                 <span className="sr-only">Permissions</span>
@@ -703,13 +658,9 @@ export function ChatPage({
                 className="chat-send"
                 type="submit"
                 aria-label={
-                  busy
-                    ? "Starting…"
-                    : session
-                      ? "Continue conversation"
-                      : "Send to Codex"
+                  busy ? 'Starting…' : session ? 'Continue conversation' : 'Send to Codex'
                 }
-                title={busy ? "Starting…" : "Send message (Ctrl+Enter)"}
+                title={busy ? 'Starting…' : 'Send message (Ctrl+Enter)'}
                 disabled={busy || !prompt.trim() || !model.trim()}
               >
                 <ChatIcon name="arrow" />
@@ -719,22 +670,16 @@ export function ChatPage({
         </form>
         <div className="chat-composer-footnote">
           <span>
-            <span
-              className={
-                "chat-recording-dot " + (current?.running ? "recording" : "")
-              }
-            />
+            <span className={'chat-recording-dot ' + (current?.running ? 'recording' : '')} />
             {busy
-              ? "Starting turn…"
+              ? 'Starting turn…'
               : current?.running
-                ? "Recording this turn"
+                ? 'Recording this turn'
                 : session
-                  ? "Recorded conversation"
-                  : "Records when you send"}
+                  ? 'Recorded conversation'
+                  : 'Records when you send'}
             <span className="chat-footnote-divider">·</span>
-            {promptMode === "sanitized"
-              ? "Sanitized prompts saved locally"
-              : "Prompt capture off"}
+            {promptMode === 'sanitized' ? 'Sanitized prompts saved locally' : 'Prompt capture off'}
           </span>
           <span>Ctrl+Enter to send</span>
         </div>

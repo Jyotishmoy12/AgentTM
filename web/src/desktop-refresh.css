@@ -14,7 +14,7 @@
     Inter,
     -apple-system,
     BlinkMacSystemFont,
-    "Segoe UI",
+    'Segoe UI',
     sans-serif;
   font-size: 13px;
 }
@@ -64,7 +64,7 @@ summary:focus-visible {
 }
 kbd {
   font:
-    10px/1.4 "SFMono-Regular",
+    10px/1.4 'SFMono-Regular',
     Consolas,
     monospace;
   border: 1px solid #3b3c44;
@@ -273,13 +273,13 @@ kbd {
   background: #202126;
   border-color: transparent;
 }
-.app-sidebar nav > button[aria-current="page"] {
+.app-sidebar nav > button[aria-current='page'] {
   background: #292c29;
   border-color: #343c32;
   color: #d3e5c6;
 }
-.app-sidebar nav > button[aria-current="page"]::before {
-  content: "";
+.app-sidebar nav > button[aria-current='page']::before {
+  content: '';
   position: absolute;
   left: -1px;
   top: 10px;
@@ -772,7 +772,7 @@ kbd {
   font-size: 11px;
   color: #9198a3;
 }
-.session-tabs button[aria-selected="true"] {
+.session-tabs button[aria-selected='true'] {
   color: #c7dfb7;
 }
 .view-explanation {
@@ -1318,7 +1318,7 @@ kbd {
 .setup-steps button {
   color: #9ba6b7;
 }
-.setup-steps button[aria-current="step"] {
+.setup-steps button[aria-current='step'] {
   color: #c8deba;
   background: #2a3425;
   border-color: #45553a;
@@ -1433,7 +1433,7 @@ kbd {
   border-radius: 6px;
   cursor: pointer;
 }
-.command-result[aria-selected="true"] {
+.command-result[aria-selected='true'] {
   background: #2f3530;
   border-color: #3b4438;
 }
@@ -1472,7 +1472,7 @@ kbd {
   font-size: 16px;
   opacity: 0;
 }
-.command-result[aria-selected="true"] .command-enter {
+.command-result[aria-selected='true'] .command-enter {
   opacity: 1;
 }
 .command-footer {

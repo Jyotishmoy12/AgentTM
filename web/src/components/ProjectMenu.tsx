@@ -1,6 +1,6 @@
-import { DialogClose } from "./DialogClose";
-import { useEffect, useRef, useState } from "react";
-import { message } from "../api";
+import { DialogClose } from './DialogClose';
+import { useEffect, useRef, useState } from 'react';
+import { message } from '../api';
 
 type ProjectBridge = {
   ProjectPath?: () => Promise<string>;
@@ -8,11 +8,7 @@ type ProjectBridge = {
   CopyText?: (text: string) => Promise<void>;
   OpenProjectWindow?: () => Promise<boolean>;
 };
-function ProjectIcon({
-  kind,
-}: {
-  kind: "folder" | "copy" | "open" | "close" | "chevron";
-}) {
+function ProjectIcon({ kind }: { kind: 'folder' | 'copy' | 'open' | 'close' | 'chevron' }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -23,38 +19,32 @@ function ProjectIcon({
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      {kind === "folder" && <path d="M3 7V5h6l2 2h10v13H3V7Z" />}
-      {kind === "copy" && (
+      {kind === 'folder' && <path d="M3 7V5h6l2 2h10v13H3V7Z" />}
+      {kind === 'copy' && (
         <>
           <rect x="8" y="8" width="12" height="13" rx="2" />
           <path d="M16 8V3H3v13h5" />
         </>
       )}
-      {kind === "open" && (
+      {kind === 'open' && (
         <>
           <rect x="3" y="6" width="14" height="15" rx="2" />
           <path d="M10 14 21 3M14 3h7v7" />
         </>
       )}
-      {kind === "close" && <path d="m6 6 12 12M18 6 6 18" />}
-      {kind === "chevron" && <path d="m8 10 4 4 4-4" />}
+      {kind === 'close' && <path d="m6 6 12 12M18 6 6 18" />}
+      {kind === 'chevron' && <path d="m8 10 4 4 4-4" />}
     </svg>
   );
 }
-export function ProjectMenu({
-  project,
-  compact = false,
-}: {
-  project: string;
-  compact?: boolean;
-}) {
+export function ProjectMenu({ project, compact = false }: { project: string; compact?: boolean }) {
   const [open, setOpen] = useState(false);
-  const [path, setPath] = useState("");
-  const [pathError, setPathError] = useState("");
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
+  const [path, setPath] = useState('');
+  const [pathError, setPathError] = useState('');
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [loading, setLoading] = useState(false);
-  const [action, setAction] = useState<"" | "copy" | "choose">("");
+  const [action, setAction] = useState<'' | 'copy' | 'choose'>('');
   const [retry, setRetry] = useState(0);
   const dialog = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLButtonElement>(null);
@@ -66,16 +56,14 @@ export function ProjectMenu({
     node?.showModal();
     return () => {
       node?.close();
-      requestAnimationFrame(() =>
-        opener.current?.focus({ preventScroll: true }),
-      );
+      requestAnimationFrame(() => opener.current?.focus({ preventScroll: true }));
     };
   }, [open]);
   useEffect(() => {
     if (!open) return;
     let active = true;
-    setPath("");
-    setPathError("");
+    setPath('');
+    setPathError('');
     if (!bridge?.ProjectPath && !bridge?.CheckSetup) {
       setLoading(false);
       return;
@@ -87,9 +75,7 @@ export function ProjectMenu({
           ? await bridge.ProjectPath()
           : (await bridge.CheckSetup!()).path;
         if (!value?.trim())
-          throw new Error(
-            "The current project path could not be read. Try again.",
-          );
+          throw new Error('The current project path could not be read. Try again.');
         if (active) setPath(value);
       })
       .catch((reason) => {
@@ -103,8 +89,8 @@ export function ProjectMenu({
     };
   }, [open, retry]);
   function show() {
-    setNotice("");
-    setError("");
+    setNotice('');
+    setError('');
     setOpen(true);
   }
   function close() {
@@ -113,38 +99,38 @@ export function ProjectMenu({
   async function choose() {
     if (!bridge?.OpenProjectWindow || pending.current) return;
     pending.current = true;
-    setAction("choose");
-    setError("");
-    setNotice("");
+    setAction('choose');
+    setError('');
+    setNotice('');
     try {
       const launched = await bridge.OpenProjectWindow();
       setNotice(
         launched
-          ? "A new AgentTM window was requested. Complete any initialization prompt there."
-          : "No project selected. Your current workspace is unchanged.",
+          ? 'A new AgentTM window was requested. Complete any initialization prompt there.'
+          : 'No project selected. Your current workspace is unchanged.',
       );
     } catch (reason) {
       setError(message(reason));
     } finally {
       pending.current = false;
-      setAction("");
+      setAction('');
     }
   }
   async function copy() {
     if (!path || pending.current) return;
     pending.current = true;
-    setAction("copy");
-    setError("");
-    setNotice("");
+    setAction('copy');
+    setError('');
+    setNotice('');
     try {
       if (bridge?.CopyText) await bridge.CopyText(path);
       else await navigator.clipboard.writeText(path);
-      setNotice("Project path copied.");
+      setNotice('Project path copied.');
     } catch (reason) {
       setError(message(reason));
     } finally {
       pending.current = false;
-      setAction("");
+      setAction('');
     }
   }
   return (
@@ -188,20 +174,14 @@ export function ProjectMenu({
             <span className="eyebrow">PROJECT</span>
             <h2 id="project-title">Your workspace</h2>
           </div>
-          <DialogClose
-            label="Close project selector"
-            onClick={close}
-            disabled={!!action}
-          />
+          <DialogClose label="Close project selector" onClick={close} disabled={!!action} />
         </header>
         <section className="project-current" aria-label="Current project">
           <div className="project-current-identity">
             <ProjectIcon kind="folder" />
             <div>
               <h3>{project}</h3>
-              <p id="project-dialog-description">
-                The project open in this window.
-              </p>
+              <p id="project-dialog-description">The project open in this window.</p>
             </div>
           </div>
           {loading && (
@@ -225,9 +205,7 @@ export function ProjectMenu({
           {pathError && (
             <div className="project-path-error" role="alert">
               <p>{pathError}</p>
-              <button onClick={() => setRetry((value) => value + 1)}>
-                Retry project path
-              </button>
+              <button onClick={() => setRetry((value) => value + 1)}>Retry project path</button>
             </div>
           )}
           {!loading && !pathError && !path && (
@@ -240,22 +218,16 @@ export function ProjectMenu({
           <h3>Open another project</h3>
           <p>
             {bridge?.OpenProjectWindow
-              ? "Choose a Git folder to open in a separate window. This workspace and any active recording stay here."
+              ? 'Choose a Git folder to open in a separate window. This workspace and any active recording stay here.'
               : "Run the following command from another Git project's terminal to open its browser dashboard."}
           </p>
           {!bridge?.OpenProjectWindow && (
             <code className="project-browser-command">agenttm ui</code>
           )}
           {bridge?.OpenProjectWindow && (
-            <button
-              className="primary-button project-choose"
-              disabled={!!action}
-              onClick={choose}
-            >
+            <button className="primary-button project-choose" disabled={!!action} onClick={choose}>
               <ProjectIcon kind="open" />
-              {action === "choose"
-                ? "Choosing project..."
-                : "Choose a Git project..."}
+              {action === 'choose' ? 'Choosing project...' : 'Choose a Git project...'}
             </button>
           )}
         </section>
@@ -270,8 +242,7 @@ export function ProjectMenu({
           </p>
         )}
         <footer className="project-dialog-footer">
-          Opening another project does not move your current recording or
-          history.
+          Opening another project does not move your current recording or history.
         </footer>
       </dialog>
     </>

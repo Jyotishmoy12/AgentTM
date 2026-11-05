@@ -1,7 +1,7 @@
-import { DialogClose } from "./DialogClose";
-import { useEffect, useRef, useState } from "react";
-import { get, message, post } from "../api";
-import type { Checkpoint, ForkPlan, ForkResult } from "../types";
+import { DialogClose } from './DialogClose';
+import { useEffect, useRef, useState } from 'react';
+import { get, message, post } from '../api';
+import type { Checkpoint, ForkPlan, ForkResult } from '../types';
 
 export function ForkDialog({
   id,
@@ -20,12 +20,12 @@ export function ForkDialog({
   );
   const [plan, setPlan] = useState<ForkPlan | null>(null);
   const [allow, setAllow] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [creating, setCreating] = useState(false);
   const [result, setResult] = useState<ForkResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [capture, setCapture] = useState<Checkpoint | null>(null);
-  const [captureError, setCaptureError] = useState("");
+  const [captureError, setCaptureError] = useState('');
   useEffect(() => {
     const controller = new AbortController();
     get<Checkpoint>(`/checkpoints/${id}`, controller.signal)
@@ -38,8 +38,7 @@ export function ForkDialog({
   async function copyPath() {
     if (!result) return;
     try {
-      if (window.go?.main?.Desktop)
-        await window.go.main.Desktop.CopyText(result.worktree_path);
+      if (window.go?.main?.Desktop) await window.go.main.Desktop.CopyText(result.worktree_path);
       else await navigator.clipboard.writeText(result.worktree_path);
       setCopied(true);
     } catch (error) {
@@ -54,13 +53,10 @@ export function ForkDialog({
   useEffect(() => {
     const controller = new AbortController();
     setPlan(null);
-    setError("");
+    setError('');
     setAllow(false);
     const timer = setTimeout(() => {
-      get<ForkPlan>(
-        `/checkpoints/${id}/fork?name=${encodeURIComponent(name)}`,
-        controller.signal,
-      )
+      get<ForkPlan>(`/checkpoints/${id}/fork?name=${encodeURIComponent(name)}`, controller.signal)
         .then(setPlan)
         .catch((e) => {
           if (!controller.signal.aborted) setError(message(e));
@@ -72,16 +68,9 @@ export function ForkDialog({
     };
   }, [id, name]);
   async function create() {
-    if (
-      !plan ||
-      !capture ||
-      plan.name !== name ||
-      creating ||
-      (plan.partial && !allow)
-    )
-      return;
+    if (!plan || !capture || plan.name !== name || creating || (plan.partial && !allow)) return;
     setCreating(true);
-    setError("");
+    setError('');
     try {
       setResult(
         await post<ForkResult>(
@@ -110,26 +99,18 @@ export function ForkDialog({
       }}
     >
       <div className="fork-dialog-header">
-        <DialogClose
-          label="Close restore dialog"
-          onClick={onClose}
-          disabled={creating}
-        />
+        <DialogClose label="Close restore dialog" onClick={onClose} disabled={creating} />
         <span className="eyebrow">ISOLATED GIT WORKTREE</span>
-        <h2 id="fork-title">
-          {result ? "Checkpoint restored" : "Restore checkpoint"}
-        </h2>
+        <h2 id="fork-title">{result ? 'Checkpoint restored' : 'Restore checkpoint'}</h2>
         <p>
           {result
-            ? "All captured file hashes were verified."
-            : "Review the destination and capture limitations before creating a separate workspace."}
+            ? 'All captured file hashes were verified.'
+            : 'Review the destination and capture limitations before creating a separate workspace.'}
         </p>
       </div>
       {result ? (
         <>
-          <p className="fork-success">
-            Ready · {result.checkpoint_id.slice(0, 8)}
-          </p>
+          <p className="fork-success">Ready · {result.checkpoint_id.slice(0, 8)}</p>
           <label>
             Worktree path
             <code className="fork-destination">{result.worktree_path}</code>
@@ -138,9 +119,8 @@ export function ForkDialog({
             Branch: <code>{result.branch_name}</code>
           </p>
           <p className="fork-description">
-            Open this directory in your editor. The files may be dirty relative
-            to its Git HEAD. No restored code was executed. This does not rewind
-            the Codex conversation.
+            Open this directory in your editor. The files may be dirty relative to its Git HEAD. No
+            restored code was executed. This does not rewind the Codex conversation.
           </p>
           {error && (
             <div className="error-box" role="alert">
@@ -148,12 +128,8 @@ export function ForkDialog({
             </div>
           )}
           <div className="fork-dialog-actions">
-            <button onClick={copyPath}>
-              {copied ? "Path copied" : "Copy worktree path"}
-            </button>
-            {onViewRestores && (
-              <button onClick={onViewRestores}>View restored workspaces</button>
-            )}
+            <button onClick={copyPath}>{copied ? 'Path copied' : 'Copy worktree path'}</button>
+            {onViewRestores && <button onClick={onViewRestores}>View restored workspaces</button>}
             <button onClick={onClose}>Done</button>
           </div>
         </>
@@ -169,19 +145,16 @@ export function ForkDialog({
             {capture ? (
               <>
                 <p>
-                  {capture.file_count} captured files ·{" "}
-                  {new Date(capture.created_at).toLocaleString()} ·{" "}
-                  <code>{id.slice(0, 8)}</code>
+                  {capture.file_count} captured files ·{' '}
+                  {new Date(capture.created_at).toLocaleString()} · <code>{id.slice(0, 8)}</code>
                 </p>
                 <p>
                   {capture.partial
-                    ? "Partial capture — omitted content will not be restored."
-                    : "Complete within the configured capture policy."}{" "}
+                    ? 'Partial capture — omitted content will not be restored.'
+                    : 'Complete within the configured capture policy.'}{' '}
                   Captures are workspace observations, not atomic snapshots.
                 </p>
-                {capture.potentially_inconsistent && (
-                  <p>Files may have changed during the scan.</p>
-                )}
+                {capture.potentially_inconsistent && <p>Files may have changed during the scan.</p>}
                 {capture.omission_count > 0 && (
                   <details open>
                     <summary>{capture.omission_count} omitted paths</summary>
@@ -192,15 +165,13 @@ export function ForkDialog({
                         </li>
                       ))}
                     </ul>
-                    {capture.omissions_truncated && (
-                      <p>Only the first 100 omissions are shown.</p>
-                    )}
+                    {capture.omissions_truncated && <p>Only the first 100 omissions are shown.</p>}
                   </details>
                 )}
               </>
             ) : (
-              <p role={captureError ? "alert" : "status"}>
-                {captureError || "Loading captured content…"}
+              <p role={captureError ? 'alert' : 'status'}>
+                {captureError || 'Loading captured content…'}
               </p>
             )}
           </section>
@@ -245,8 +216,8 @@ export function ForkDialog({
             !error && <p className="loading-inline">Checking destination…</p>
           )}
           <p className="fork-description">
-            The original working tree, index and HEAD stay unchanged. No
-            scripts, installers or agent commands will run.
+            The original working tree, index and HEAD stay unchanged. No scripts, installers or
+            agent commands will run.
           </p>
           {error && (
             <div className="error-box" role="alert">
@@ -261,16 +232,10 @@ export function ForkDialog({
               className="primary-button"
               type="submit"
               disabled={
-                !plan ||
-                !capture ||
-                creating ||
-                plan.name !== name ||
-                (plan.partial && !allow)
+                !plan || !capture || creating || plan.name !== name || (plan.partial && !allow)
               }
             >
-              {creating
-                ? "Restoring and verifying…"
-                : "Create restored worktree"}
+              {creating ? 'Restoring and verifying…' : 'Create restored worktree'}
             </button>
           </div>
         </form>

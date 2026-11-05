@@ -1,1 +1,1 @@
-﻿export { StoragePage } from "./StorageManager";
+﻿export { StoragePage } from './StorageManager';

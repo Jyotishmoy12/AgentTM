@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { message } from "../api";
-import type { CodexModel, FeatureBridge } from "../desktop";
+import { useEffect, useState } from 'react';
+import { message } from '../api';
+import type { CodexModel, FeatureBridge } from '../desktop';
 
-const preferenceKey = "agenttm:chat:model";
+const preferenceKey = 'agenttm:chat:model';
 export function ModelPicker({
   bridge,
   value,
@@ -16,16 +16,16 @@ export function ModelPicker({
 }) {
   const [models, setModels] = useState<CodexModel[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [custom, setCustom] = useState(false);
   const [revision, setRevision] = useState(0);
   const [choosing, setChoosing] = useState(false);
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState('');
   const [toolsOpen, setToolsOpen] = useState(false);
   useEffect(() => {
     let disposed = false;
     setLoading(true);
-    setError("");
+    setError('');
     if (!bridge.CodexModels) {
       setLoading(false);
       setCustom(true);
@@ -37,9 +37,9 @@ export function ModelPicker({
         if (disposed) return;
         setModels(list);
         setCustom(!list.length);
-        let saved = "";
+        let saved = '';
         try {
-          saved = localStorage.getItem(preferenceKey) ?? "";
+          saved = localStorage.getItem(preferenceKey) ?? '';
         } catch {
           /* optional preference */
         }
@@ -78,7 +78,7 @@ export function ModelPicker({
       const path = await bridge.ChooseCodex();
       if (path) {
         setLocation(path);
-        setError("");
+        setError('');
         setToolsOpen(false);
         setRevision((n) => n + 1);
       }
@@ -95,11 +95,11 @@ export function ModelPicker({
         <select
           aria-label="Chat model"
           disabled={disabled || loading}
-          value={custom ? "__custom" : value}
+          value={custom ? '__custom' : value}
           onChange={(e) => {
-            if (e.target.value === "__custom") {
+            if (e.target.value === '__custom') {
               setCustom(true);
-              onChange("");
+              onChange('');
             } else {
               setCustom(false);
               select(e.target.value);
@@ -107,12 +107,12 @@ export function ModelPicker({
           }}
         >
           <option value="" disabled>
-            {loading ? "Loading Codex models…" : "Choose a model"}
+            {loading ? 'Loading Codex models…' : 'Choose a model'}
           </option>
           {models.map((model) => (
             <option key={model.model} value={model.model}>
               {model.displayName}
-              {model.isDefault ? " (recommended)" : ""}
+              {model.isDefault ? ' (recommended)' : ''}
             </option>
           ))}
           <option value="__custom">Enter a model manually…</option>
@@ -133,10 +133,10 @@ export function ModelPicker({
         className="model-tools"
         open={toolsOpen}
         onKeyDown={(event) => {
-          if (event.key === "Escape") {
+          if (event.key === 'Escape') {
             event.stopPropagation();
             setToolsOpen(false);
-            event.currentTarget.querySelector("summary")?.focus();
+            event.currentTarget.querySelector('summary')?.focus();
           }
         }}
         onToggle={(e) => setToolsOpen(e.currentTarget.open)}
@@ -149,7 +149,7 @@ export function ModelPicker({
             disabled={disabled || loading}
             onClick={() => setRevision((n) => n + 1)}
           >
-            {loading ? "Checking model catalog…" : "Refresh models"}
+            {loading ? 'Checking model catalog…' : 'Refresh models'}
           </button>
           {bridge.ChooseCodex && (
             <button
@@ -158,7 +158,7 @@ export function ModelPicker({
               disabled={disabled || loading || choosing}
               onClick={chooseCodex}
             >
-              {choosing ? "Choosing Codex…" : "Choose Codex executable…"}
+              {choosing ? 'Choosing Codex…' : 'Choose Codex executable…'}
             </button>
           )}
           {location && <small>Using: {location}</small>}

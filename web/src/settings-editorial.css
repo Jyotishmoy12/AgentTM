@@ -237,7 +237,7 @@
   font-size: 10px;
   color: #9ba49a;
 }
-.setup-dialog .setup-steps > button[aria-current="step"] {
+.setup-dialog .setup-steps > button[aria-current='step'] {
   background: #2f3530;
   color: #e0e7db;
 }

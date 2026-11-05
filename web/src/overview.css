@@ -39,10 +39,10 @@
   height: 15px;
   color: #a6a6a5;
 }
-.library-shell .app-sidebar nav > button[aria-current="page"] {
+.library-shell .app-sidebar nav > button[aria-current='page'] {
   background: #2c302d;
 }
-.library-shell .app-sidebar nav > button[aria-current="page"]::before {
+.library-shell .app-sidebar nav > button[aria-current='page']::before {
   display: none;
 }
 .library-shell .app-sidebar nav > button:hover {
@@ -195,7 +195,7 @@
   color: #989998;
   font-size: 11px;
 }
-.home-filters button[aria-selected="true"] {
+.home-filters button[aria-selected='true'] {
   color: #e1e1e0;
   background: #323432;
   border-color: transparent;
@@ -394,7 +394,7 @@
   flex: 1 1 0;
 }
 .home-recording-page::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 0;
   left: 0;
@@ -680,9 +680,7 @@
 }
 /* Compact navigation defaults to icons; the explicit expand action takes priority. */
 @media (min-width: 651px) and (max-width: 800px) {
-  .app-shell.library-shell.navigation-shell.refreshed-shell:not(
-      .sidebar-collapsed
-    ) {
+  .app-shell.library-shell.navigation-shell.refreshed-shell:not(.sidebar-collapsed) {
     grid-template-columns: 210px minmax(0, 1fr);
   }
   .library-shell:not(.sidebar-collapsed) .app-sidebar {
@@ -692,11 +690,7 @@
     justify-content: flex-start;
     padding: 8px 10px;
   }
-  .library-shell:not(.sidebar-collapsed)
-    .app-sidebar
-    nav
-    > button
-    > span:not(.nav-count) {
+  .library-shell:not(.sidebar-collapsed) .app-sidebar nav > button > span:not(.nav-count) {
     display: grid;
   }
   .library-shell:not(.sidebar-collapsed) .app-sidebar .project-selector {

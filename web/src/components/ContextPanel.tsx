@@ -1,6 +1,6 @@
-import { memo } from "react";
-import { changedPaths, record } from "../state";
-import type { Checkpoint, RecordedEvent } from "../types";
+import { memo } from 'react';
+import { changedPaths, record } from '../state';
+import type { Checkpoint, RecordedEvent } from '../types';
 
 export const ContextPanel = memo(function ContextPanel({
   event,
@@ -27,29 +27,21 @@ export const ContextPanel = memo(function ContextPanel({
   const item = record(payload.item);
   const paths = event ? changedPaths(event) : [];
   return (
-    <aside
-      className="activity-panel workspace-context"
-      aria-label="Event and checkpoint details"
-    >
+    <aside className="activity-panel workspace-context" aria-label="Event and checkpoint details">
       <div className="panel-heading">
         <h2>Activity</h2>
-        <button
-          onClick={onClose}
-          aria-label="Close details panel"
-          title="Close details panel"
-        >
+        <button onClick={onClose} aria-label="Close details panel" title="Close details panel">
           ×
         </button>
       </div>
       <div className="activity-content">
         <div className="context-section-label">
-          {manual ? "SELECTED CHECKPOINT" : "SELECTED OBSERVATION"}
+          {manual ? 'SELECTED CHECKPOINT' : 'SELECTED OBSERVATION'}
         </div>
         <h3>
           {manual
-            ? checkpoint?.kind.replaceAll("_", " ") || checkpointID.slice(0, 8)
-            : event?.kind.replace("agenttm.", "").replaceAll(".", " / ") ||
-              "Select an event"}
+            ? checkpoint?.kind.replaceAll('_', ' ') || checkpointID.slice(0, 8)
+            : event?.kind.replace('agenttm.', '').replaceAll('.', ' / ') || 'Select an event'}
         </h3>
         <dl className="details">
           {event && !manual && (
@@ -59,18 +51,14 @@ export const ContextPanel = memo(function ContextPanel({
               <dt>Received</dt>
               <dd>{new Date(event.received_at).toLocaleString()}</dd>
               <dt>Tool</dt>
-              <dd>{event.tool_name?.replaceAll("_", " ") || "—"}</dd>
+              <dd>{event.tool_name?.replaceAll('_', ' ') || '—'}</dd>
               <dt>Status</dt>
-              <dd>
-                {typeof item.status === "string" ? item.status : "Recorded"}
-              </dd>
+              <dd>{typeof item.status === 'string' ? item.status : 'Recorded'}</dd>
             </>
           )}
           <dt>Checkpoint</dt>
           <dd>
-            <code>
-              {checkpointID ? checkpointID.slice(0, 8) : "Not yet observed"}
-            </code>
+            <code>{checkpointID ? checkpointID.slice(0, 8) : 'Not yet observed'}</code>
           </dd>
           {checkpoint && (
             <>
@@ -79,11 +67,9 @@ export const ContextPanel = memo(function ContextPanel({
               <dt>Files</dt>
               <dd>{checkpoint.file_count} captured</dd>
               <dt>Fidelity</dt>
-              <dd>{checkpoint.fidelity || "Not specified"}</dd>
+              <dd>{checkpoint.fidelity || 'Not specified'}</dd>
               <dt>Parent</dt>
-              <dd>
-                {checkpoint.parent_id?.slice(0, 8) || "Empty tree baseline"}
-              </dd>
+              <dd>{checkpoint.parent_id?.slice(0, 8) || 'Empty tree baseline'}</dd>
             </>
           )}
         </dl>
@@ -102,25 +88,20 @@ export const ContextPanel = memo(function ContextPanel({
           <h4>Workspace observation</h4>
           <p>
             {manual
-              ? "This checkpoint was selected independently of the event."
+              ? 'This checkpoint was selected independently of the event.'
               : exact
-                ? "Checkpoint linked to this received observation."
+                ? 'Checkpoint linked to this received observation.'
                 : checkpointID
-                  ? "Last known workspace · this event has no checkpoint."
-                  : "No checkpoint was observed at or before this event."}
+                  ? 'Last known workspace · this event has no checkpoint.'
+                  : 'No checkpoint was observed at or before this event.'}
           </p>
           {checkpoint?.potentially_inconsistent && (
-            <div className="warning-box">
-              Files may have changed during the scan.
-            </div>
+            <div className="warning-box">Files may have changed during the scan.</div>
           )}
           {checkpoint?.partial && (
             <div className="warning-box">
               <strong>Partial capture</strong>
-              <p>
-                {checkpoint.omission_count} omitted paths. Review them before
-                restoring.
-              </p>
+              <p>{checkpoint.omission_count} omitted paths. Review them before restoring.</p>
               <details>
                 <summary>Capture omissions</summary>
                 <ul>
@@ -130,9 +111,7 @@ export const ContextPanel = memo(function ContextPanel({
                     </li>
                   ))}
                 </ul>
-                {checkpoint.omissions_truncated && (
-                  <p>Only the first 100 omissions are shown.</p>
-                )}
+                {checkpoint.omissions_truncated && <p>Only the first 100 omissions are shown.</p>}
               </details>
             </div>
           )}
@@ -147,21 +126,19 @@ export const ContextPanel = memo(function ContextPanel({
             </ul>
           </section>
         )}
-        {typeof item.command === "string" && (
+        {typeof item.command === 'string' && (
           <section>
             <h4>Command</h4>
             <pre className="payload-text">{item.command}</pre>
           </section>
         )}
-        {typeof item.aggregated_output === "string" && (
+        {typeof item.aggregated_output === 'string' && (
           <section>
             <h4>Tool output</h4>
-            <pre className="payload-text">
-              {item.aggregated_output || "(No output)"}
-            </pre>
+            <pre className="payload-text">{item.aggregated_output || '(No output)'}</pre>
           </section>
         )}
-        {typeof item.text === "string" && (
+        {typeof item.text === 'string' && (
           <section>
             <h4>Agent message</h4>
             <p className="agent-message">{item.text}</p>
@@ -173,15 +150,12 @@ export const ContextPanel = memo(function ContextPanel({
         {event && (
           <details className="payload-details">
             <summary>Sanitized event payload</summary>
-            <pre className="payload-text">
-              {JSON.stringify(event.payload, null, 2)}
-            </pre>
+            <pre className="payload-text">{JSON.stringify(event.payload, null, 2)}</pre>
           </details>
         )}
         <div className="attribution-note">
-          Workspace observations are not atomic and do not establish causal line
-          attribution. File changes can also come from other tools or background
-          processes.
+          Workspace observations are not atomic and do not establish causal line attribution. File
+          changes can also come from other tools or background processes.
         </div>
       </div>
       <div className="context-restore">
@@ -193,8 +167,8 @@ export const ContextPanel = memo(function ContextPanel({
           Restore checkpoint
         </button>
         <small>
-          Creates an isolated Git worktree. Your original working tree, index,
-          and HEAD stay in place.
+          Creates an isolated Git worktree. Your original working tree, index, and HEAD stay in
+          place.
         </small>
       </div>
     </aside>

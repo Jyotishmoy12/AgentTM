@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { NavIcon } from "./NavigationPages";
+import { useEffect, useRef, useState } from 'react';
+import { NavIcon } from './NavigationPages';
 
 export interface AppCommand {
   id: string;
@@ -21,12 +21,10 @@ export function CommandMenu({
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const input = useRef<HTMLInputElement>(null);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [index, setIndex] = useState(0);
   const matches = commands.filter((command) =>
-    `${command.title} ${command.detail}`
-      .toLowerCase()
-      .includes(query.trim().toLowerCase()),
+    `${command.title} ${command.detail}`.toLowerCase().includes(query.trim().toLowerCase()),
   );
   const selected = Math.min(index, Math.max(matches.length - 1, 0));
 
@@ -39,13 +37,11 @@ export function CommandMenu({
 
   useEffect(() => {
     if (open)
-      document
-        .getElementById(`command-result-${selected}`)
-        ?.scrollIntoView({ block: "nearest" });
+      document.getElementById(`command-result-${selected}`)?.scrollIntoView({ block: 'nearest' });
   }, [selected, open, query]);
 
   function dismiss() {
-    setQuery("");
+    setQuery('');
     setIndex(0);
     close();
   }
@@ -79,9 +75,7 @@ export function CommandMenu({
           aria-expanded="true"
           aria-autocomplete="list"
           aria-controls="command-results"
-          aria-activedescendant={
-            matches.length ? `command-result-${selected}` : undefined
-          }
+          aria-activedescendant={matches.length ? `command-result-${selected}` : undefined}
           placeholder="Where would you like to go?"
           value={query}
           onChange={(event) => {
@@ -89,17 +83,15 @@ export function CommandMenu({
             setIndex(0);
           }}
           onKeyDown={(event) => {
-            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
               event.preventDefault();
               if (matches.length)
                 setIndex(
-                  (selected +
-                    (event.key === "ArrowDown" ? 1 : -1) +
-                    matches.length) %
+                  (selected + (event.key === 'ArrowDown' ? 1 : -1) + matches.length) %
                     matches.length,
                 );
             }
-            if (event.key === "Enter" && matches[selected]) {
+            if (event.key === 'Enter' && matches[selected]) {
               event.preventDefault();
               execute(matches[selected]);
             }
@@ -114,15 +106,8 @@ export function CommandMenu({
           <kbd>Esc</kbd>
         </button>
       </div>
-      <div className="command-group-label">
-        {query ? "RESULTS" : "GO TO & QUICK ACTIONS"}
-      </div>
-      <div
-        className="command-results"
-        id="command-results"
-        role="listbox"
-        aria-label="Commands"
-      >
+      <div className="command-group-label">{query ? 'RESULTS' : 'GO TO & QUICK ACTIONS'}</div>
+      <div className="command-results" id="command-results" role="listbox" aria-label="Commands">
         {matches.map((command, i) => (
           <div
             id={`command-result-${i}`}

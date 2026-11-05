@@ -34,6 +34,22 @@ go build -o .\bin\agenttm.exe .\cmd\agenttm
 ```
 
 
+## Frontend formatting
+
+The `web` frontend uses a pinned Prettier development dependency. Run these
+commands from `web` after `npm ci`:
+
+```powershell
+npm.cmd run format
+npm.cmd run format:check
+```
+
+`format` writes consistent formatting to source, styles, tests, scripts, and
+configuration. `format:check` reports differences without changing files.
+Dependencies, generated reports, coverage, build output, and `package-lock.json`
+are excluded. Formatting options live in `web/.prettierrc.json`; line endings
+are normalized to LF for consistency across platforms.
+
 ## Build release archives
 
 ```powershell

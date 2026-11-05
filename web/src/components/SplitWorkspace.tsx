@@ -1,10 +1,6 @@
-import { useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useRef, useState, type CSSProperties, type ReactNode } from 'react';
 
-export function SplitWorkspace({
-  children,
-}: {
-  children: [ReactNode, ReactNode];
-}) {
+export function SplitWorkspace({ children }: { children: [ReactNode, ReactNode] }) {
   const host = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState(57);
   const [dragging, setDragging] = useState(false);
@@ -12,11 +8,11 @@ export function SplitWorkspace({
   return (
     <div
       ref={host}
-      className={`timeline-workspace ${dragging ? "is-resizing" : ""}`}
+      className={`timeline-workspace ${dragging ? 'is-resizing' : ''}`}
       style={
         {
-          "--timeline-size": `${position}fr`,
-          "--inspector-size": `${100 - position}fr`,
+          '--timeline-size': `${position}fr`,
+          '--inspector-size': `${100 - position}fr`,
         } as CSSProperties
       }
     >
@@ -42,14 +38,14 @@ export function SplitWorkspace({
         onPointerUp={() => setDragging(false)}
         onLostPointerCapture={() => setDragging(false)}
         onKeyDown={(event) => {
-          if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+          if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
             event.preventDefault();
             setPosition((value) =>
-              event.key === "Home"
+              event.key === 'Home'
                 ? 35
-                : event.key === "End"
+                : event.key === 'End'
                   ? 70
-                  : clamp(value + (event.key === "ArrowLeft" ? -3 : 3)),
+                  : clamp(value + (event.key === 'ArrowLeft' ? -3 : 3)),
             );
           }
         }}

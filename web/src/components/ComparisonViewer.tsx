@@ -1,6 +1,6 @@
-import { memo, useEffect, useRef, useState } from "react";
-import type * as Monaco from "monaco-editor/editor";
-import { language, loadMonaco } from "./CodeViewer";
+import { memo, useEffect, useRef, useState } from 'react';
+import type * as Monaco from 'monaco-editor/editor';
+import { language, loadMonaco } from './CodeViewer';
 
 const positions = new Map<string, Monaco.editor.IDiffEditorViewState>();
 export const ComparisonViewer = memo(function ComparisonViewer({
@@ -29,22 +29,22 @@ export const ComparisonViewer = memo(function ComparisonViewer({
     loadMonaco()
       .then((monaco) => {
         if (disposed || !host.current) return;
-        monaco.editor.defineTheme("agenttm-diff", {
-          base: "vs-dark",
+        monaco.editor.defineTheme('agenttm-diff', {
+          base: 'vs-dark',
           inherit: true,
           rules: [],
           colors: {
-            "editor.background": "#191a1f",
-            "editorGutter.background": "#191a1f",
-            "editorLineNumber.foreground": "#687180",
-            "diffEditor.insertedTextBackground": "#648b3333",
-            "diffEditor.removedTextBackground": "#bb435333",
+            'editor.background': '#191a1f',
+            'editorGutter.background': '#191a1f',
+            'editorLineNumber.foreground': '#687180',
+            'diffEditor.insertedTextBackground': '#648b3333',
+            'diffEditor.removedTextBackground': '#bb435333',
           },
         });
         original = monaco.editor.createModel(before, language(path));
         modified = monaco.editor.createModel(after, language(path));
         const instance = monaco.editor.createDiffEditor(host.current, {
-          theme: "agenttm-diff",
+          theme: 'agenttm-diff',
           readOnly: true,
           originalEditable: false,
           domReadOnly: true,
@@ -54,14 +54,14 @@ export const ComparisonViewer = memo(function ComparisonViewer({
           ignoreTrimWhitespace: false,
           maxComputationTime: 1500,
           minimap: { enabled: false },
-          fontFamily: "Cascadia Code, Consolas, monospace",
+          fontFamily: 'Cascadia Code, Consolas, monospace',
           fontSize: 13,
           lineHeight: 22,
           scrollBeyondLastLine: false,
           contextmenu: false,
           links: false,
           renderOverviewRuler: false,
-          ariaLabel: "Read-only checkpoint comparison " + path,
+          ariaLabel: 'Read-only checkpoint comparison ' + path,
         });
         editor.current = instance;
         instance.setModel({ original, modified });
@@ -76,8 +76,7 @@ export const ComparisonViewer = memo(function ComparisonViewer({
       const instance = editor.current;
       const position = instance?.saveViewState();
       if (position) {
-        if (positions.size > 100)
-          positions.delete(positions.keys().next().value!);
+        if (positions.size > 100) positions.delete(positions.keys().next().value!);
         positions.set(stateKey, position);
       }
       instance?.dispose();

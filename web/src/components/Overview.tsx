@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import { get } from "../api";
-import { changedPaths, eventTitle, record } from "../state";
-import type { Health, Page, RecordedEvent, Session } from "../types";
-import type { AppPage } from "./NavigationPages";
+import { useEffect, useState } from 'react';
+import { get } from '../api';
+import { changedPaths, eventTitle, record } from '../state';
+import type { Health, Page, RecordedEvent, Session } from '../types';
+import type { AppPage } from './NavigationPages';
 
 type IconName =
-  | "home"
-  | "session"
-  | "chat"
-  | "book"
-  | "checkpoint"
-  | "restore"
-  | "arrow"
-  | "folder"
-  | "clock";
+  | 'home'
+  | 'session'
+  | 'chat'
+  | 'book'
+  | 'checkpoint'
+  | 'restore'
+  | 'arrow'
+  | 'folder'
+  | 'clock';
 function HomeIcon({ name }: { name: IconName }) {
   const paths: Record<IconName, React.ReactNode> = {
     home: (
@@ -86,70 +86,50 @@ function SessionCard({
   onRename: (id: string) => void;
   canRename: boolean;
 }) {
-  const [lines, setLines] = useState<{ kind: string; text: string }[] | null>(
-    null,
-  );
+  const [lines, setLines] = useState<{ kind: string; text: string }[] | null>(null);
   const [failed, setFailed] = useState(false);
   const fallback =
-    session.title ||
-    `${session.agent === "codex" ? "Codex" : session.agent} session`;
+    session.title || `${session.agent === 'codex' ? 'Codex' : session.agent} session`;
   const [heading, setHeading] = useState(fallback);
   useEffect(() => {
     const controller = new AbortController();
     setHeading(fallback);
-    get<Page<RecordedEvent>>(
-      "/sessions/" + session.id + "/events?limit=12",
-      controller.signal,
-    )
+    get<Page<RecordedEvent>>('/sessions/' + session.id + '/events?limit=12', controller.signal)
       .then((page) => {
         if (!controller.signal.aborted) {
           setFailed(false);
           // Use only the first persisted user prompt. Do not derive a title from
           // agent output or read prompt text from Codex's private history.
           const firstPrompt = page.items.find(
-            (event) =>
-              event.kind === "agenttm.chat.prompt" ||
-              event.kind === "agenttm.run.started",
+            (event) => event.kind === 'agenttm.chat.prompt' || event.kind === 'agenttm.run.started',
           );
           const payload = record(firstPrompt?.payload);
           const prompt =
-            firstPrompt?.kind === "agenttm.chat.prompt"
-              ? payload.text
-              : payload.prompt;
-          const text =
-            typeof prompt === "string"
-              ? prompt.replace(/\s+/g, " ").trim()
-              : "";
+            firstPrompt?.kind === 'agenttm.chat.prompt' ? payload.text : payload.prompt;
+          const text = typeof prompt === 'string' ? prompt.replace(/\s+/g, ' ').trim() : '';
           setHeading(
             session.title
               ? session.title
-              : text &&
-                  !/^\[(?:prompt.*(?:off|omitted)|redacted)\]$/i.test(text)
-                ? text.slice(0, 120) + (text.length > 120 ? "…" : "")
+              : text && !/^\[(?:prompt.*(?:off|omitted)|redacted)\]$/i.test(text)
+                ? text.slice(0, 120) + (text.length > 120 ? '…' : '')
                 : fallback,
           );
           const activity = page.items.filter(
-            (event) =>
-              event.kind !== "agenttm.chat.prompt" &&
-              event.kind !== "agenttm.run.started",
+            (event) => event.kind !== 'agenttm.chat.prompt' && event.kind !== 'agenttm.run.started',
           );
           const detailed = activity.filter((event) => {
             const item = record(record(event.payload).item);
             return (
-              typeof item.command === "string" ||
-              typeof item.text === "string" ||
+              typeof item.command === 'string' ||
+              typeof item.text === 'string' ||
               changedPaths(event).length > 0
             );
           });
           setLines(
-            (detailed.length ? detailed : activity)
-              .slice(0, 3)
-              .map((event) => ({
-                kind: event.kind.replace("agenttm.", "").replaceAll(".", " / "),
-                text: (
-                  changedPaths(event).join(", ") || eventTitle(event)
-                ).slice(0, 120),
-              })),
+            (detailed.length ? detailed : activity).slice(0, 3).map((event) => ({
+              kind: event.kind.replace('agenttm.', '').replaceAll('.', ' / '),
+              text: (changedPaths(event).join(', ') || eventTitle(event)).slice(0, 120),
+            })),
           );
         }
       })
@@ -161,7 +141,7 @@ function SessionCard({
   return (
     <article className="home-session-tile">
       <button
-        className={"home-session-card home-session-" + session.status}
+        className={'home-session-card home-session-' + session.status}
         onClick={() => onOpen(session.id)}
         aria-label={`Open session ${session.id.slice(0, 8)}`}
       >
@@ -175,10 +155,10 @@ function SessionCard({
         <div className="home-recording-page">
           <div className="home-paper-date">
             {new Date(session.started_at).toLocaleString([], {
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
             })}
           </div>
           {failed ? (
@@ -199,9 +179,9 @@ function SessionCard({
           )}
         </div>
         <div className="home-card-bottom">
-          <span className={"home-session-status " + session.status}>
+          <span className={'home-session-status ' + session.status}>
             <span />
-            {session.status.replaceAll("_", " ")}
+            {session.status.replaceAll('_', ' ')}
           </span>
           <span className="home-view-session">
             View session
@@ -245,14 +225,9 @@ export function Overview({
   navigate: (page: AppPage) => void;
   onRename: (id: string) => void;
 }) {
-  const [filter, setFilter] = useState<"recent" | "active" | "completed">(
-    "recent",
-  );
-  const desktopChat =
-    !!window.go?.main?.Desktop && "StartChat" in window.go.main.Desktop;
-  const filtered = sessions.filter(
-    (session) => filter === "recent" || session.status === filter,
-  );
+  const [filter, setFilter] = useState<'recent' | 'active' | 'completed'>('recent');
+  const desktopChat = !!window.go?.main?.Desktop && 'StartChat' in window.go.main.Desktop;
+  const filtered = sessions.filter((session) => filter === 'recent' || session.status === filter);
   const recent = [...filtered]
     .sort((a, b) => Date.parse(b.started_at) - Date.parse(a.started_at))
     .slice(0, 8);
@@ -263,14 +238,11 @@ export function Overview({
           <h1>Overview</h1>
         </div>
         <div className="home-actions">
-          <button
-            className="home-new"
-            onClick={() => navigate(desktopChat ? "chat" : "setup")}
-          >
+          <button className="home-new" onClick={() => navigate(desktopChat ? 'chat' : 'setup')}>
             <HomeIcon name="chat" />
-            {desktopChat ? "New conversation" : "Set up recording"}
+            {desktopChat ? 'New conversation' : 'Set up recording'}
           </button>
-          <button className="home-guide" onClick={() => navigate("setup")}>
+          <button className="home-guide" onClick={() => navigate('setup')}>
             <HomeIcon name="book" />
             Recording guide
           </button>
@@ -283,24 +255,21 @@ export function Overview({
           role="tablist"
           aria-label="Recent session filter"
           onKeyDown={(event) => {
-            if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key))
-              return;
+            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
             event.preventDefault();
-            const values = ["recent", "active", "completed"] as const;
+            const values = ['recent', 'active', 'completed'] as const;
             const index = values.indexOf(filter);
             const next =
-              event.key === "Home"
+              event.key === 'Home'
                 ? 0
-                : event.key === "End"
+                : event.key === 'End'
                   ? 2
-                  : (index + (event.key === "ArrowRight" ? 1 : 2)) % 3;
+                  : (index + (event.key === 'ArrowRight' ? 1 : 2)) % 3;
             setFilter(values[next]);
-            event.currentTarget
-              .querySelectorAll<HTMLButtonElement>("button")
-              [next].focus();
+            event.currentTarget.querySelectorAll<HTMLButtonElement>('button')[next].focus();
           }}
         >
-          {(["recent", "active", "completed"] as const).map((value) => (
+          {(['recent', 'active', 'completed'] as const).map((value) => (
             <button
               key={value}
               role="tab"
@@ -308,15 +277,11 @@ export function Overview({
               tabIndex={filter === value ? 0 : -1}
               onClick={() => setFilter(value)}
             >
-              {value === "recent"
-                ? "Recents"
-                : value === "active"
-                  ? "Active"
-                  : "Completed"}
+              {value === 'recent' ? 'Recents' : value === 'active' ? 'Active' : 'Completed'}
             </button>
           ))}
         </div>
-        <button className="home-view-all" onClick={() => navigate("sessions")}>
+        <button className="home-view-all" onClick={() => navigate('sessions')}>
           All sessions
           <HomeIcon name="arrow" />
         </button>
@@ -329,7 +294,7 @@ export function Overview({
               <SessionCard
                 key={session.id}
                 session={session}
-                project={health?.project || "Current project"}
+                project={health?.project || 'Current project'}
                 onOpen={onOpen}
                 onRename={onRename}
                 canRename={!!health?.csrf_token}
@@ -343,32 +308,30 @@ export function Overview({
             </span>
             <h2>
               {sessions.length
-                ? "No " + filter + " sessions in loaded history"
-                : "Your history starts with a run"}
+                ? 'No ' + filter + ' sessions in loaded history'
+                : 'Your history starts with a run'}
             </h2>
             <p>
               {sessions.length
-                ? "Choose Recents to browse your other recordings."
-                : "Set up Codex, start a conversation, and your recordings will appear here."}
+                ? 'Choose Recents to browse your other recordings.'
+                : 'Set up Codex, start a conversation, and your recordings will appear here.'}
             </p>
             <button
               onClick={() =>
-                sessions.length
-                  ? setFilter("recent")
-                  : navigate(desktopChat ? "chat" : "setup")
+                sessions.length ? setFilter('recent') : navigate(desktopChat ? 'chat' : 'setup')
               }
             >
               {sessions.length
-                ? "Show recents"
+                ? 'Show recents'
                 : desktopChat
-                  ? "Start a conversation"
-                  : "Set up recording"}
+                  ? 'Start a conversation'
+                  : 'Set up recording'}
               <HomeIcon name="arrow" />
             </button>
           </div>
         )}
         {filtered.length > 8 || more ? (
-          <button className="home-more" onClick={() => navigate("sessions")}>
+          <button className="home-more" onClick={() => navigate('sessions')}>
             Browse more sessions
             <HomeIcon name="arrow" />
           </button>
@@ -381,13 +344,13 @@ export function Overview({
           History stored on this device
         </span>
         <span>
-          {health?.prompt_mode === "sanitized"
-            ? "Sanitized prompt capture enabled"
-            : "Prompt text capture off"}
+          {health?.prompt_mode === 'sanitized'
+            ? 'Sanitized prompt capture enabled'
+            : 'Prompt text capture off'}
         </span>
         <span>
           {sessions.length}
-          {more ? "+" : ""} loaded sessions
+          {more ? '+' : ''} loaded sessions
         </span>
       </footer>
     </div>

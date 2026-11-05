@@ -11,5 +11,7 @@ import 'monaco-editor/languages/definitions/css/register';
 import 'monaco-editor/languages/definitions/html/register';
 import 'monaco-editor/languages/definitions/yaml/register';
 import 'monaco-editor/languages/definitions/shell/register';
-(self as unknown as { MonacoEnvironment: { getWorker: () => Worker } }).MonacoEnvironment = { getWorker: () => new EditorWorker() };
+(self as unknown as { MonacoEnvironment: { getWorker: () => Worker } }).MonacoEnvironment = {
+  getWorker: () => new EditorWorker(),
+};
 export const editor = monaco.editor;
