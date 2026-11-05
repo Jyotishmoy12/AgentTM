@@ -9,9 +9,11 @@ open-source licensing. Original AgentTM code is proprietary under
 
 - Official binaries may be used for personal and internal business purposes;
   installation and backup copies are permitted.
-- General original source reuse, modification, redistribution, resale, and
-  third-party hosted services require separate written permission, except where
-  applicable law, GitHub's terms, or existing grants permit them.
+- Section 3 of LICENSE permits cloning, local builds, modifications, testing,
+  and GitHub forks and pull requests solely for contributions to AgentTM.
+- Other original source reuse and redistribution, resale, rebranding as one's
+  own product, and third-party hosted services require separate written
+  permission, subject to applicable law, GitHub's terms, and existing grants.
 - GitHub users can view and fork a public repository under its platform terms.
   A proprietary notice does not cancel those rights or make exposed code
   technically impossible to copy. See [GitHub licensing guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository).
@@ -39,7 +41,10 @@ packages do not retroactively replace the contents of v0.1.0/v0.3.0 assets.
 
 ## Feedback and contributions
 
-Use public issues for bug reports and feature requests, with sanitized examples.
-Do not submit original implementation changes without first agreeing on written
-contribution and usage terms with the owner. GitHub fork functionality alone is
-not a general license to commercialize or redistribute the implementation.
+Public issues and pull requests are welcome. See [CONTRIBUTING.md](../CONTRIBUTING.md)
+for reporting, testing, and submission instructions. Contributors retain their
+copyright and grant the maintainer the section 3 license to incorporate and
+distribute their submissions as part of AgentTM, including commercial releases.
+This permission does not transfer ownership or retroactively cover earlier work.
+GitHub fork functionality alone is not a general license to commercialize or
+redistribute the implementation.

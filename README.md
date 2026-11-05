@@ -4,16 +4,23 @@ A local debugging tool that records managed Codex sessions and workspace checkpo
 
 **Public source, proprietary license.** This repository remains public, but
 AgentTM is not offered under an open-source license. See [LICENSE](LICENSE) for
-official binary-use permissions and restrictions on original implementation reuse.
+official binary-use permissions, limited contribution rights, and restrictions
+on resale and original implementation reuse.
 Third-party licenses and GitHub's public-repository terms remain in force. See
 [licensing details](docs/licensing.md).
 
-**Watch the 30-second demo — with background music and sound effects:**
+![AgentTM Overview with recorded sessions](docs/images/overview.png)
+
+Current source-build interface, using an existing disposable demo recording.
+Check your release notes for the interface included in a published binary.
+
+**Earlier 30-second demo — with background music and sound effects:**
 
 https://github.com/user-attachments/assets/c6453d39-dd26-4190-9db9-36bf6eb95e47
 
 Press Play to watch with audio; use the player's controls to pause or mute.
-Real UI captures from a disposable demo project, edited into a short promo.
+This video shows an earlier interface. The screenshots show the current design;
+the launch video will be refreshed separately.
 [Download the MP4](docs/videos/agenttm-demo.mp4) · [Video credits](docs/videos/CREDITS.md).
 
 ## What AgentTM does
@@ -47,16 +54,18 @@ and platform gaps; historical audit results do not describe every later release.
 See also the [v0.3.3 release validation and onboarding follow-up](docs/release-validation-v0.3.3.md).
 
 <details>
-<summary>More screenshots: timeline, desktop chat, and storage</summary>
+<summary>Explore the current interface: History, Checkpoint Explorer, and restored workspaces</summary>
 
-These screenshots use demo/test data; they illustrate the interface rather than
-evidence of a real model execution.
+These source-build captures use an existing disposable Codex demo recording.
+They show the interface, not a new execution or a claim about every release.
 
-![Recorded session timeline and tool activity](docs/images/session-timeline.png)
+![Visual History with recorded events and workspace checkpoints](docs/images/history-overview.png)
 
-![Windows desktop Codex chat](docs/images/codex-chat.png)
+![Focused Checkpoint Explorer with historical files and differences](docs/images/checkpoint-explorer.png)
 
-![Desktop encrypted backups and blob cleanup](docs/images/storage-backups.png)
+![Restored workspaces list and selected workspace details](docs/images/restored-workspaces.png)
+
+[Screenshot provenance](docs/images/capture-manifest.json).
 
 </details>
 
@@ -209,9 +218,9 @@ Git remains the source of repository identity and isolated worktree support.
 
 Go 1.25+ and Git are required to build the CLI. Node.js 24+ is needed to rebuild
 frontend assets; checked-in embedded assets permit a Go-only CLI build.
-Public visibility does not grant general source reuse or modification permission;
-the commands below document the maintainer build process. Obtain permission for
-source uses not already allowed by applicable law or GitHub's terms.
+Section 3 of [LICENSE](LICENSE) permits these builds and modifications for
+contributions to AgentTM. See [CONTRIBUTING.md](CONTRIBUTING.md); other source
+uses require separate permission unless already permitted by law or existing grants.
 
 ~~~powershell
 git clone https://github.com/Jyotishmoy12/AgentTM.git
@@ -262,6 +271,8 @@ revoke existing rights.
 
 Report bugs and feature requests through
 [Issues](https://github.com/Jyotishmoy12/AgentTM/issues) with sanitized reproduction
-steps. Original implementation contributions require a separate agreement with
-the owner; public source-code pull requests are not the contribution model.
+steps. **Pull requests are welcome**, including code and documentation fixes;
+see [CONTRIBUTING.md](CONTRIBUTING.md) for the limited contribution permissions
+and submission terms. Selling or rebranding AgentTM as your own product remains
+restricted without written permission.
 Do not include credentials, private recordings, or raw model streams.

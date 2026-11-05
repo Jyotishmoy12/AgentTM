@@ -1,0 +1,209 @@
+﻿/* Project options share the neutral surfaces of Settings and the Setup Guide. */
+.project-selector .project-chevron svg {
+  width: 15px;
+  height: 15px;
+}
+.editorial-project-dialog {
+  width: min(480px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 24px;
+  background: #1e2022;
+  color: #e3e5e1;
+  border: 1px solid #3b3e40;
+  border-radius: 12px;
+  box-shadow: 0 24px 80px #0008;
+}
+.editorial-project-dialog::backdrop {
+  background: #090b0dcc;
+  backdrop-filter: none;
+}
+.editorial-project-dialog svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+.editorial-project-dialog .project-dialog-heading {
+  align-items: flex-start;
+  gap: 16px;
+}
+.editorial-project-dialog .eyebrow {
+  color: #9ba39d;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+}
+.editorial-project-dialog h2 {
+  font-size: 23px;
+  font-weight: 550;
+  letter-spacing: -0.6px;
+  line-height: 1.4;
+  margin: 7px 0 0;
+}
+.editorial-project-dialog h3 {
+  font-size: 13px;
+  font-weight: 500;
+  color: #d8ddd7;
+  line-height: 1.6;
+  margin: 0;
+}
+.editorial-project-dialog button {
+  font-family: inherit;
+  font-size: 11px;
+  color: #c8ceca;
+  background: #2b2f2d;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.editorial-project-dialog button:hover:not(:disabled) {
+  background: #363b37;
+}
+.editorial-project-dialog button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.editorial-project-dialog button:focus-visible {
+  outline: 2px solid #acbf91;
+  outline-offset: 3px;
+}
+.editorial-project-dialog .project-dialog-heading button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  background: transparent;
+}
+.project-current {
+  margin-top: 25px;
+}
+.project-current-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.project-current-identity > svg {
+  width: 22px;
+  height: 22px;
+  color: #a9b3a7;
+}
+.project-current-identity > div {
+  min-width: 0;
+}
+.project-current-identity h3 {
+  overflow-wrap: anywhere;
+}
+.project-current-identity p {
+  font-size: 11px;
+  color: #a6aba8;
+  margin: 3px 0 0;
+  line-height: 1.7;
+}
+.project-location {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-top: 16px;
+  background: #191b1e;
+  border: 1px solid #333936;
+  border-radius: 7px;
+}
+.project-location code {
+  flex: 1;
+  min-width: 0;
+  user-select: text;
+  overflow-wrap: anywhere;
+  color: #cbd2c7;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.project-location button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 6px;
+}
+.editorial-project-dialog .project-switch-info {
+  border-top: 1px solid #353937;
+  padding-top: 20px;
+  margin-top: 22px;
+}
+.editorial-project-dialog .project-switch-info p {
+  color: #a9afa9;
+  font-size: 11px;
+  line-height: 1.85;
+  margin: 7px 0 17px;
+}
+.editorial-project-dialog .project-choose {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #b1c993;
+  color: #1b2512;
+  padding: 9px 12px;
+}
+.editorial-project-dialog .project-choose:hover:not(:disabled) {
+  background: #c0d3a8;
+  color: #1b2512;
+}
+.project-path-status,
+.project-feedback {
+  font-size: 11px;
+  line-height: 1.85;
+  color: #b4beb0;
+  margin: 15px 0 0;
+}
+.project-path-error,
+.project-action-error {
+  font-size: 11px;
+  line-height: 1.85;
+  color: #ddba9d;
+  border-left: 2px solid #ad8665;
+  padding-left: 12px;
+  margin: 15px 0 0;
+  overflow-wrap: anywhere;
+}
+.project-path-error p {
+  margin: 0 0 7px;
+}
+.project-path-error button {
+  padding: 6px 9px;
+}
+.project-browser-command {
+  display: block;
+  color: #cbd2c7;
+  font-size: 12px;
+  user-select: text;
+}
+.project-dialog-footer {
+  border-top: 1px solid #303432;
+  margin-top: 23px;
+  padding-top: 14px;
+  font-size: 10px;
+  color: #9fa7a1;
+  line-height: 1.8;
+}
+@media (max-height: 600px) {
+  .editorial-project-dialog {
+    padding: 20px;
+  }
+  .project-current {
+    margin-top: 17px;
+  }
+  .editorial-project-dialog .project-switch-info {
+    margin-top: 17px;
+    padding-top: 16px;
+  }
+  .project-dialog-footer {
+    margin-top: 17px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .editorial-project-dialog button {
+    transition: none;
+  }
+}

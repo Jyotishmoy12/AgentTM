@@ -89,6 +89,9 @@ func TestEncryptedBackupRoundTripAndAuthentication(t *testing.T) {
 	ctx := context.Background()
 	e := historyFixture(t)
 	session, cp := captureFile(t, e, "private historical content")
+	if err := e.Store.RenameSession(session, "Investigate parser failure"); err != nil {
+		t.Fatal(err)
+	}
 	observer := capture.New(e, session, true)
 	for _, kind := range []string{"item.started", "item.completed"} {
 		r := events.Record{Kind: kind, Tool: "command_execution", Call: "backup-operation", Payload: []byte(`{"item":{"status":"completed"}}`)}
@@ -125,6 +128,9 @@ func TestEncryptedBackupRoundTripAndAuthentication(t *testing.T) {
 	if err = RestoreBackup(ctx, damaged, target, password); err == nil {
 		t.Fatal("tampering accepted")
 	}
+	if stages, stageErr := filepath.Glob(filepath.Join(target, ".agenttm-restore-*")); stageErr != nil || len(stages) != 0 {
+		t.Fatal("failed restore retained staging content", stageErr)
+	}
 	if err = RestoreBackup(ctx, archive, target, password); err != nil {
 		t.Fatal(err)
 	}
@@ -133,6 +139,10 @@ func TestEncryptedBackupRoundTripAndAuthentication(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer restored.DB.Close()
+	sessions, err := restored.Sessions()
+	if err != nil || len(sessions) != 1 || sessions[0].Title != "Investigate parser failure" {
+		t.Fatalf("session name lost in backup: %+v %v", sessions, err)
+	}
 	operations, err := restored.Operations(session, 0, 100)
 	if err != nil || len(operations) != 1 || operations[0].After == "" {
 		t.Fatalf("operation history lost on restore: %+v %v", operations, err)

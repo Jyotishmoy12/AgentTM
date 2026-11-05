@@ -70,13 +70,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	parts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
 	forkPost := r.Method == http.MethodPost && len(parts) == 4 && parts[0] == "api" && parts[1] == "checkpoints" && parts[3] == "fork"
-	if r.Method != http.MethodGet && !forkPost {
+	titlePost := r.Method == http.MethodPost && len(parts) == 4 && parts[0] == "api" && parts[1] == "sessions" && parts[3] == "title"
+	if r.Method != http.MethodGet && !forkPost && !titlePost {
 		w.Header().Set("Allow", "GET, POST")
-		fail(w, 405, "method_not_allowed", "Only reads and the explicit checkpoint fork action are supported.")
+		fail(w, 405, "method_not_allowed", "Only reads and explicit checkpoint restore or session naming actions are supported.")
 		return
 	}
-	if forkPost && ((!s.desktop && r.Header.Get("Origin") != "http://"+s.Address) || subtle.ConstantTimeCompare([]byte(r.Header.Get("X-AgentTM-CSRF")), []byte(s.csrfToken)) != 1) {
-		fail(w, 403, "csrf_required", "Fork requires this UI's same-origin confirmation token. Refresh the page and retry.")
+	if (forkPost || titlePost) && ((!s.desktop && r.Header.Get("Origin") != "http://"+s.Address) || subtle.ConstantTimeCompare([]byte(r.Header.Get("X-AgentTM-CSRF")), []byte(s.csrfToken)) != 1) {
+		fail(w, 403, "csrf_required", "This action requires the UI's same-origin confirmation token. Refresh the page and retry.")
 		return
 	}
 	if len(r.URL.RawQuery) > 8192 {
@@ -200,6 +201,9 @@ func (s *Server) api(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		switch parts[3] {
+		case "title":
+			s.renameSession(w, r, id)
+			return
 		case "operations":
 			s.operations(w, r, id)
 			return

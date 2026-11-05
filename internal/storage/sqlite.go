@@ -26,7 +26,10 @@ var forkMigration string
 //go:embed migrations/004_operation_checkpoints.sql
 var operationMigration string
 
-const SchemaVersion = 4
+//go:embed migrations/005_session_titles.sql
+var titleMigration string
+
+const SchemaVersion = 5
 
 type Store struct {
 	DB        *sql.DB
@@ -45,6 +48,7 @@ type Event struct {
 }
 type Session struct {
 	ID        string         `json:"id"`
+	Title     string         `json:"title"`
 	Agent     string         `json:"agent"`
 	StartedAt string         `json:"started_at"`
 	EndedAt   sql.NullString `json:"ended_at"`
@@ -144,6 +148,14 @@ func Open(root string) (*Store, error) {
 			return fail(e)
 		}
 	}
+	if v < 5 {
+		if _, e = tx.Exec(titleMigration); e != nil {
+			return fail(e)
+		}
+		if _, e = tx.Exec("PRAGMA user_version=5"); e != nil {
+			return fail(e)
+		}
+	}
 	// Older databases may have recorded the OS-visible alias of the repository
 	// (for example a short Windows temp path) before Open began canonicalizing
 	// roots. Match those rows by their resolved path so migration retains the
@@ -213,7 +225,7 @@ func (s *Store) AppendID(session, kind, tool, call string, payload []byte) (stri
 	return id, tx.Commit()
 }
 func (s *Store) Sessions() ([]Session, error) {
-	rows, e := s.DB.Query("SELECT id,agent,started_at,ended_at,status,exit_code FROM sessions WHERE project_id=? ORDER BY started_at DESC", s.ProjectID)
+	rows, e := s.DB.Query("SELECT id,title,agent,started_at,ended_at,status,exit_code FROM sessions WHERE project_id=? ORDER BY started_at DESC", s.ProjectID)
 	if e != nil {
 		return nil, e
 	}
@@ -221,7 +233,7 @@ func (s *Store) Sessions() ([]Session, error) {
 	out := []Session{}
 	for rows.Next() {
 		var v Session
-		if e = rows.Scan(&v.ID, &v.Agent, &v.StartedAt, &v.EndedAt, &v.Status, &v.ExitCode); e != nil {
+		if e = rows.Scan(&v.ID, &v.Title, &v.Agent, &v.StartedAt, &v.EndedAt, &v.Status, &v.ExitCode); e != nil {
 			return nil, e
 		}
 		out = append(out, v)

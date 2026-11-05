@@ -25,7 +25,29 @@ to third parties as a hosted or managed service. Those uses require separate
 written permission. It does not grant permission to modify or extract and reuse
 the original AgentTM implementation, except where applicable law permits it.
 
-3. Third-party components and existing rights
+3. Contributions to AgentTM
+
+You may report issues and submit pull requests to the official AgentTM repository.
+You may fork or clone the repository, build and test it locally, and modify it
+solely to prepare, review, or test contributions to that repository. You may share
+those changes through GitHub forks and pull requests for that purpose. Retain
+copyright, license, and attribution notices in those copies and contributions.
+This limited permission does not authorize distributing a separate product,
+selling the original or modified implementation, offering it as a hosted or
+managed service, or rebranding or claiming AgentTM's implementation as your own.
+Those uses require the copyright holder's prior written permission.
+
+For contributions you intentionally submit for inclusion in AgentTM, you retain
+copyright in your original contribution and grant the AgentTM copyright holder
+a perpetual, worldwide, non-exclusive, royalty-free, irrevocable copyright
+license to use, reproduce, modify, distribute, sublicense, and sell that
+contribution as part of AgentTM, including official source and binary releases.
+You must have the authority to grant those rights and identify any third-party
+material and its applicable license. A separate written contribution agreement,
+if any, takes precedence. This section does not obtain rights retroactively in
+earlier contributions or transfer ownership of contributors' work.
+
+4. Third-party components and existing rights
 
 Third-party components remain under their own licenses. Their notices and terms
 are provided in THIRD_PARTY_NOTICES.txt in release archives and in the bundled
@@ -35,14 +57,14 @@ rights. It does not assert ownership of third-party code or others' contribution
 It does not grant AgentTM ownership of your project files, prompts, recordings,
 or agent outputs. Their respective owners' rights and service terms still apply.
 
-4. Disclaimer
+5. Disclaimer
 
 To the extent permitted by applicable law, AgentTM is provided as is, without
 warranties of any kind, and the copyright holder is not liable for damages
 arising from its use. You are responsible for appropriate backups and for
 reviewing what your configured coding agent is authorized to execute.
 
-5. Permissions
+6. Permissions
 
 For permissions beyond this license, contact the owner through
 https://github.com/Jyotishmoy12/AgentTM/issues . Do not include private source,

@@ -38,6 +38,7 @@ test('desktop chat and storage controls use explicit native actions', async ({ p
   expect(starts[1].args[0]).toBe(sessionID);
   await page.screenshot({ path: '../.test-work/chat-feature.png', fullPage: true });
   await nav.getByRole('button', { name: 'Storage & backups', exact: true }).click();
+  await page.getByRole('button', { name: 'Create backup', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Create encrypted backup', exact: true })).toBeDisabled();
   await page.getByLabel('Backup passphrase', { exact: true }).fill('a good test passphrase');
   await page.getByLabel('Confirm backup passphrase', { exact: true }).fill('a different passphrase');
@@ -45,8 +46,10 @@ test('desktop chat and storage controls use explicit native actions', async ({ p
   await page.getByLabel('Confirm backup passphrase', { exact: true }).fill('a good test passphrase');
   await page.getByRole('button', { name: 'Create encrypted backup', exact: true }).click();
   await expect(page.getByRole('status')).toContainText('Encrypted backup saved');
+  await page.getByRole('button', { name: 'Create backup', exact: true }).click();
   await expect(page.getByLabel('Backup passphrase', { exact: true })).toHaveValue('');
-  await page.getByRole('button', { name: 'Preview unused blobs', exact: true }).click();
+  await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await page.getByRole('button', { name: 'Preview Cleanup', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Delete previewed blobs', exact: true })).toBeDisabled();
   await page.getByRole('checkbox').check();
   await page.getByRole('button', { name: 'Delete previewed blobs', exact: true }).click();

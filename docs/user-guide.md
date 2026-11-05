@@ -107,21 +107,21 @@ running while using the browser. Ctrl+C stops the UI server; it does not delete
 recorded history. If the port is busy, use `agenttm ui --port 7332`, or `--port 0`
 to choose an available port. Use `--no-browser` to open the printed URL yourself.
 
-Open **Sessions**, then choose your recording. **Refresh history** reloads the
+Open **History**, then choose your recording. **Refresh history** reloads the
 available history. If the UI is serving in one terminal, use a second terminal
 opened at the same project path for additional commands; shell variables such
 as `$demo` do not automatically carry into a new terminal.
 
-![Session timeline and event details using demo data](images/session-timeline.png)
+![Visual History with synthetic demo data](images/history-overview.png)
 
 | Screen or tab | What to do there |
 | --- | --- |
 | Overview | Find recent sessions and the next inspection step. |
-| Sessions → Timeline | Select an event to inspect its received details and supported tool output. |
-| Sessions → Operations | Inspect individual operation outcomes and before/after checkpoint coverage. |
-| Sessions → Files | Browse files stored at the selected checkpoint, not your live files. |
-| Sessions → Changes | Compare the selected checkpoint with its manifest parent. |
-| Checkpoints | Select a session and captured state directly. |
+| History | Explore chronological events and checkpoint milestones. Filter or expand observations for details. |
+| History / Operation boundaries | Inspect supported operation outcomes and before/after capture coverage. |
+| Inspect checkpoint / Files | Browse captured files in the dedicated Checkpoint Explorer. |
+| Inspect checkpoint / Changes | Compare captured files with the checkpoint's manifest parent. |
+| Checkpoint Explorer / Details | Open capture metadata when needed; closed by default. |
 | Restored workspaces | Find the folders and branches created by checkpoint restoration. |
 | Setup & help | Review setup and recording guidance. |
 
@@ -129,9 +129,20 @@ Chat with Codex and Storage & backups also appear in navigation; their native
 actions require the Windows desktop app. A browser-only message explaining that
 requirement is expected.
 
+For longer recordings, **Session activity** shows counts in equal time buckets.
+Click a populated bar to reveal and focus that segment of recorded history.
+This resets the timeline filters; empty bins are disabled. The histogram is
+hidden for fewer than 20 events or when all timestamps are identical.
+
+Prompt, command, response, capture, and failure icons distinguish recorded
+activity. Expand an event for diagnostic names and payloads. Adjacent events
+share a collapsible group only when their recorded identifiers match; failures
+and checkpoint milestones stay visible. **Compare with previous** opens the
+recorded parent comparison when that parent is present in loaded checkpoints.
+
 ## 4. Read operation checkpoints
 
-Open **Operations** in your session. Each card separates the tool's reported
+Open **History**, choose your session, then select **View operation boundaries**. Each card separates the tool's reported
 outcome from its capture status. **Inspect before** and **Inspect after** open
 the corresponding historical files when those states exist. Use **Refresh
 operations** to reload the list during or after a run.
@@ -157,6 +168,11 @@ count does not establish that no intermediate edit occurred. See
 
 ## 5. Inspect files and changes
 
+Choose **Inspect checkpoint** on a History milestone to open the dedicated
+Checkpoint Explorer. Its file panel is resizable; Details starts closed.
+
+![Checkpoint Explorer with synthetic demo data](images/checkpoint-explorer.png)
+
 Choose a baseline checkpoint in **Files**, then select `message.txt`. In the
 example it should show `Version one`. Select a checkpoint that captured the edit
 to inspect `Version two`. The editor is read-only; viewing an old file does not
@@ -177,11 +193,11 @@ files, excluded paths, oversized files, and external services may not be capture
 To explore the baseline without overwriting `Version two` in the original project:
 
 1. Select the baseline and inspect its files first.
-2. Choose **Fork checkpoint**.
+2. Choose **Restore checkpoint**.
 3. Enter a unique name such as `before-edit`.
 4. Review the destination, branch, and any partial-snapshot warnings. Consent to
    a partial restore only if you understand which files will be missing.
-5. Choose **Create isolated fork**.
+5. Choose **Create restored worktree**.
 6. Open **Restored workspaces** to find the recorded folder location, then open
    that folder in your editor.
 
@@ -195,6 +211,29 @@ Inspect and test the restored copy before bringing any changes back through your
 normal Git workflow. This restores captured files, not the agent's conversation,
 dependencies, ignored files, credentials, or external environment. Do not expect
 **Continue in chat** to move a conversation into the restored directory.
+
+### Manage restored workspaces
+
+Open **Restored workspaces** for a compact list of recorded restores. Search by
+folder name, path, branch, or checkpoint; sort by date, name, or restore result.
+Search and sorting cover loaded records; use **Load more workspaces** when shown.
+Select a row to see its full location, branch, source checkpoint, and recorded
+date. Small windows open the details as a drawer; Escape closes it.
+
+- **Copy path** copies the recorded location; **Inspect source checkpoint** opens
+  the source in Checkpoint Explorer, with any missing-data error shown explicitly.
+- In updated Windows source builds, **Check folder** checks whether the recorded
+  directory is currently accessible. Missing or moved folders remain in the ledger;
+  they are not silently removed or relocated.
+- **Open folder** rechecks the record and requests Windows File Explorer. The
+  native action accepts a project-scoped restore ID, not a caller-supplied path.
+  Browser users can copy the path and open it manually instead. VS Code launching
+  and workspace deletion are not implemented here.
+
+**Completed** means the restore ledger recorded success. Folder accessibility is
+a separate, on-demand check: it does not verify Git registration or current file
+integrity. These actions never restore into the original working tree or rewind
+its Codex conversation.
 
 ## 7. Inspect history from the terminal
 
@@ -259,12 +298,16 @@ See [desktop setup](desktop-onboarding.md) for prerequisites and first-launch he
 
 In **Chat with Codex**:
 
-1. Choose **New conversation** and an available model.
+1. Use the plus button for **New conversation**, or the history icon to choose
+   a saved conversation. Choose an available model in the composer toolbar.
 2. Start with **Read only** for explanations. Select **Allow project edits** when
    you intend Codex to change project files.
-3. Send your task. Review any supported tool-approval prompts using **Allow once**
+3. Send your task with the arrow button or **Ctrl+Enter**. Enter adds a newline.
+   Review any supported tool-approval prompts using **Allow once**
    or **Decline**; **Stop turn** requests interruption.
-4. Inspect the recorded session in **Sessions** after the turn finishes.
+4. Use **View history** to inspect the recorded session and captured checkpoints.
+   Failed tool details open automatically; other tool details can be expanded.
+   If you scroll up during a reply, **Latest messages** returns to the bottom.
 
 If model discovery fails, open **Model settings**, refresh models, or choose the
 installed Codex executable directly. Listing a model does not guarantee account
@@ -280,20 +323,28 @@ conversation history.
 ## 9. Back up history and manage storage
 
 In the native app, open **Storage & backups**. To create an encrypted history
-backup, enter and confirm a passphrase of at least 12 characters, then choose
+backup, choose **Create backup** to open its dedicated dialog. Enter and confirm
+a passphrase of at least 12 characters, then choose
 **Create encrypted backup** and a new `.age` file outside `.agenttm`. Keep the
 passphrase separately; AgentTM cannot recover a forgotten one.
 
 Restoration needs the existing backup/passphrase and a Git clone with **no existing
-`.agenttm` directory**. Choose **Restore a backup**, select the archive/destination,
+`.agenttm` directory**. Choose **Restore backup**, enter the archive passphrase, then choose
+**Choose archive & target**. Select the archive and destination in the native dialogs,
 and review the native confirmation. The archive is validated before history is
 published; an existing history store is not overwritten.
+
+The Local history summary measures regular-file sizes under .agenttm, excluding
+restored worktrees. Its disjoint categories include blob storage, the SQLite
+database and sidecar files, manifests, logs, and other history files. These are
+logical bytes, not allocated disk space; exported archives outside .agenttm are
+not counted. If measurement is unavailable, the UI shows no made-up totals.
 
 History backups do not include Git history, your current workspace, restored
 worktrees, or Codex credentials/thread files. Back those up separately. An AgentTM
 history restore is not a complete runnable-project or conversation-history backup.
 
-For storage cleanup, first **Preview unused blobs**. Referenced checkpoint files
+For **Storage Cleanup**, first choose **Preview Cleanup**. Referenced checkpoint files
 are preserved; default cleanup candidates must be unreferenced and at least 24
 hours old. Cleanup refuses active recordings or unsafe/corrupt storage. The CLI
 preview is also available:
@@ -302,11 +353,48 @@ preview is also available:
 agenttm gc
 ```
 
-The preview does not delete anything. Removing an old session is a separate,
+The preview does not delete anything. Review its eligible counts and size, check
+the explicit consent box, then use **Delete previewed blobs**. A failed or changed
+preview must be refreshed before retrying. Deletion errors may leave a partially
+completed cleanup; never infer that no files were removed.
+
+Removing an old session is a separate,
 destructive action; it removes its inspection history and cannot be undone
 without a suitable backup. Read [chat and storage](chat-and-storage.md) and
 the [CLI reference](cli.md) before applying cleanup or purging a session.
 Do not delete `.agenttm` or arbitrary object files to make one recording work.
+
+### Open another project
+
+Select your project name in the sidebar to open **Your workspace**. The location
+row shows the current project path; use its copy icon to copy it. A failed path
+read offers **Retry project path**.
+
+In the Windows desktop app, **Choose a Git project...** opens a folder picker.
+Select an existing Git working tree. AgentTM requests a separate window for that
+folder and asks for initialization there if it has no local history. Canceling
+leaves the current workspace unchanged. This does not move the current recording
+or history to the other project. If an error appears, correct it and choose again.
+
+In the browser, run `agenttm ui` from the other project's terminal instead.
+
+### Settings and Setup Guide
+
+**Settings** shows loaded project configuration, environment diagnostics, and the
+running AgentTM version. Prompt capture is displayed read-only; this page does
+not introduce a new preference switch. **Check again** reruns supported checks.
+Codex readiness covers its version, JSON execution support, and observable sign-in;
+Git availability/root validity and history API readability have separate statuses.
+Unverified checks remain unverified, especially in a browser or older native build.
+A readable database is not a full storage-integrity result, and model access and
+tool execution are confirmed only by a real task.
+
+Open **Setup guide** from the toolbar or Settings for instructions. The original
+five onboarding steps cover the project, installation, sign-in, and a first run.
+The reference sections **History basics**, **Capture & limits**, and **Restore
+safely** explain recorded events, eligible files and omissions, comparisons, and
+isolated restoration. Commands have Copy buttons. Escape closes the guide and
+returns keyboard focus to its opener.
 
 ## 10. Handle failures and interruptions
 

@@ -21,6 +21,7 @@ import (
 	"agenttm/internal/interactive"
 	"agenttm/internal/maintenance"
 	"agenttm/internal/process"
+	"agenttm/internal/project"
 	"agenttm/internal/server"
 	"agenttm/internal/snapshot"
 	"github.com/wailsapp/wails/v2"
@@ -33,8 +34,13 @@ import (
 func main() {
 	handler := &desktopproject.Launcher{}
 	desktop := &Desktop{chat: &interactive.Manager{}, launcher: handler}
+	// A project chosen in another window must survive the child process launch,
+	// including when it still needs explicit history initialization.
+	if len(os.Args) == 3 && os.Args[1] == "--project" {
+		desktop.pendingProject = os.Args[2]
+	}
 	// Keep initialized-project launches, without implicitly initializing Explorer's cwd.
-	if directory, err := os.Getwd(); err == nil {
+	if directory, err := os.Getwd(); err == nil && desktop.pendingProject == "" {
 		if engine, err := desktopproject.Open(directory, nil); err == nil && engine != nil {
 			desktop.attach(engine)
 		}
@@ -45,14 +51,28 @@ func main() {
 
 	err := wails.Run(&options.App{
 		Title:            "AgentTM",
-		Width:            1100,
-		Height:           740,
+		Width:            1240,
+		Height:           800,
 		DisableResize:    false,
 		MinWidth:         760,
 		MinHeight:        550,
 		AssetServer:      &assetserver.Options{Handler: handler},
-		BackgroundColour: &options.RGBA{R: 10, G: 16, B: 24, A: 1},
+		BackgroundColour: &options.RGBA{R: 23, G: 24, B: 28, A: 1},
 		OnStartup:        func(ctx context.Context) { desktop.ctx = ctx },
+		OnDomReady: func(ctx context.Context) {
+			desktop.mu.Lock()
+			pending := desktop.pendingProject != ""
+			desktop.mu.Unlock()
+			if !pending {
+				return
+			}
+			opened, openErr := desktop.ChooseProject()
+			if openErr != nil {
+				_, _ = runtime.MessageDialog(ctx, runtime.MessageDialogOptions{Type: runtime.ErrorDialog, Title: "Could not open project", Message: openErr.Error()})
+			} else if opened {
+				runtime.WindowReload(ctx)
+			}
+		},
 		OnShutdown: func(context.Context) {
 			desktop.mu.Lock()
 			defer desktop.mu.Unlock()
@@ -62,7 +82,7 @@ func main() {
 			}
 		},
 		Bind:                     []interface{}{desktop},
-		Windows:                  &windowoptions.Options{WebviewIsTransparent: false, WindowIsTranslucent: false},
+		Windows:                  &windowoptions.Options{Theme: windowoptions.Dark, WebviewIsTransparent: false, WindowIsTranslucent: false},
 		Frameless:                false,
 		EnableDefaultContextMenu: false,
 	})
@@ -72,12 +92,13 @@ func main() {
 }
 
 type Desktop struct {
-	ctx      context.Context
-	root     string
-	mu       sync.Mutex
-	chat     *interactive.Manager
-	engine   *snapshot.Engine
-	launcher *desktopproject.Launcher
+	ctx            context.Context
+	root           string
+	mu             sync.Mutex
+	chat           *interactive.Manager
+	engine         *snapshot.Engine
+	launcher       *desktopproject.Launcher
+	pendingProject string
 }
 
 // Called only before startup or under mu. An open project is never replaced.
@@ -89,16 +110,9 @@ func (d *Desktop) attach(engine *snapshot.Engine) {
 }
 
 func (d *Desktop) ChooseProject() (bool, error) {
-	d.mu.Lock()
-	defer d.mu.Unlock()
-	if d.engine != nil {
-		return false, fmt.Errorf("a project is already open; close and reopen AgentTM to choose another")
-	}
-	directory, err := runtime.OpenDirectoryDialog(d.ctx, runtime.OpenDialogOptions{Title: "Choose an existing Git project"})
-	if err != nil || directory == "" {
-		return false, err
-	}
-	engine, err := desktopproject.Open(directory, func(root string) (bool, error) {
+	return d.chooseProject(func() (string, error) {
+		return runtime.OpenDirectoryDialog(d.ctx, runtime.OpenDialogOptions{Title: "Choose an existing Git project"})
+	}, func(root string) (bool, error) {
 		answer, err := runtime.MessageDialog(d.ctx, runtime.MessageDialogOptions{
 			Type: runtime.QuestionDialog, Title: "Initialize AgentTM history?",
 			Message: "Create local AgentTM history in:\n" + root + "\n\nThis creates .agenttm and adds it to the local Git exclusion file. It does not create a commit or change your tracked files.",
@@ -106,6 +120,24 @@ func (d *Desktop) ChooseProject() (bool, error) {
 		})
 		return answer == "Initialize", err
 	})
+}
+
+func (d *Desktop) chooseProject(pick func() (string, error), confirm func(string) (bool, error)) (bool, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.engine != nil {
+		return false, fmt.Errorf("a project is already open; close and reopen AgentTM to choose another")
+	}
+	directory := d.pendingProject
+	d.pendingProject = ""
+	var err error
+	if directory == "" {
+		directory, err = pick()
+	}
+	if err != nil || directory == "" {
+		return false, err
+	}
+	engine, err := desktopproject.Open(directory, confirm)
 	if err != nil || engine == nil {
 		return false, err
 	}
@@ -113,7 +145,83 @@ func (d *Desktop) ChooseProject() (bool, error) {
 	return true, nil
 }
 
+// ProjectPath reads the already opened project without probing Codex or Git.
+func (d *Desktop) ProjectPath() (string, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.engine == nil {
+		return "", fmt.Errorf("open a Git project first")
+	}
+	return d.root, nil
+}
+
+func projectWindowCommand(executable, root string) *exec.Cmd {
+	command := exec.Command(executable, "--project", root)
+	command.Dir = root
+	// This is an interactive GUI application, not a background console helper.
+	// SW_HIDE suppresses Wails' initial ShowWindow call on Windows.
+	return command
+}
+
+// OpenProjectWindow keeps the current engine and recording attached to this
+// window. Initialization, if needed, remains an explicit action in the new one.
+func (d *Desktop) OpenProjectWindow() (bool, error) {
+	directory, err := runtime.OpenDirectoryDialog(d.ctx, runtime.OpenDialogOptions{Title: "Open a Git project in another AgentTM window"})
+	if err != nil || directory == "" {
+		return false, err
+	}
+	root, err := project.Root(directory)
+	if err != nil {
+		return false, fmt.Errorf("choose an existing Git working tree: %w", err)
+	}
+	executable, err := os.Executable()
+	if err != nil {
+		return false, err
+	}
+	command := projectWindowCommand(executable, root)
+	if err = command.Start(); err != nil {
+		return false, err
+	}
+	_ = command.Process.Release()
+	return true, nil
+}
+
 func (d *Desktop) ChatStatus() interactive.State { return d.chat.Status() }
+
+// These methods accept project-scoped restore IDs, never caller-supplied paths.
+func (d *Desktop) CheckRestoredWorkspace(id string) (desktopproject.FolderState, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.engine == nil {
+		return desktopproject.FolderState{}, fmt.Errorf("open a Git project first")
+	}
+	return desktopproject.CheckRestoredFolder(d.engine.Store, d.engine.Root, id)
+}
+func (d *Desktop) OpenRestoredWorkspace(id string) error {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.engine == nil {
+		return fmt.Errorf("open a Git project first")
+	}
+	folder, err := desktopproject.CheckRestoredFolder(d.engine.Store, d.engine.Root, id)
+	if err != nil {
+		return err
+	}
+	if folder.State != "available" {
+		return fmt.Errorf("%s", folder.Message)
+	}
+	// Use a fixed system executable with a single path argument; no shell or code runs.
+	windowsDir := os.Getenv("SystemRoot")
+	if windowsDir == "" || !filepath.IsAbs(windowsDir) {
+		return fmt.Errorf("Windows File Explorer could not be located")
+	}
+	command := exec.Command(filepath.Join(windowsDir, "explorer.exe"), folder.Path)
+	if err = command.Start(); err != nil {
+		return fmt.Errorf("could not start Windows File Explorer: %w", err)
+	}
+	_ = command.Process.Release()
+	return nil
+}
 func (d *Desktop) CodexModels() ([]interactive.Model, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -200,6 +308,14 @@ func (d *Desktop) GarbageCollect(apply bool, token string) (maintenance.GCReport
 	}
 	return maintenance.Collect(d.engine, apply, token, 24*time.Hour)
 }
+func (d *Desktop) StorageUsage() (maintenance.Usage, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.engine == nil {
+		return maintenance.Usage{}, fmt.Errorf("open a Git project first")
+	}
+	return maintenance.StorageUsage(d.engine.Root)
+}
 func (d *Desktop) CreateBackup(password string) (string, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
@@ -247,10 +363,11 @@ func (d *Desktop) RestoreHistory(password string) (string, error) {
 }
 
 type SetupStatus struct {
-	State   string `json:"state"`
-	Version string `json:"version"`
-	Project string `json:"project"`
-	Path    string `json:"path"`
+	State       string                        `json:"state"`
+	Version     string                        `json:"version"`
+	Project     string                        `json:"project"`
+	Path        string                        `json:"path"`
+	Environment desktopproject.GitEnvironment `json:"environment"`
 }
 
 // CheckSetup runs diagnostics only. Credentials and diagnostic output never
@@ -263,6 +380,9 @@ func (d *Desktop) CheckSetup() SetupStatus {
 		status.State = "project_required"
 		return status
 	}
+	gitCheck, gitCancel := context.WithTimeout(d.ctx, 5*time.Second)
+	status.Environment = desktopproject.CheckGitEnvironment(gitCheck, d.root)
+	gitCancel()
 	check, cancel := context.WithTimeout(d.ctx, 20*time.Second)
 	defer cancel()
 	executable := d.chat.ExecutablePath()

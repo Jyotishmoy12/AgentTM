@@ -1,0 +1,34 @@
+{
+  "source": "Current source-build production React UI; existing disposable Codex demo recording",
+  "images": {
+    "overview.png": {
+      "width": 3200,
+      "height": 2000
+    },
+    "history.png": {
+      "width": 3200,
+      "height": 2000
+    },
+    "history-detail.png": {
+      "width": 2740,
+      "height": 1854
+    },
+    "explorer.png": {
+      "width": 3200,
+      "height": 2000
+    },
+    "explorer-detail.png": {
+      "width": 2740,
+      "height": 1854
+    },
+    "workspaces.png": {
+      "width": 3200,
+      "height": 2000
+    },
+    "workspaces-detail.png": {
+      "width": 2740,
+      "height": 1854
+    }
+  },
+  "originalPreserved": true
+}

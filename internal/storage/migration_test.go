@@ -74,7 +74,7 @@ func TestVersionThreeOperationMigration(t *testing.T) {
 	if err = s.Append(id, "turn.completed", "", "", []byte(`{}`)); err != nil {
 		t.Fatal(err)
 	}
-	if _, err = s.DB.Exec("DROP TABLE operations; PRAGMA user_version=3"); err != nil {
+	if _, err = s.DB.Exec("ALTER TABLE sessions DROP COLUMN title; DROP TABLE operations; PRAGMA user_version=3"); err != nil {
 		t.Fatal(err)
 	}
 	s.DB.Close()

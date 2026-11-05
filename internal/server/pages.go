@@ -56,7 +56,7 @@ func (s *Server) sessions(w http.ResponseWriter, r *http.Request) {
 		fail(w, 400, "invalid_limit", "Session limit must be 1..100.")
 		return
 	}
-	rows, err := s.Engine.Store.DB.Query("SELECT rowid,id,agent,started_at,ended_at,status,exit_code,upstream_session_id FROM sessions WHERE project_id=? AND (?=0 OR rowid<?) ORDER BY rowid DESC LIMIT ?", s.Engine.Store.ProjectID, after, after, limit+1)
+	rows, err := s.Engine.Store.DB.Query("SELECT rowid,id,title,agent,started_at,ended_at,status,exit_code,upstream_session_id FROM sessions WHERE project_id=? AND (?=0 OR rowid<?) ORDER BY rowid DESC LIMIT ?", s.Engine.Store.ProjectID, after, after, limit+1)
 	if err != nil {
 		fail(w, 500, "database_error", "Cannot read sessions.")
 		return
@@ -67,11 +67,11 @@ func (s *Server) sessions(w http.ResponseWriter, r *http.Request) {
 	var next any
 	for rows.Next() {
 		var rowid int64
-		var id, agent, start, status string
+		var id, title, agent, start, status string
 		var end sql.NullString
 		var exit sql.NullInt64
 		var upstream sql.NullString
-		if err = rows.Scan(&rowid, &id, &agent, &start, &end, &status, &exit, &upstream); err != nil {
+		if err = rows.Scan(&rowid, &id, &title, &agent, &start, &end, &status, &exit, &upstream); err != nil {
 			fail(w, 500, "database_error", "Cannot read session.")
 			return
 		}
@@ -86,7 +86,7 @@ func (s *Server) sessions(w http.ResponseWriter, r *http.Request) {
 		if exit.Valid {
 			code = exit.Int64
 		}
-		items = append(items, map[string]any{"id": id, "agent": agent, "started_at": start, "ended_at": ended, "status": status, "exit_code": code, "resumable": upstream.Valid && upstream.String != "" && status != "active"})
+		items = append(items, map[string]any{"id": id, "title": title, "agent": agent, "started_at": start, "ended_at": ended, "status": status, "exit_code": code, "resumable": upstream.Valid && upstream.String != "" && status != "active"})
 		last = rowid
 	}
 	if err = rows.Err(); err != nil {

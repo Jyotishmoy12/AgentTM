@@ -1,0 +1,458 @@
+.settings-editorial {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: #1e2020;
+  color: #e3e5e1;
+  padding: 31px clamp(24px, 4vw, 56px) 30px;
+  scrollbar-gutter: stable;
+}
+.settings-heading,
+.settings-content {
+  max-width: 1060px;
+  margin: 0 auto;
+}
+.settings-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.settings-heading h1 {
+  font-size: 28px;
+  font-weight: 550;
+  letter-spacing: -0.8px;
+  line-height: 1.3;
+  margin: 10px 0;
+}
+.settings-heading p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #a6aba8;
+  margin: 0;
+}
+.settings-editorial button {
+  font-family: inherit;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: #c8ceca;
+  font-size: 11px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.settings-editorial button:hover:not(:disabled) {
+  background: #303432;
+  color: #e3e8df;
+}
+.settings-editorial button:disabled {
+  opacity: 0.45;
+}
+.settings-editorial button:focus-visible {
+  outline: 2px solid #b3ca96;
+  outline-offset: 3px;
+}
+.settings-heading .settings-guide-action {
+  padding: 9px 12px;
+  background: #2c302d;
+}
+.settings-guide-action > span {
+  margin-left: 12px;
+}
+.settings-group {
+  padding: 20px 0 6px;
+  border-top: 1px solid #353937;
+  margin-top: 24px;
+}
+.settings-group + .settings-group {
+  margin-top: 15px;
+}
+.settings-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 9px;
+}
+.settings-section-title h2 {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+.settings-section-title > span {
+  font-size: 10px;
+  color: #a2a8a4;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 0;
+  border-bottom: 1px solid #303432;
+  min-width: 0;
+}
+.settings-row:last-child {
+  border-bottom: 0;
+}
+.settings-row-label {
+  flex: 1;
+  min-width: 0;
+}
+.settings-row-label h3 {
+  font-size: 12px;
+  font-weight: 500;
+  color: #d8ddd7;
+  line-height: 1.6;
+  margin: 0;
+}
+.settings-row-label h3 small {
+  font-size: 10px;
+  font-weight: 400;
+  color: #a2a8a3;
+  margin-left: 11px;
+}
+.settings-row-label p {
+  font-size: 10px;
+  color: #a9afa9;
+  line-height: 1.8;
+  margin: 5px 0 0;
+  overflow-wrap: anywhere;
+  max-width: 650px;
+}
+.settings-row-label p[title] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 90%;
+}
+.settings-value {
+  font-size: 11px;
+  color: #c4cbc4;
+  text-align: right;
+  max-width: 45%;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+.settings-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  line-height: 1.8;
+  color: #a8afa9;
+  flex-shrink: 0;
+}
+.settings-status i {
+  height: 5px;
+  width: 5px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #828b84;
+}
+.settings-status.status-ready {
+  color: #c7d0c2;
+}
+.settings-status.status-ready i {
+  background: #acc68c;
+}
+.settings-status.status-warning {
+  color: #d9bc8e;
+}
+.settings-status.status-warning i {
+  background: #c2a477;
+}
+.settings-check-note {
+  font-size: 10px;
+  line-height: 1.85;
+  color: #a0a8a1;
+  margin: 15px 0 0;
+}
+.settings-diagnostic-error {
+  font-size: 11px;
+  line-height: 1.85;
+  color: #ddba9d;
+  border-left: 2px solid #ad8665;
+  padding: 8px 12px;
+  background: #302b22;
+  margin: 16px 0 0;
+}
+.setup-dialog:not([open]) {
+  display: none;
+}
+.setup-dialog[open] {
+  display: grid;
+}
+.setup-dialog {
+  padding: 0;
+  margin: auto;
+  color: #dfe3de;
+  background: #1e2022;
+  border: 1px solid #3b3e40;
+  box-shadow: 0 25px 100px #0009;
+  width: min(940px, calc(100vw - 32px));
+  height: min(720px, calc(100dvh - 40px));
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 40px);
+}
+.setup-dialog::backdrop {
+  background: #090b0dcc;
+}
+.setup-dialog .setup-steps {
+  background: #1c1e21;
+  border-color: #303432;
+  gap: 6px;
+  padding: 23px 14px;
+  overflow: auto;
+}
+.setup-dialog .setup-steps > strong {
+  font-size: 21px;
+  font-weight: 550;
+  color: #e0e4dd;
+}
+.setup-dialog .setup-steps > p {
+  color: #a5ada5;
+  margin: 3px 0 15px;
+  font-size: 11px;
+}
+.setup-dialog .setup-steps > small {
+  padding-top: 14px;
+  color: #a0a8a1;
+}
+.setup-dialog .setup-steps > button {
+  border: 0;
+  border-radius: 6px;
+  color: #b2bab2;
+  padding: 9px 8px;
+  gap: 9px;
+  flex-shrink: 0;
+}
+.setup-dialog .setup-steps > button span {
+  border: 0;
+  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  color: #9ba49a;
+}
+.setup-dialog .setup-steps > button[aria-current="step"] {
+  background: #2f3530;
+  color: #e0e7db;
+}
+.setup-dialog .setup-steps > button:nth-of-type(6) {
+  margin-top: 14px;
+  border-top: 1px solid #303432;
+  padding-top: 13px;
+}
+.setup-dialog .setup-main {
+  background: #1e2022;
+}
+.setup-dialog .setup-top {
+  background: #1e2022;
+  color: #a4aca5;
+  border-color: #303432;
+  padding: 16px 26px;
+  letter-spacing: 1px;
+  font-size: 9px;
+}
+.setup-dialog .setup-top button {
+  font-size: 10px;
+  color: #c3cbc1;
+  border: 0;
+  background: transparent;
+}
+.setup-dialog .setup-body {
+  padding: 8px 28px 23px;
+}
+.setup-dialog .setup-body h1 {
+  font-size: 26px;
+  font-weight: 550;
+  letter-spacing: -0.7px;
+  line-height: 1.3;
+  margin: 5px 0 20px;
+  color: #e3e8df;
+}
+.setup-dialog .setup-body h2 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #d5ddd1;
+  margin: 24px 0 10px;
+}
+.setup-dialog .setup-body p,
+.setup-dialog .setup-body li {
+  font-size: 12px;
+  color: #b2bab2;
+  line-height: 1.9;
+}
+.setup-dialog .setup-body p {
+  margin: 11px 0;
+}
+.setup-dialog .setup-callout {
+  background: #25292a;
+  border: 1px solid #383e3b;
+  border-radius: 7px;
+  color: #cbd2c7;
+  padding: 13px 15px;
+  margin: 19px 0;
+}
+.setup-dialog .setup-callout small {
+  color: #aab3a8;
+}
+.setup-dialog .setup-command {
+  background: #191b1e;
+  border-color: #333936;
+  padding: 11px 12px;
+  border-radius: 6px;
+}
+.setup-dialog .setup-command code {
+  font-size: 11px;
+  color: #d2dbcc;
+}
+.setup-dialog .setup-command button {
+  font-size: 10px;
+  border: 0;
+  background: #303633;
+  color: #c7d2c1;
+  padding: 7px 9px;
+}
+.setup-dialog .setup-actions {
+  background: #1e2022;
+  border-color: #303432;
+  padding: 13px 20px;
+}
+.setup-dialog .setup-actions button {
+  font-size: 11px;
+  border-color: transparent;
+  background: transparent;
+  color: #c3ccc0;
+}
+.setup-dialog .setup-actions button.primary-button {
+  background: #b1c993;
+  color: #1b2512;
+}
+.setup-dialog .setup-actions > small {
+  font-size: 9px;
+  color: #a7b0a5;
+}
+.setup-dialog .setup-body button:focus-visible,
+.setup-dialog .setup-top button:focus-visible,
+.setup-dialog .setup-steps button:focus-visible,
+.setup-dialog .setup-actions button:focus-visible {
+  outline: 2px solid #b2cb94;
+  outline-offset: 2px;
+}
+.guide-terms {
+  display: block;
+  margin: 21px 0;
+}
+.guide-terms dt {
+  font-size: 12px;
+  color: #dae1d6;
+  font-weight: 500;
+  margin-top: 18px;
+}
+.guide-terms dd {
+  font-size: 12px;
+  color: #b2bab2;
+  line-height: 1.9;
+  margin: 5px 0 0;
+}
+@media (max-width: 800px) {
+  .settings-editorial {
+    padding: 25px 22px 24px;
+  }
+  .settings-heading h1 {
+    font-size: 25px;
+  }
+  .settings-heading {
+    gap: 12px;
+  }
+  .settings-heading .settings-guide-action {
+    font-size: 10px;
+    padding: 8px;
+  }
+  .settings-section-title > span {
+    font-size: 9px;
+  }
+  .settings-row {
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .settings-row-label h3 small {
+    display: block;
+    margin-left: 0;
+  }
+  .setup-dialog .setup-body {
+    padding: 8px 20px 20px;
+  }
+  .setup-dialog .setup-steps {
+    padding: 18px 10px;
+  }
+  .setup-dialog .setup-steps > button {
+    font-size: 11px;
+    padding: 8px 5px;
+  }
+  .setup-dialog .setup-top {
+    padding: 14px 20px;
+  }
+  .setup-dialog .setup-actions {
+    padding: 11px 12px;
+  }
+}
+@media (max-width: 650px) {
+  .settings-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .settings-heading .settings-guide-action {
+    padding-left: 0;
+    background: transparent;
+  }
+  .settings-section-title > span {
+    max-width: 55%;
+    text-align: right;
+  }
+  .settings-row {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .settings-row-label {
+    flex-basis: 65%;
+  }
+  .settings-status {
+    font-size: 9px;
+  }
+  .settings-value {
+    max-width: 45%;
+    font-size: 10px;
+  }
+  .settings-row > button {
+    margin-left: auto;
+  }
+  .setup-dialog {
+    height: calc(100dvh - 20px);
+    max-height: calc(100dvh - 20px);
+    width: calc(100vw - 20px);
+    max-width: calc(100vw - 20px);
+  }
+  .setup-dialog .setup-body h1 {
+    font-size: 23px;
+  }
+  .setup-dialog .setup-actions {
+    gap: 8px;
+  }
+  .setup-dialog .setup-actions button {
+    font-size: 10px;
+    padding: 7px 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .settings-editorial *,
+  .setup-dialog * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}

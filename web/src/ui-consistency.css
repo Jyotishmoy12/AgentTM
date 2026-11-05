@@ -1,0 +1,240 @@
+﻿/* Shared finishing details; layouts and safety-related states remain view-owned. */
+:root {
+  --ui-page-gutter: clamp(24px, 4vw, 56px);
+  --ui-title-size: 26px;
+  --ui-section-size: 16px;
+  --ui-body-size: 12px;
+  --ui-caption-size: 11px;
+  --ui-divider: #353937;
+  --ui-focus: #acbf91;
+}
+.library-shell
+  :is(
+    .home-heading,
+    .restores-heading,
+    .settings-heading,
+    .storage-editorial-heading
+  )
+  h1 {
+  font-size: var(--ui-title-size);
+  font-weight: 550;
+  line-height: 1.3;
+  letter-spacing: -0.7px;
+}
+.library-shell
+  :is(.restores-heading, .settings-heading, .storage-editorial-heading)
+  > p,
+.library-shell .settings-heading > div > p {
+  font-size: var(--ui-body-size);
+  line-height: 1.8;
+}
+.library-shell :is(.settings-section-title, .storage-section-heading) h2 {
+  font-size: var(--ui-section-size);
+  font-weight: 500;
+}
+.library-shell :is(.settings-row-label, .storage-workflow-row) h3 {
+  font-size: var(--ui-body-size);
+}
+.library-shell :is(.settings-row-label, .storage-workflow-row) p {
+  font-size: var(--ui-caption-size);
+}
+.library-shell .home-overview {
+  padding-inline: var(--ui-page-gutter);
+}
+.library-shell :is(.storage-manager, .settings-editorial) {
+  padding-inline: var(--ui-page-gutter);
+}
+.library-shell .restores-heading {
+  padding-inline: var(--ui-page-gutter);
+}
+.library-shell :is(.restores-controls, .restores-body) {
+  margin-inline: var(--ui-page-gutter);
+}
+.library-shell .visual-history {
+  padding-inline: var(--ui-page-gutter);
+}
+.library-shell .history-sticky-summary {
+  padding-inline: var(--ui-page-gutter);
+}
+.library-shell .home-session-card {
+  transition:
+    background 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+.library-shell .home-session-card:hover:not(:disabled) {
+  background: #2c302d;
+  border-color: #75816d;
+  box-shadow: 0 7px 18px #0003;
+}
+.library-shell .home-session-tile:focus-within .home-session-card {
+  border-color: #75816d;
+}
+.library-shell .home-session-card:hover .home-view-session,
+.library-shell .home-session-card:focus-visible .home-view-session {
+  color: #d4dfcc;
+}
+.library-shell .home-rename-session {
+  border-radius: 5px;
+}
+.library-shell .home-rename-session:focus-visible {
+  outline: 2px solid var(--ui-focus);
+  outline-offset: 2px;
+  background: #303630;
+}
+.app-shell
+  :is(button, a, input, select, textarea, summary, [tabindex]):focus-visible,
+dialog :is(button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline-color: var(--ui-focus);
+  outline-width: 2px;
+  outline-offset: 3px;
+}
+.app-shell *,
+dialog * {
+  scrollbar-color: #525952 transparent;
+  scrollbar-width: thin;
+}
+.app-shell ::-webkit-scrollbar,
+dialog ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.app-shell ::-webkit-scrollbar-thumb,
+dialog ::-webkit-scrollbar-thumb {
+  background: #525952;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 8px;
+}
+.app-shell ::-webkit-scrollbar-thumb:hover,
+dialog ::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7468;
+}
+.app-shell ::-webkit-scrollbar-corner,
+dialog ::-webkit-scrollbar-corner {
+  background: transparent;
+}
+dialog:is(
+    .setup-dialog,
+    .storage-flow,
+    .fork-dialog,
+    .session-name-dialog,
+    .project-dialog,
+    .command-dialog
+  )::backdrop {
+  background: #090b0dcc;
+  backdrop-filter: none;
+}
+dialog:is(.fork-dialog, .session-name-dialog, .project-dialog) {
+  padding: 24px;
+  border-radius: 12px;
+  border-color: #3b3e40;
+  background: #1e2022;
+  color: #dfe3de;
+}
+dialog:is(.fork-dialog, .session-name-dialog) {
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+}
+dialog .app-dialog-close.app-dialog-close {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #b4beb0;
+  flex-shrink: 0;
+  font-size: 0;
+  line-height: 1;
+}
+dialog .app-dialog-close.app-dialog-close svg {
+  width: 18px;
+  height: 18px;
+}
+dialog .app-dialog-close.app-dialog-close:hover:not(:disabled) {
+  background: #303630;
+  color: #e3e8df;
+}
+dialog .app-dialog-close.app-dialog-close:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.fork-dialog-header,
+.session-name-dialog form {
+  position: relative;
+}
+.fork-dialog-header > .app-dialog-close,
+.session-name-dialog form > .app-dialog-close {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.fork-dialog-header > h2,
+.session-name-dialog h2 {
+  padding-right: 34px;
+}
+.session-name-dialog h2,
+.fork-dialog-header h2,
+.storage-flow > header h2 {
+  font-size: 22px;
+  font-weight: 550;
+  letter-spacing: -0.5px;
+  line-height: 1.4;
+}
+.session-name-actions,
+.fork-actions {
+  justify-content: flex-end;
+  gap: 8px;
+}
+.storage-flow > header,
+.storage-flow-body {
+  padding-inline: 24px;
+}
+.storage-flow > footer {
+  padding: 16px 24px;
+}
+.sidebar-hint {
+  position: fixed;
+  z-index: 200;
+  pointer-events: none;
+  transform: translateY(-50%);
+  width: max-content;
+  max-width: 250px;
+  padding: 8px 11px;
+  border: 1px solid #3b413b;
+  border-radius: 7px;
+  background: #292d2a;
+  color: #dfe4da;
+  box-shadow: 0 5px 18px #0004;
+  font:
+    11px/1.6 Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 800px) {
+  :root {
+    --ui-page-gutter: 24px;
+    --ui-title-size: 24px;
+  }
+  .library-shell .restores-heading {
+    padding-block: 25px 20px;
+  }
+}
+@media (max-width: 650px) {
+  :root {
+    --ui-page-gutter: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .library-shell .home-session-card,
+  .library-shell .home-rename-session {
+    transition: none;
+  }
+}

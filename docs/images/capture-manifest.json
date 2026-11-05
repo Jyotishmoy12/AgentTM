@@ -1,0 +1,30 @@
+{
+  "source": "Current source-build production React UI; existing disposable Codex demo recording",
+  "images": {
+    "overview.png": {
+      "width": 3200,
+      "height": 2000,
+      "source": "../../website/public/images/overview.png",
+      "sha256": "e464d723c1c17fa24e2187273a49669335305672675d338f83ae95e3b2368004"
+    },
+    "history-overview.png": {
+      "width": 2740,
+      "height": 1854,
+      "source": "../../website/public/images/history-detail.png",
+      "sha256": "af68f8bbe170f3b070c99715d81a192bc94c8def51c43d5855241ab32acd135a"
+    },
+    "checkpoint-explorer.png": {
+      "width": 2740,
+      "height": 1854,
+      "source": "../../website/public/images/explorer-detail.png",
+      "sha256": "d9fd5cc0dfd0d23416bc121b4c456b456500e9ea65d81da947925b26ee03effb"
+    },
+    "restored-workspaces.png": {
+      "width": 2740,
+      "height": 1854,
+      "source": "../../website/public/images/workspaces-detail.png",
+      "sha256": "c080bac8280a8f8f22fb859c260593f30a17cfc160fdbcb19b1b04ef83894e52"
+    }
+  },
+  "originalPreserved": true
+}
