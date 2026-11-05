@@ -9,7 +9,7 @@ on resale and original implementation reuse.
 Third-party licenses and GitHub's public-repository terms remain in force. See
 [licensing details](docs/licensing.md).
 
-![AgentTM Overview with recorded sessions](docs/images/overview.png)
+![AgentTM Overview with recorded sessions](images/overview.png)
 
 Current source-build interface, using an existing disposable demo recording.
 Check your release notes for the interface included in a published binary.
@@ -53,21 +53,25 @@ dashboard. See the dated [launch audit](docs/launch-audit.md) for verified resul
 and platform gaps; historical audit results do not describe every later release.
 See also the [v0.3.3 release validation and onboarding follow-up](docs/release-validation-v0.3.3.md).
 
-<details>
-<summary>Explore the current interface: History, Checkpoint Explorer, and restored workspaces</summary>
+## Explore the interface
 
 These source-build captures use an existing disposable Codex demo recording.
 They show the interface, not a new execution or a claim about every release.
 
-![Visual History with recorded events and workspace checkpoints](docs/images/history-overview.png)
+### History
 
-![Focused Checkpoint Explorer with historical files and differences](docs/images/checkpoint-explorer.png)
+![Visual History with recorded events and workspace checkpoints](images/history-overview.png)
 
-![Restored workspaces list and selected workspace details](docs/images/restored-workspaces.png)
+### Checkpoint Explorer
 
-[Screenshot provenance](docs/images/capture-manifest.json).
+![Focused Checkpoint Explorer with historical files and differences](images/checkpoint-explorer.png)
 
-</details>
+### Restored workspaces
+
+![Restored workspaces list and selected workspace details](images/restored-workspaces.png)
+
+The full-resolution PNGs are available in the [images folder](images/README.md)
+for sharing. [Screenshot provenance](docs/images/capture-manifest.json).
 
 ## Installation
 
