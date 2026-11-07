@@ -6,10 +6,11 @@ for (const width of [375, 768, 1024, 1440]) {
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto('/');
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Know what happened.');
-    await page.locator('.hero-preview img').evaluate(async (image: HTMLImageElement) => {
-      await image.decode();
-    });
-    await expect(page.locator('.hero-preview img')).toHaveJSProperty('naturalWidth', 3200);
+    await expect(page.locator('.hero-preview video')).toHaveAttribute(
+      'poster',
+      /product-tour-poster.png$/,
+    );
+    await expect(page.locator('.hero-preview video')).toHaveJSProperty('videoWidth', 1920);
     await expect(page.locator('.hero h1')).toHaveCSS('opacity', '1');
     await expect(page.locator('.hero-preview .product-frame')).toHaveCSS('opacity', '1');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -91,17 +92,8 @@ test('copy feedback and accessible video playback controls', async ({ page, cont
   await page.getByRole('button', { name: 'Copy agenttm init', exact: true }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Copied' })).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('agenttm init');
-  const trigger = page.getByRole('button', {
-    name: 'Watch the 30-second demo',
-  });
-  await trigger.click();
-  const dialog = page.getByRole('dialog', { name: 'AgentTM in 30 seconds' });
-  await expect(dialog).toBeVisible();
-  await expect(page.locator('video')).toHaveJSProperty('controls', true);
-  await expect(page.locator('video')).toHaveJSProperty('autoplay', false);
-  await page.keyboard.press('Escape');
-  await expect(dialog).not.toBeVisible();
-  await expect(trigger).toBeFocused();
+  await expect(page.locator('.video-trigger')).toHaveCount(0);
+  await expect(page.locator('.hero-preview video')).toHaveJSProperty('controls', false);
 });
 
 test('download choices distinguish desktop from CLI and keep the matching guide in sync', async ({
@@ -155,7 +147,7 @@ test('production page has no missing local resources or placeholder links', asyn
   await page.goto('/');
   for (const name of ['File history & diffs', 'Safe restoration'])
     await page.getByRole('tab', { name }).click();
-  await page.getByRole('button', { name: 'Watch the 30-second demo' }).click();
+  await page.locator('.hero-preview video').scrollIntoViewIfNeeded();
   await page.locator('video').evaluate(
     (video) =>
       new Promise<void>((resolve, reject) => {
@@ -170,7 +162,7 @@ test('production page has no missing local resources or placeholder links', asyn
         }
       }),
   );
-  expect(await page.locator('video').evaluate((video) => Math.round(video.duration))).toBe(30);
+  expect(await page.locator('video').evaluate((video) => Math.round(video.duration))).toBe(40);
   expect(await page.locator('a[href="#"]').count()).toBe(0);
   expect(failed).toEqual([]);
 });

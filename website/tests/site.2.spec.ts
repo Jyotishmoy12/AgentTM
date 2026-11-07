@@ -139,11 +139,12 @@ test('Git comparison is accurate, linked and usable on mobile', async ({ page })
     .screenshot({ path: test.info().outputPath('comparison-mobile.png') });
 });
 
-test('website uses current desktop captures and labels the older workflow video', async ({
-  page,
-}) => {
+test('website uses current desktop captures and the updated product film', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('.hero-preview img')).toHaveAttribute('src', /history.png$/);
+  await expect(page.locator('.hero-preview video')).toHaveAttribute(
+    'poster',
+    /product-tour-poster.png$/,
+  );
   await expect(page.locator('.preview-caption')).toContainText('Current desktop source build');
   for (const [tab, file] of [
     ['Session timeline', 'history-detail.png'],
@@ -163,8 +164,11 @@ test('website uses current desktop captures and labels the older workflow video'
     expect(box!.height).toBeGreaterThan(100);
     await page.locator('#features').screenshot({ path: test.info().outputPath(file) });
   }
-  await page.getByRole('button', { name: 'Watch the 30-second demo', exact: true }).click();
-  await expect(page.getByRole('dialog', { name: 'AgentTM in 30 seconds' })).toContainText(
-    'Earlier-interface workflow demo',
+  await expect(page.locator('.hero-preview video')).toHaveAttribute(
+    'src',
+    /agenttm-product-tour.mp4$/,
   );
+  await expect(
+    page.getByRole('button', { name: 'Watch the 30-second demo', exact: true }),
+  ).toHaveCount(0);
 });

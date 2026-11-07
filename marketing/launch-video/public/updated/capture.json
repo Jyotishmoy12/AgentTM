@@ -1,0 +1,119 @@
+{
+  "capturedAt": "2026-11-07T13:55:17.728Z",
+  "viewport": {
+    "width": 1600,
+    "height": 800
+  },
+  "pixels": {
+    "width": 3200,
+    "height": 1600
+  },
+  "session": "21c05021-8fa3-4272-bb26-95c59135f4f2",
+  "checkpoint": "e1898a98-75eb-4d99-a95e-a667309b923b",
+  "source": "Current production React UI; existing real Codex recording; edited demonstration",
+  "restore": {
+    "branch_name": "agenttm/cart-checkpoint-ty5x",
+    "checkpoint_id": "e1898a98-75eb-4d99-a95e-a667309b923b",
+    "created_at": "2026-11-07T13:55:15.0797881Z",
+    "id": "29293683-167f-4904-ba6a-49149d76e8ee",
+    "status": "ready",
+    "worktree_path": "C:\\dev\\AgentTM\\.test-work\\launch-film-27cbe606-6e67-4aef-abe2-1b264c98bc0c\\demo-checkout\\.agenttm\\worktrees\\cart-checkpoint-ty5x"
+  },
+  "originalPreserved": true,
+  "before": {
+    "head": "e699a61dac4da126d88dbd47d3efbb48aed0a0f0",
+    "index": "1a34b06ded021d1dbbb6fdbcc37c0690c1069e8bfe86c4c3f8392bf1ae3711e2",
+    "cart": "86fd7ebd39839406b37ef3ee57ad2139e2dec691377c10cc0558e6c89ff229f5",
+    "tests": "e482c27ae8634eea18b91e6639a2550c23d22ad2405b67208b16992231f1c2d3"
+  },
+  "after": {
+    "head": "e699a61dac4da126d88dbd47d3efbb48aed0a0f0",
+    "index": "1a34b06ded021d1dbbb6fdbcc37c0690c1069e8bfe86c4c3f8392bf1ae3711e2",
+    "cart": "86fd7ebd39839406b37ef3ee57ad2139e2dec691377c10cc0558e6c89ff229f5",
+    "tests": "e482c27ae8634eea18b91e6639a2550c23d22ad2405b67208b16992231f1c2d3"
+  },
+  "browserErrors": [],
+  "shots": {
+    "overview": {
+      "targets": {
+        "history": {
+          "x": 114.5,
+          "y": 214
+        }
+      },
+      "sha256": "3bf18bfa83e78d436e5b4f8a0a0b3fef5887e99c4ee55fb251ac3816f64724a6"
+    },
+    "history": {
+      "targets": {
+        "filter": {
+          "x": 582.2265625,
+          "y": 540.21875
+        }
+      },
+      "sha256": "33123970a177e97a98aaf42f65088647305f4824e5687637943c4f0394785b3a"
+    },
+    "checkpoints": {
+      "targets": {
+        "inspect": {
+          "x": 1374.4609375,
+          "y": 480
+        }
+      },
+      "sha256": "e090306fd6fc60e6371b8b535eab6e19e567ac653a1f28ee47b0cf9d4f0730d1"
+    },
+    "files": {
+      "targets": {
+        "changes": {
+          "x": 343.0078125,
+          "y": 203.6875
+        }
+      },
+      "sha256": "4f827fa8f640904ec06c0ad2ba1de0f5f10929a989acd0d12b69080e9a73fd82"
+    },
+    "changes": {
+      "targets": {
+        "split": {
+          "x": 471.046875,
+          "y": 203.6875
+        }
+      },
+      "sha256": "b72444ee2686ca2430a705630343b7e887fe76a65fb29829328bac6bcad82ea4"
+    },
+    "split": {
+      "targets": {
+        "restore": {
+          "x": 1518.3515625,
+          "y": 87.34375
+        }
+      },
+      "sha256": "fb428bbe98ec458314d8e38cc8a8b8d302d34dca867948ebba4e8f2f9485f9a3"
+    },
+    "restore": {
+      "targets": {
+        "confirm": {
+          "x": 976.3984375,
+          "y": 682.40625
+        }
+      },
+      "sha256": "ea3f9c5dda264f3176a0bc7082ab00be24440a337db1e3e04db9bfda601b75ca"
+    },
+    "restored": {
+      "targets": {
+        "view": {
+          "x": 914.9609375,
+          "y": 575.375
+        }
+      },
+      "sha256": "2af46df09bccd637bc35f8dc469790a56e9ddaae5ab3ac36e39c76e80cd13647"
+    },
+    "workspaces": {
+      "targets": {
+        "row": {
+          "x": 749,
+          "y": 335.1875
+        }
+      },
+      "sha256": "78117ad004c06119d1baf36b1da74be441934dd4915e67e7cbb12ff0647d813b"
+    }
+  }
+}

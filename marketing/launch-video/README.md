@@ -1,5 +1,9 @@
 # AgentTM launch video
 
+The [updated product film](UPDATED.md) uses the current UI, full-frame product
+views, animated cursor interactions, smooth zooms, and audio. New exports are in
+`out/updated/`; the original film described below is preserved.
+
 An editable 30-second, 1920×1080, 30 fps promo: record a managed Codex run,
 inspect its captured changes, and restore a checkpoint into an isolated worktree.
 Created using [video-shotcraft](https://github.com/Vincentwei1021/video-shotcraft)

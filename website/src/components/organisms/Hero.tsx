@@ -1,13 +1,10 @@
-import { useState } from 'react';
 import { links } from '../../content';
 import { Icon } from '../atoms/Icon';
 import { ProductHuntBadge } from '../molecules/ProductHuntBadge';
 import { AmbientField } from './AmbientField';
-import { DemoVideo } from './DemoVideo';
-import { ProductPreview } from './ProductPreview';
+import { HeroFilm } from './HeroFilm';
 
 export function Hero() {
-  const [videoOpen, setVideoOpen] = useState(false);
   return (
     <section className="hero" aria-labelledby="hero-title">
       <AmbientField />
@@ -39,27 +36,17 @@ export function Hero() {
         <p className="platform-note">
           Windows desktop <span>·</span> Windows / macOS / Linux CLI
         </p>
-        <button type="button" className="video-trigger" onClick={() => setVideoOpen(true)}>
-          <span>
-            <Icon name="play" />
-          </span>{' '}
-          Watch the 30-second demo <Icon name="arrow" />
-        </button>
         <div className="hero-preview">
           <span className="preview-corner corner-tl" aria-hidden="true" />
           <span className="preview-corner corner-tr" aria-hidden="true" />
           <span className="preview-edge-label" aria-hidden="true">
             WORKSPACE HISTORY / 001
           </span>
-          <ProductPreview
-            image="history.png"
-            alt="Current AgentTM History interface showing actual recorded Codex activity and captured workspace states in a disposable demo project."
-            eager
-          />
+          <HeroFilm />
         </div>
-        <div className="preview-caption">
+        <div className="preview-caption" id="hero-film-caption">
           <span>
-            <i className="status-dot" /> Current desktop source build · disposable demo project
+            <i className="status-dot" /> Current desktop source build · 40-second recorded demo
           </span>
           <span>Record. Inspect. Restore.</span>
         </div>
@@ -82,7 +69,6 @@ export function Hero() {
           </span>
         </div>
       </div>
-      <DemoVideo open={videoOpen} onClose={() => setVideoOpen(false)} />
     </section>
   );
 }

@@ -1,0 +1,25 @@
+.hero-film {
+  aspect-ratio: 16 / 9;
+  background: #101312;
+}
+.hero-film > video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: inherit;
+}
+.hero-film-retry {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .hero-film-retry {
+    bottom: 10px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+}

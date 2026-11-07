@@ -47,7 +47,7 @@ test('muted product palette and edge-to-edge screenshots preserve the layout', a
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
-  await page.locator('.hero-preview img').evaluate(async (node: HTMLImageElement) => node.decode());
+  await expect(page.locator('.hero-preview video')).toHaveJSProperty('videoWidth', 1920);
   await page.screenshot({
     path: test.info().outputPath('muted-hero.png'),
     animations: 'disabled',

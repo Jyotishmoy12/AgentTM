@@ -150,12 +150,14 @@ The hosting domain has not been selected. Before public deployment:
 - [src/comparison.css](src/comparison.css) styles the responsive Git comparison.
   Its rows in `src/content.ts` distinguish Git's built-in tools from managed Codex
   recording, without claiming causal attribution or checkpoint-based chat rewind.
-- `public/images/video-poster.png`: original AgentTM launch artwork.
-- `public/media/agenttm-demo.mp4`: copy of the real 30-second promo with music and
-  effects from [the repository video](../docs/videos/agenttm-demo.mp4).
-  Its [credits and music terms](../docs/videos/CREDITS.md) still apply.
-  The player labels its earlier interface explicitly; the screenshots show the
-  current design. This pass does not regenerate the launch video.
+- `public/media/agenttm-product-tour.mp4`: web-optimized 40-second, 1080p/60-fps
+  silent export of the [updated product film](../marketing/launch-video/UPDATED.md).
+  It replaces the hero screenshot and the old demo-modal link. Playback starts
+  automatically near the viewport, loops muted without native controls, and
+  follows the website's motion toggle, tab visibility, and reduced-motion setting.
+- `public/images/product-tour-poster.png`: current-interface film preview shown
+  while loading or when automatic motion is disabled. Failed playback has a
+  retry action. The original 30-second media asset is retained for existing links.
 - [public/favicon.svg](public/favicon.svg): AgentTM history icon, rendered locally.
 
 To recapture the current UI, build the root CLI with the latest embedded frontend,
