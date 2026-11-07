@@ -14,8 +14,9 @@ button, Escape, the backdrop, or by choosing a guide. Desktop keeps a persistent
 sidebar. Native dialog behavior traps keyboard focus while the mobile menu is open.
 
 Documentation links use fragments such as `docs.html#desktop-install` and
-`docs.html#cli-install`. Publish **both HTML files and the assets directory**
-from `dist`; no server route rewrites are necessary. The build uses relative
+`docs.html#cli-install`. Publish the **entire `dist` directory**, including both
+HTML files and its `assets`, `images`, and `media` folders. No server route rewrites
+are necessary. The build uses relative
 asset paths for hosting at a subdirectory. macOS/Linux installation commands
 appear only after users choose an OS and enter their actual archive filename.
 
@@ -37,6 +38,10 @@ npm run dev
 Open the local URL printed by Vite (normally `http://127.0.0.1:5173`).
 
 ## Checks and build
+
+Vite reports generated bundle sizes in kB and gzip sizes, not source line counts.
+The production build separates `react-vendor` from `shared-ui` so framework code
+can be cached independently of application UI changes.
 
 ```sh
 npm run lint
