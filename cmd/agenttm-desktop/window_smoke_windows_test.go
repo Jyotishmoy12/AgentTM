@@ -14,10 +14,10 @@ import (
 
 	"agenttm/internal/process"
 	"agenttm/internal/project"
+
 	"golang.org/x/sys/windows"
 )
 
-// Opt in with a production GUI binary; normal CI runs never open a window.
 func TestNativeProjectWindowVisible(t *testing.T) {
 	binary := os.Getenv("AGENTTM_DESKTOP_SMOKE_BINARY")
 	if binary == "" {
@@ -44,11 +44,10 @@ func TestNativeProjectWindowVisible(t *testing.T) {
 	defer func() {
 		if handle != 0 {
 			_, _, _ = post.Call(uintptr(handle), 0x0010, 0, 0)
-		} // WM_CLOSE only for this test's child.
+		}
 		select {
 		case <-done:
 		case <-time.After(5 * time.Second):
-			// Terminate only the child created by this test and its WebView2 descendants.
 			kill := exec.Command("taskkill", "/PID", strconv.Itoa(cmd.Process.Pid), "/T", "/F")
 			process.HideWindow(kill)
 			_ = kill.Run()

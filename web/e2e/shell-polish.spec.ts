@@ -9,6 +9,10 @@ const launcher = readFileSync(
   new URL('../../internal/desktop/launcher.js', import.meta.url),
   'utf8',
 );
+const welcomeStyles = ['welcome.css', 'welcome-layout.css'].map((name) => ({
+  name,
+  body: readFileSync(new URL(`../../internal/desktop/${name}`, import.meta.url), 'utf8'),
+}));
 
 test('overview uses balanced available width and sidebar starts with project and search', async ({
   page,
@@ -109,12 +113,18 @@ test('first-launch welcome matches desktop styling and preserves cancellation an
   await page.route('**/launcher.js', (route) =>
     route.fulfill({ contentType: 'application/javascript', body: launcher }),
   );
+  for (const style of welcomeStyles) {
+    await page.route(`**/${style.name}`, (route) =>
+      route.fulfill({ contentType: 'text/css', body: style.body }),
+    );
+  }
   await page.goto('/welcome-preview');
   const button = page.getByRole('button', {
     name: 'Open a Git project',
     exact: true,
   });
   await expect(page.getByRole('heading', { name: 'Open your workspace.' })).toBeVisible();
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(30, 32, 34)');
   for (const size of [
     { width: 1240, height: 800 },
     { width: 760, height: 550 },

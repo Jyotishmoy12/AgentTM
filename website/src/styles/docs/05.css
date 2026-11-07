@@ -1,0 +1,104 @@
+.docs-drawer-heading button,
+.docs-menu-button {
+  place-items: center;
+  height: 34px;
+  width: 34px;
+  padding: 7px;
+  border: 1px solid #464c47;
+  border-radius: 6px;
+  background: #232624;
+  color: #b4bcb5;
+  cursor: pointer;
+}
+.docs-drawer-heading button .icon,
+.docs-menu-button .icon {
+  height: 18px;
+  width: 18px;
+}
+.docs-mobile-drawer .docs-sidebar-home {
+  display: flex;
+}
+.docs-mobile-drawer .docs-nav-group {
+  margin-top: 24px;
+}
+@media (max-width: 650px) {
+  .docs-topbar nav {
+    display: none;
+  }
+  .docs-menu-button {
+    display: grid;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .docs-layout > .docs-guide-sidebar {
+    display: none;
+  }
+}
+.docs-site {
+  background: var(--bg);
+  color: #e8e8e8;
+}
+.docs-topbar {
+  background: #0b0e0df5;
+  border-color: var(--line);
+}
+.docs-mobile-drawer {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.docs-article-heading h1,
+.docs-article h2,
+.docs-article strong {
+  color: #e8e8e8;
+}
+.docs-article p,
+.docs-article li,
+.docs-article-heading > p:last-child {
+  color: #b6bdb8;
+}
+.docs-article p a,
+.docs-article li a,
+.doc-note a,
+.doc-inline-link {
+  color: var(--accent);
+}
+.docs-article-heading .eyebrow,
+.doc-path-tag {
+  color: #79c997;
+}
+.docs-nav-group a[aria-current='page'],
+.doc-os-picker button[aria-pressed='true'] {
+  background: #203128;
+  border-color: #3c5845;
+  color: #c5eccd;
+}
+.docs-guide-search,
+.docs-site .code-block,
+.doc-filename {
+  background: #101412;
+  border-color: var(--line);
+}
+.doc-paths > a {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.doc-paths > a:hover {
+  background: #1b231e;
+  border-color: #47654e;
+}
+.doc-note {
+  background: #191d1b;
+  border-color: var(--line);
+  color: #bdc7bf;
+}
+.doc-caution {
+  background: #24231d;
+  border-color: #514b37;
+  color: #d0c6aa;
+}
+.docs-guide-search:focus-within {
+  border-color: var(--accent);
+}
+.docs-guide-search input:focus-visible {
+  outline: none;
+}

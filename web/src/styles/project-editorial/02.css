@@ -1,0 +1,34 @@
+.project-browser-command {
+  display: block;
+  color: #cbd2c7;
+  font-size: 12px;
+  user-select: text;
+}
+.project-dialog-footer {
+  border-top: 1px solid #303432;
+  margin-top: 23px;
+  padding-top: 14px;
+  font-size: 10px;
+  color: #9fa7a1;
+  line-height: 1.8;
+}
+@media (max-height: 600px) {
+  .editorial-project-dialog {
+    padding: 20px;
+  }
+  .project-current {
+    margin-top: 17px;
+  }
+  .editorial-project-dialog .project-switch-info {
+    margin-top: 17px;
+    padding-top: 16px;
+  }
+  .project-dialog-footer {
+    margin-top: 17px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .editorial-project-dialog button {
+    transition: none;
+  }
+}

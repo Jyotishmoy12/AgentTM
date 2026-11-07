@@ -1,0 +1,114 @@
+@media (min-width: 651px) and (max-width: 800px) {
+  .app-shell.library-shell.navigation-shell.refreshed-shell:not(.sidebar-collapsed) {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+  .library-shell:not(.sidebar-collapsed) .app-sidebar {
+    padding-inline: 14px;
+  }
+  .library-shell:not(.sidebar-collapsed) .app-sidebar nav > button {
+    justify-content: flex-start;
+    padding: 8px 10px;
+  }
+  .library-shell:not(.sidebar-collapsed) .app-sidebar nav > button > span:not(.nav-count) {
+    display: grid;
+  }
+  .library-shell:not(.sidebar-collapsed) .app-sidebar .project-selector {
+    justify-content: flex-start;
+    padding: 18px 8px 10px;
+  }
+  .library-shell:not(.sidebar-collapsed) .project-selector > span:nth-child(2) {
+    display: grid;
+  }
+  .library-shell:not(.sidebar-collapsed) .project-selector > .project-chevron {
+    display: block;
+  }
+  .library-shell:not(.sidebar-collapsed) .app-sidebar .sidebar-search {
+    justify-content: flex-start;
+  }
+  .library-shell:not(.sidebar-collapsed) .app-sidebar .sidebar-search > span {
+    display: inline;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-session-card {
+    transition: none;
+  }
+}
+.library-shell {
+  --wb-bg: #1d1f22;
+  --wb-panel: #232629;
+  --wb-raised: #2a2e30;
+  --wb-border: #373c3d;
+  --wb-text: #d9d9d9;
+  --wb-muted: #9c9c9b;
+}
+.library-shell .page-heading {
+  background: #1e2022;
+  border-color: #303434;
+}
+.library-shell .page-scroll {
+  background: #1e2022;
+}
+.library-shell .session-bar,
+.library-shell .workbench-toolbar,
+.library-shell .inspection-toolbar,
+.library-shell .panel-heading {
+  background: #25282b;
+  border-color: #373c3d;
+}
+.library-shell .history-workbench > .state-note {
+  background: #202325;
+}
+.library-shell .history-workbench > .state-note.last-known {
+  background: #2b281f;
+}
+.library-shell .history-rail,
+.library-shell .history-rail .timeline-filters,
+.library-shell .history-rail .timeline-footer,
+.library-shell .workbench-context,
+.library-shell .workbench-context .activity-panel {
+  background: #222529;
+  border-color: #373c3d;
+}
+.library-shell .history-type,
+.library-shell .context-restore,
+.library-shell .workbench-status,
+.library-shell .history-workbench .file-tree {
+  background: #24272a;
+  border-color: #373c3d;
+}
+.library-shell .history-workbench .file-heading,
+.library-shell .history-workbench .diff-heading,
+.library-shell .comparison-labels {
+  background: #25292c;
+  border-color: #393e3d;
+}
+.library-shell .history-row .event-card.selected {
+  background: #353534;
+  border-color: #5e5f5e;
+  box-shadow: inset 2px 0 #8b9e7d;
+}
+.library-shell .history-row .event-card:hover {
+  background: #313131;
+  border-color: #535453;
+}
+.library-shell .primary-button {
+  background: #9caf8d;
+  color: #192016;
+  border-color: #a4b597;
+}
+.library-shell .workbench-toolbar button.primary-button {
+  background: #93a680;
+  color: #192016;
+  border-color: #a0b18c;
+}
+.library-shell .primary-button:hover:not(:disabled) {
+  background: #adc19b;
+  border-color: #b5c9a3;
+}
+@media (max-height: 650px) and (min-width: 651px) {
+  .library-shell .topbar {
+    min-height: 40px;
+    height: 40px;
+  }
+}

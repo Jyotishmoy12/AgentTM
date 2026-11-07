@@ -1,0 +1,173 @@
+.inspection-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 38px;
+  flex-shrink: 0;
+  padding: 0 12px;
+  gap: 12px;
+  border-bottom: 1px solid var(--wb-border);
+  background: #252c35;
+}
+.inspection-toolbar > [role='tablist'] {
+  display: flex;
+  align-self: stretch;
+  gap: 17px;
+}
+.inspection-toolbar [role='tab'] {
+  padding: 0 2px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  border-radius: 0;
+  font-size: 12px;
+  color: #9aadc2;
+}
+.inspection-toolbar [role='tab'][aria-selected='true'] {
+  border-bottom-color: #99c47a;
+  color: #cfe4ba;
+}
+.diff-mode-switch {
+  display: flex;
+  gap: 0;
+  border: 1px solid #465367;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.diff-mode-switch button {
+  border: 0;
+  background: #202832;
+  color: #8fa1b8;
+  padding: 4px 7px;
+  font-size: 10px;
+  border-radius: 0;
+}
+.diff-mode-switch button[aria-pressed='true'] {
+  background: #3b4e3e;
+  color: #d1e2c3;
+}
+.inspector-host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+.inspector-host[hidden] {
+  display: none !important;
+}
+.historical-inspector {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.history-workbench .file-layout {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.history-workbench .file-tree {
+  background: #1c222a;
+  min-height: 0;
+  min-width: 0;
+  border-color: #35404f;
+}
+.file-list-title {
+  padding: 12px 10px 5px;
+  font-size: 10px;
+  font-family: Consolas, monospace;
+  color: #8198b1;
+  display: flex;
+  justify-content: space-between;
+}
+.history-workbench .file-tree > input {
+  font-size: 11px;
+  margin: 8px;
+  padding: 6px;
+  background: #141b22;
+  border-color: #36465b;
+}
+.history-workbench .tree-list {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 4px;
+}
+.history-workbench .tree-list button {
+  font-size: 11px;
+  padding: 7px 5px;
+  line-height: 1.6;
+  border-radius: 3px;
+  gap: 6px;
+  color: #a1b2c8;
+}
+.history-workbench .tree-list button.active-file {
+  background: #2f4030;
+  color: #cee1ba;
+  border-color: #4f6644;
+}
+.history-workbench .tree-folder summary {
+  font-size: 11px;
+  color: #93a8c3;
+}
+.history-workbench .tree-list .change-kind {
+  width: 15px;
+  flex-shrink: 0;
+  font-size: 10px;
+}
+.history-workbench .editor-panel {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  background: #191a1f;
+}
+.history-workbench .file-heading {
+  min-height: 35px;
+  padding: 8px 11px;
+  background: #202832;
+  border-bottom-color: #354153;
+  font-size: 11px;
+}
+.history-workbench .readonly-label {
+  font-size: 10px;
+  color: #7e91a9;
+}
+.history-workbench .code-viewer {
+  min-height: 0;
+  flex: 1;
+}
+.history-workbench .diff-heading {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 7px 10px;
+  background: #1b232c;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+  font-size: 10px;
+  border-bottom: 1px solid #303d4f;
+}
+.history-workbench .diff-heading strong {
+  color: #acbecf;
+}
+.history-workbench .diff-heading span {
+  color: #7b91ac;
+}
+.comparison-labels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 10px;
+  color: #7f95ae;
+  background: #1e2630;
+  border-bottom: 1px solid #344055;
+  flex-shrink: 0;
+}
+.comparison-labels > span:last-child {
+  text-align: right;
+}

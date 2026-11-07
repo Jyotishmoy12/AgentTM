@@ -4,33 +4,20 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 
-	"agenttm/internal/config"
 	"agenttm/internal/project"
 	"agenttm/internal/snapshot"
 	"agenttm/internal/storage"
 	"filippo.io/age"
 )
 
-const backupLimit int64 = 20 << 30
-
-type BackupInfo struct {
-	Version   int    `json:"version"`
-	ProjectID string `json:"project_id"`
-	Created   string `json:"created_at"`
-}
-
-// Backup streams history through tar/gzip and the standard age passphrase
-// format. It excludes live worktrees, Git history, and Codex credentials.
 func Backup(ctx context.Context, e *snapshot.Engine, destination, password string) (err error) {
 	if len(password) < 12 || len(password) > 1024 {
 		return fmt.Errorf("use a backup passphrase of 12..1024 characters")
@@ -66,7 +53,6 @@ func Backup(ctx context.Context, e *snapshot.Engine, destination, password strin
 	if projects != 1 {
 		return fmt.Errorf("backup requires a single-project history database")
 	}
-	// SQLite creates a consistent standalone copy, including committed WAL data.
 	stage, err := os.MkdirTemp(filepath.Join(base, "data"), ".backup-")
 	if err != nil {
 		return err
@@ -180,262 +166,4 @@ func Backup(ctx context.Context, e *snapshot.Engine, destination, password strin
 		return err
 	}
 	return out.Sync()
-}
-
-// RestoreBackup publishes validated history only into a Git repository with no
-// existing .agenttm directory. Neither current files nor Git refs are restored.
-func RestoreBackup(ctx context.Context, archivePath, destination, password string) (err error) {
-	root, err := project.Root(destination)
-	if err != nil {
-		return err
-	}
-	target := filepath.Join(root, ".agenttm")
-	if err = project.SafePath(target); err != nil {
-		return err
-	}
-	if _, err = os.Lstat(target); !os.IsNotExist(err) {
-		return fmt.Errorf("destination already has .agenttm; restore into a clean clone")
-	}
-	archivePath, err = canonicalBackupFile(archivePath)
-	if err != nil {
-		return err
-	}
-	input, err := os.Open(archivePath)
-	if err != nil {
-		return err
-	}
-	defer input.Close()
-	identity, err := age.NewScryptIdentity(password)
-	if err != nil {
-		return err
-	}
-	identity.SetMaxWorkFactor(18)
-	decrypted, err := age.Decrypt(input, identity)
-	if err != nil {
-		return fmt.Errorf("cannot decrypt backup: wrong passphrase or damaged file")
-	}
-	compressed, err := gzip.NewReader(decrypted)
-	if err != nil {
-		return fmt.Errorf("invalid backup payload")
-	}
-	defer compressed.Close()
-	stage, err := os.MkdirTemp(root, ".agenttm-restore-")
-	if err != nil {
-		return err
-	}
-	defer os.RemoveAll(stage)
-	base := filepath.Join(stage, ".agenttm")
-	if err = os.Mkdir(base, 0700); err != nil {
-		return err
-	}
-	archive := tar.NewReader(compressed)
-	seen := map[string]bool{}
-	var total int64
-	for count := 0; ; count++ {
-		if ctx.Err() != nil {
-			return ctx.Err()
-		}
-		header, readErr := archive.Next()
-		if readErr == io.EOF {
-			break
-		}
-		if readErr != nil {
-			return fmt.Errorf("backup is truncated or corrupt")
-		}
-		name := header.Name
-		if count > 1000000 || header.Typeflag != tar.TypeReg || !allowedBackupPath(name) || seen[name] || header.Size < 0 || header.Size > backupEntryLimit(name) {
-			return fmt.Errorf("unsafe or duplicate backup entry")
-		}
-		total += header.Size
-		if total > backupLimit {
-			return fmt.Errorf("backup exceeds 20 GiB extraction limit")
-		}
-		seen[name] = true
-		p := filepath.Join(base, filepath.FromSlash(name))
-		if err = os.MkdirAll(filepath.Dir(p), 0700); err != nil {
-			return err
-		}
-		file, err := os.OpenFile(p, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
-		if err != nil {
-			return err
-		}
-		_, copyErr := io.CopyN(file, archive, header.Size)
-		closeErr := file.Close()
-		if copyErr != nil {
-			return fmt.Errorf("backup is truncated or corrupt")
-		}
-		if closeErr != nil {
-			return closeErr
-		}
-	}
-	// Consume both trailers: a valid tar EOF alone does not authenticate an age
-	// stream's final chunk. No destination is published before authentication.
-	if n, readErr := io.Copy(io.Discard, io.LimitReader(compressed, 1)); readErr != nil || n != 0 {
-		return fmt.Errorf("backup authentication failed or trailing payload")
-	}
-	if _, err = io.Copy(io.Discard, decrypted); err != nil {
-		return fmt.Errorf("backup authentication failed")
-	}
-	if !seen["backup.json"] || !seen["config.json"] || !seen["data/events.db"] {
-		return fmt.Errorf("backup is incomplete")
-	}
-	b, err := os.ReadFile(filepath.Join(base, "backup.json"))
-	if err != nil {
-		return err
-	}
-	var meta BackupInfo
-	if json.Unmarshal(b, &meta) != nil || meta.Version != 1 || !snapshot.ValidID(meta.ProjectID) {
-		return fmt.Errorf("unsupported backup format")
-	}
-	c, err := config.Load(filepath.Join(base, "config.json"))
-	if err != nil {
-		return err
-	}
-	db, err := sql.Open("sqlite", filepath.Join(base, "data", "events.db"))
-	if err != nil {
-		return err
-	}
-	// Always close before the directory rename, particularly on Windows.
-	verifyErr := func() error {
-		var integrity string
-		if err := db.QueryRow("PRAGMA integrity_check").Scan(&integrity); err != nil || integrity != "ok" {
-			return fmt.Errorf("backup database integrity failed")
-		}
-		var version int
-		if err := db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version < 3 || version > storage.SchemaVersion {
-			return fmt.Errorf("unsupported backup database version")
-		}
-		violations, err := db.Query("PRAGMA foreign_key_check")
-		if err != nil {
-			return err
-		}
-		hasViolation := violations.Next()
-		checkErr := violations.Err()
-		violations.Close()
-		if checkErr != nil || hasViolation {
-			return fmt.Errorf("backup database contains broken references")
-		}
-		var count int
-		if err := db.QueryRow("SELECT count(*) FROM projects").Scan(&count); err != nil || count != 1 {
-			return fmt.Errorf("backup must contain one project")
-		}
-		if err := db.QueryRow("SELECT count(*) FROM projects WHERE id=?", meta.ProjectID).Scan(&count); err != nil || count != 1 {
-			return fmt.Errorf("backup project mismatch")
-		}
-		store := &storage.Store{DB: db, ProjectID: meta.ProjectID}
-		engine := snapshot.Engine{Root: stage, Store: store, Config: c}
-		rows, err := db.Query("SELECT id FROM checkpoints")
-		if err != nil {
-			return err
-		}
-		var ids []string
-		for rows.Next() {
-			var id string
-			if err = rows.Scan(&id); err != nil {
-				rows.Close()
-				return err
-			}
-			ids = append(ids, id)
-		}
-		err = rows.Err()
-		rows.Close()
-		if err != nil {
-			return err
-		}
-		for _, id := range ids {
-			m, err := engine.Load(id)
-			if err != nil {
-				return err
-			}
-			for _, f := range m.Files {
-				if _, err = engine.ReadObject(f); err != nil {
-					return err
-				}
-			}
-		}
-		if _, err = db.Exec("UPDATE projects SET root_path=? WHERE id=?", root, meta.ProjectID); err != nil {
-			return err
-		}
-		_, err = db.Exec("PRAGMA wal_checkpoint(TRUNCATE)")
-		return err
-	}()
-	closeErr := db.Close()
-	if verifyErr != nil {
-		return verifyErr
-	}
-	if closeErr != nil {
-		return closeErr
-	}
-	if err = os.Remove(filepath.Join(base, "backup.json")); err != nil {
-		return err
-	}
-	for _, area := range []string{"objects", "manifests", "logs"} {
-		if err = os.MkdirAll(filepath.Join(base, area), 0700); err != nil {
-			return err
-		}
-	}
-	if _, err = os.Lstat(target); !os.IsNotExist(err) {
-		return fmt.Errorf("destination changed; restore cancelled")
-	}
-	return os.Rename(base, target)
-}
-
-// Selected archive directories can have OS aliases such as macOS /var or /tmp.
-// Resolve the parent only: the archive itself must not be a symlink, and paths
-// explicitly inside protected storage must pass SafePath before any resolution.
-func canonicalBackupFile(name string) (string, error) {
-	p, err := filepath.Abs(name)
-	if err != nil {
-		return "", err
-	}
-	for current := p; ; current = filepath.Dir(current) {
-		base := filepath.Base(current)
-		if strings.EqualFold(base, ".agenttm") || strings.EqualFold(base, ".git") {
-			if err = project.SafePath(p); err != nil {
-				return "", err
-			}
-			break
-		}
-		if filepath.Dir(current) == current {
-			break
-		}
-	}
-	parent, err := filepath.EvalSymlinks(filepath.Dir(p))
-	if err != nil {
-		return "", err
-	}
-	p = filepath.Join(parent, filepath.Base(p))
-	if err = project.SafePath(p); err != nil {
-		return "", err
-	}
-	return p, nil
-}
-
-func allowedBackupPath(name string) bool {
-	if name == "backup.json" || name == "config.json" || name == "data/events.db" {
-		return true
-	}
-	if path.Clean(name) != name || strings.ContainsAny(name, "\\:") || strings.HasPrefix(name, "/") {
-		return false
-	}
-	parts := strings.Split(name, "/")
-	if len(parts) == 2 && (parts[0] == "manifests" || parts[0] == "logs") {
-		return strings.HasSuffix(parts[1], ".json") && snapshot.ValidID(strings.TrimSuffix(parts[1], ".json"))
-	}
-	return len(parts) == 3 && parts[0] == "objects" && snapshot.ValidHash(parts[2]) && parts[1] == parts[2][:2]
-}
-
-func backupEntryLimit(name string) int64 {
-	switch {
-	case name == "backup.json":
-		return 4096
-	case name == "data/events.db":
-		return 8 << 30
-	case strings.HasPrefix(name, "objects/"):
-		return snapshot.MaxBlobBytes
-	case strings.HasPrefix(name, "manifests/"):
-		return snapshot.MaxManifestBytes
-	default:
-		return 1 << 20
-	}
 }

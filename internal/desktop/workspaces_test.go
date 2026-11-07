@@ -1,13 +1,14 @@
 package desktop
 
 import (
-	"agenttm/internal/project"
-	"agenttm/internal/storage"
 	"context"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"agenttm/internal/project"
+	"agenttm/internal/storage"
 )
 
 func TestRecordedWorkspaceFolderChecks(t *testing.T) {
@@ -69,7 +70,6 @@ func TestRecordedWorkspaceFolderChecks(t *testing.T) {
 	if result.Path != available || !strings.Contains(result.Message, "not re-verified") {
 		t.Fatal("folder check implied integrity verification")
 	}
-	// A saved ready record does not prove that the directory still exists.
 	check(add(filepath.Join(base, "removed")), "missing")
 	ordinaryFile := filepath.Join(base, "file")
 	if err = os.WriteFile(ordinaryFile, []byte("not a directory"), 0600); err != nil {

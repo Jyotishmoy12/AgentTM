@@ -28,8 +28,6 @@ export function eventFailed(event: RecordedEvent) {
     (typeof item.exit_code === 'number' && item.exit_code !== 0)
   );
 }
-
-/** Labels describe the received notification, never assumed tool execution. */
 export function activityKind(event: RecordedEvent) {
   const payload = record(event.payload),
     item = record(payload.item);
@@ -94,8 +92,6 @@ export function activityKind(event: RecordedEvent) {
     hint: 'Session activity',
   };
 }
-
-/** Only explicit IDs are eligible. Never assign a turn by event proximity. */
 export function eventGroupKey(event: RecordedEvent): string {
   if (eventFailed(event) || event.checkpoint_id || !event.kind.startsWith('item.')) return '';
   const payload = record(event.payload);

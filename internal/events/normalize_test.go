@@ -6,14 +6,6 @@ import (
 	"testing"
 )
 
-func TestRedaction(t *testing.T) {
-	for _, secret := range []string{"sk-abcdefghijklmnop", "ghp_abcdefghijklmnop", "AKIA1234567890123456", "password=hunter2", "Bearer abcdef12345", "postgres://user:password@localhost/db", "-----BEGIN PRIVATE KEY-----\nsecret\n-----END PRIVATE KEY-----"} {
-		got := Redact(secret)
-		if got == secret || !strings.Contains(got, "[REDACTED]") {
-			t.Errorf("redaction failed: %q", got)
-		}
-	}
-}
 func TestNormalize(t *testing.T) {
 	for _, line := range []string{`{"type":"item.completed"}`, `{"type":"future","password":"hunter2"}`, `broken`, `null`} {
 		r := Normalize([]byte(line), 1024, "")
@@ -37,21 +29,7 @@ func TestNormalize(t *testing.T) {
 		t.Fatalf("invalid truncation %d", len(r.Payload))
 	}
 }
-func TestReadJSONL(t *testing.T) {
-	input := "\n{\"type\":\"turn.started\"}\n" + strings.Repeat("x", 200) + "\nmalformed\n{\"type\":\"turn.completed\"}"
-	var lines int
-	var huge int
-	e := ReadJSONL(strings.NewReader(input), 100, func(b []byte, oversized bool) error {
-		lines++
-		if oversized {
-			huge++
-		}
-		return nil
-	})
-	if e != nil || lines != 4 || huge != 1 {
-		t.Fatalf("%d %d %v", lines, huge, e)
-	}
-}
+
 func TestEmbeddedSecretsAndUsageCounters(t *testing.T) {
 	r := Normalize([]byte(`{"type":"error","message":"{\"api_key\":\"do-not-store\"}"}`), 4096, "")
 	if strings.Contains(string(r.Payload), "do-not-store") {

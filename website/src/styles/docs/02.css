@@ -1,0 +1,167 @@
+.docs-article-heading h1:focus {
+  outline: none;
+}
+.docs-article-heading > p:last-child {
+  font-size: 13px;
+  color: #afb4b1;
+}
+.docs-article p,
+.docs-article li {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #b3b7b4;
+}
+.docs-article p {
+  margin: 12px 0;
+}
+.docs-article h2 {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -0.025em;
+  margin: 32px 0 14px;
+  color: #c8cdc6;
+}
+.docs-article strong {
+  color: #d3d7d1;
+  font-weight: 550;
+}
+.docs-article p a,
+.docs-article li a,
+.doc-note a {
+  color: #a8b4ab;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: #515953;
+}
+.docs-article a:hover {
+  color: #d4dad1;
+}
+.docs-article code {
+  overflow-wrap: anywhere;
+  font:
+    11px/1.8 'Cascadia Code',
+    Consolas,
+    monospace;
+  color: #bfc5bc;
+}
+.docs-article ul,
+.docs-article ol {
+  padding-left: 21px;
+}
+.docs-article li {
+  margin: 8px 0;
+}
+.docs-article blockquote {
+  margin: 17px 0;
+  padding: 15px 19px;
+  border-left: 2px solid #8b978d;
+  background: #1e211f;
+  font-size: 14px;
+  color: #cacfc9;
+  line-height: 1.8;
+}
+.doc-paths {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 26px 0;
+}
+.doc-paths > a {
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  padding: 25px;
+  border: 1px solid #404641;
+  border-radius: 12px;
+  background: radial-gradient(ellipse at top left, #30363140, transparent), #171a18;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+.doc-paths > a:hover {
+  background-color: #222623;
+  border-color: #737b73;
+}
+.doc-paths > a > .icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 18px;
+}
+.doc-path-tag {
+  font-size: 8px;
+  letter-spacing: 0.09em;
+  color: #9da49d;
+}
+.doc-paths h2 {
+  margin: 9px 0;
+  font-size: 26px;
+}
+.doc-paths p {
+  font-size: 12px;
+  flex: 1;
+}
+.doc-paths strong {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+  margin-top: 19px;
+}
+.doc-paths strong .icon {
+  width: 14px;
+  height: 14px;
+}
+.doc-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 15px 17px;
+  margin: 23px 0;
+  border: 1px solid #3e433f;
+  border-radius: 8px;
+  background: #1d201e;
+  color: #bdc1bd;
+  font-size: 12px;
+  line-height: 1.9;
+}
+.doc-note > .icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.doc-note > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.doc-caution {
+  background: #222320;
+  border-color: #4f504a;
+  color: #c3c4bd;
+}
+.doc-checklist {
+  list-style: none;
+  padding: 0 !important;
+  margin: 23px 0;
+}
+.doc-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-bottom: 1px solid #282b28;
+  padding: 12px 0;
+  margin: 0;
+}
+.doc-checklist .icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.doc-step {
+  display: grid;
+  grid-template-columns: 29px minmax(0, 1fr);
+  gap: 15px;
+  margin: 38px 0;
+}

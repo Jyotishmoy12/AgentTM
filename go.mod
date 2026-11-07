@@ -6,6 +6,7 @@ require (
 	filippo.io/age v1.3.2
 	github.com/wailsapp/wails/v2 v2.11.0
 	modernc.org/sqlite v1.48.2
+	go.uber.org/goleak v1.3.0
 )
 
 require (

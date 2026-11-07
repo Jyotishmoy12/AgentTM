@@ -1,0 +1,174 @@
+.history-event-group {
+  margin: 10px 0 18px 16px;
+  min-width: 0;
+  border-bottom: 1px solid #393938;
+  padding: 10px 0 15px;
+}
+.history-event-group > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 4px 20px 4px 0;
+  position: relative;
+}
+.history-event-group > summary:after {
+  content: '+';
+  position: absolute;
+  right: 0;
+  color: #a2a3a1;
+}
+.history-event-group[open] > summary:after {
+  content: '−';
+}
+.history-event-group > summary > strong {
+  font-size: 12px;
+  font-weight: 550;
+  color: #cecfcd;
+}
+.history-event-group > summary > span {
+  font-size: 10px;
+  color: #a6a7a5;
+}
+.group-explanation {
+  font-size: 10px;
+  color: #a4a5a3;
+  margin: 13px 0 2px;
+}
+.grouped-event {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 4px;
+}
+.grouped-event > time {
+  font-size: 9px;
+  padding-top: 15px;
+  color: #aaaba9;
+}
+.grouped-event .history-event {
+  padding-left: 0;
+}
+@media (max-width: 800px) {
+  .history-sticky-summary span {
+    display: none;
+  }
+  .milestone-content > .milestone-actions {
+    flex-basis: 150px;
+  }
+  .milestone-content .editorial-kicker > time {
+    display: block;
+    margin: 5px 0 0;
+  }
+  .history-event-group > summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+}
+@media (max-width: 650px) {
+  .history-event-group {
+    grid-column: 2;
+  }
+  .milestone-content > .milestone-actions {
+    flex-basis: 100%;
+  }
+  .grouped-event {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .grouped-event > time {
+    padding-top: 12px;
+  }
+  .grouped-event .history-event {
+    padding-top: 6px;
+  }
+  .density-bars {
+    gap: 3px;
+  }
+}
+.density-times {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 9px;
+  font-variant-numeric: tabular-nums;
+}
+.history-filterbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  border-bottom: 1px solid #373736;
+  padding-bottom: 13px;
+  gap: 10px;
+}
+.history-filters {
+  display: flex;
+  gap: 5px;
+}
+.history-filters button {
+  font-size: 12px;
+  padding: 8px 13px;
+  color: #b2b2b1;
+}
+.history-filters button[aria-pressed='true'] {
+  background: #333532;
+  color: #e5e5e4;
+}
+.history-operations-toggle {
+  font-size: 11px;
+}
+.history-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 19px 0 10px;
+}
+.history-search > svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #939392;
+}
+.history-search input {
+  flex: 1;
+  width: 0;
+  min-width: 80px;
+  background: transparent;
+  border: 0;
+  color: #dddddc;
+  font-size: 12px;
+  padding: 8px 0;
+}
+.history-search select {
+  background: #242725;
+  border: 1px solid #3a3a39;
+  max-width: 190px;
+  font-size: 11px;
+  color: #c2c2c1;
+  padding: 7px;
+}
+.chronology {
+  list-style: none;
+  padding: 10px 0 0;
+}
+.chronology-row {
+  display: grid;
+  grid-template-columns: 80px 34px minmax(0, 1fr);
+  position: relative;
+  min-height: 64px;
+}
+.chronology-row > time {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: #a4a4a3;
+  padding-top: 17px;
+  white-space: nowrap;
+}
+.timeline-marker {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  padding-top: 21px;
+  position: relative;
+}

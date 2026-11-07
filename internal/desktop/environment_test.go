@@ -1,12 +1,13 @@
 package desktop
 
 import (
-	"agenttm/internal/project"
 	"context"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"agenttm/internal/project"
 )
 
 func TestGitEnvironmentVerifiesExpectedRootWithoutChanges(t *testing.T) {

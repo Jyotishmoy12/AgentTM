@@ -63,7 +63,6 @@ func verifyRelease(directory, version string) error {
 	if len(seen) == 0 {
 		return fmt.Errorf("empty checksum manifest")
 	}
-	// An archive accidentally omitted from SHA256SUMS must not be publishable.
 	entries, err := os.ReadDir(directory)
 	if err != nil {
 		return err
@@ -101,8 +100,6 @@ func verifyArchive(path string, desktop bool) error {
 		binary = "AgentTM.exe"
 	}
 	expected := map[string]bool{binary: false, "README.md": false, "RESTORE.md": false, "THIRD_PARTY_NOTICES.txt": false}
-	// Preserve verification of historical published archives. New package
-	// versions must carry the proprietary terms alongside dependency notices.
 	expected["LICENSE"] = false
 	expected["NOTICE"] = false
 	historical := historicalUnlicensedVersion(filepath.Base(path))

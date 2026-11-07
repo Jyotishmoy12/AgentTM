@@ -1,0 +1,39 @@
+@media (max-width: 850px) {
+  .focus-layout {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 25px;
+  }
+  .focus-heading {
+    display: block;
+    margin-bottom: 35px;
+  }
+  .focus-heading > p {
+    margin-top: 20px;
+  }
+  .focus-heading > p > br {
+    display: none;
+  }
+  .focus-shot {
+    aspect-ratio: 1.2;
+  }
+  .focus-viewer-bar {
+    padding: 10px 12px;
+  }
+  .focus-viewer-bar > span {
+    font-size: 7px;
+    line-height: 1.6;
+  }
+  .capture-expand > span {
+    display: none;
+  }
+  .focus-caption h3 {
+    font-size: 19px;
+  }
+  .focus-image-label {
+    padding: 10px 12px;
+    font-size: 5px;
+  }
+  .focus-image-label > span:last-child {
+    display: none;
+  }
+}

@@ -11,52 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"agenttm/internal/operation"
 	"agenttm/internal/project"
 	"agenttm/internal/snapshot"
 	"agenttm/internal/storage"
 )
 
-// Quiesce excludes new managed recordings, snapshots, forks and purges. Locks
-// survive crashes; an old active session requires diagnosis rather than guessing.
-func Quiesce(root string, s *storage.Store) (func(), error) {
-	var releases []func()
-	release := func() {
-		for i := len(releases) - 1; i >= 0; i-- {
-			releases[i]()
-		}
-	}
-	for _, name := range []string{"maintenance", "recording", "snapshot"} {
-		unlock, err := operation.Acquire(root, name)
-		if err != nil {
-			release()
-			return nil, err
-		}
-		releases = append(releases, unlock)
-	}
-	var active int
-	if err := s.DB.QueryRow("SELECT count(*) FROM sessions WHERE status='active'").Scan(&active); err != nil {
-		release()
-		return nil, err
-	}
-	if active > 0 {
-		release()
-		return nil, fmt.Errorf("finish or diagnose active recordings before maintenance")
-	}
-	return release, nil
-}
-
-type GCReport struct {
-	Objects    int    `json:"objects"`
-	Referenced int    `json:"referenced"`
-	Candidates int    `json:"candidates"`
-	Bytes      int64  `json:"bytes"`
-	Removed    int    `json:"removed"`
-	Token      string `json:"token"`
-}
-
-// Collect removes only canonical blobs unreachable from every indexed manifest
-// in this database. A preview token binds deletion to the exact candidate set.
 func Collect(engine *snapshot.Engine, apply bool, expected string, minAge time.Duration) (GCReport, error) {
 	var report GCReport
 	if minAge < 0 {
@@ -71,7 +30,6 @@ func Collect(engine *snapshot.Engine, apply bool, expected string, minAge time.D
 	if err != nil {
 		return report, err
 	}
-	type checkpoint struct{ id, session string }
 	var checkpoints []checkpoint
 	for rows.Next() {
 		var c checkpoint
@@ -126,11 +84,6 @@ func Collect(engine *snapshot.Engine, apply bool, expected string, minAge time.D
 	base := filepath.Join(engine.Root, ".agenttm", "objects")
 	if err = project.SafePath(base); err != nil {
 		return report, err
-	}
-	type candidate struct {
-		path     string
-		size     int64
-		modified int64
 	}
 	var candidates []candidate
 	cutoff := time.Now().Add(-minAge)

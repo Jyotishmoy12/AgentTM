@@ -42,7 +42,7 @@ jobs:
           version="${REQUESTED_VERSION:-${GITHUB_REF_NAME#v}}"
           go run ./cmd/release --version "$version"
           cp scripts/install.ps1 scripts/install.sh dist/
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8.0.2
         with:
           name: windows-desktop-preview
           path: dist/

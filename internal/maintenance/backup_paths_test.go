@@ -22,7 +22,6 @@ func TestBackupAndRestoreThroughDirectoryAlias(t *testing.T) {
 	e := historyFixture(t)
 	_, checkpoint := captureFile(t, e, "directory alias history")
 	parent := t.TempDir()
-	// Resolve the test directory too: macOS TempDir itself can start with /var.
 	parent, err := filepath.EvalSymlinks(parent)
 	if err != nil {
 		t.Fatal(err)

@@ -10,7 +10,9 @@ const seed = spawnSync('go', ['run', './internal/server/testdata/seed', '--root'
   stdio: 'inherit',
 });
 if (seed.status !== 0) process.exit(seed.status ?? 1);
-const binary = path.join(root, 'bin', process.platform === 'win32' ? 'agenttm.exe' : 'agenttm');
+const binary =
+  process.env.AGENTTM_E2E_BINARY ||
+  path.join(root, 'bin', process.platform === 'win32' ? 'agenttm.exe' : 'agenttm');
 const child = spawn(
   binary,
   ['ui', '--no-browser', '--port', process.env.AGENTTM_E2E_PORT || '7333'],

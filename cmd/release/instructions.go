@@ -2,8 +2,6 @@ package main
 
 import "fmt"
 
-// Archive instructions are standalone: repository-relative documentation links
-// in the main README would be broken when only the release ZIP is extracted.
 func releaseReadme(version string, desktop bool) []byte {
 	text := fmt.Sprintf(`# AgentTM %s
 

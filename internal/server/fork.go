@@ -32,11 +32,7 @@ func (s *Server) fork(w http.ResponseWriter, r *http.Request, id string) {
 		fail(w, 415, "json_required", "Fork confirmation requires application/json.")
 		return
 	}
-	var input struct {
-		Name         string `json:"name"`
-		AllowPartial bool   `json:"allow_partial"`
-		Confirmed    bool   `json:"confirmed"`
-	}
+	var input forkRequest
 	body := http.MaxBytesReader(w, r.Body, 4096)
 	defer body.Close()
 	decoder := json.NewDecoder(body)

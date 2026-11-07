@@ -1,3 +1,4 @@
+import { desktopBridge } from './handlers/native';
 export interface Approval {
   id: string;
   method: string;
@@ -47,6 +48,6 @@ export interface FeatureBridge {
   RestoreHistory(password: string): Promise<string>;
 }
 export function desktopFeatures(): FeatureBridge | null {
-  const bridge = window.go?.main?.Desktop;
+  const bridge = desktopBridge();
   return bridge && 'StartChat' in bridge ? (bridge as typeof bridge & FeatureBridge) : null;
 }

@@ -25,7 +25,7 @@ func TestEventPayloadBudgetPreservesCursor(t *testing.T) {
 	if len(page["items"].([]any)) != 2 || page["next_cursor"] != nil {
 		t.Fatal("byte-based pagination lost events")
 	}
-	// Corrupt stored payloads produce structured errors, not invalid response JSON.
+
 	if err = f.app.Engine.Store.Append(session, "test", "", "", []byte(`broken`)); err != nil {
 		t.Fatal(err)
 	}

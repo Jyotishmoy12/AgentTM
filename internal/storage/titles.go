@@ -8,7 +8,6 @@ import (
 	"unicode/utf8"
 )
 
-// ValidateSessionTitle accepts explicit user labels; it does not derive or store prompts.
 func ValidateSessionTitle(title string) (string, error) {
 	title = strings.TrimSpace(title)
 	if !utf8.ValidString(title) || utf8.RuneCountInString(title) > 120 {

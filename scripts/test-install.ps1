@@ -18,7 +18,6 @@ $originalPath = $env:PATH
 $originalUserPath = [Environment]::GetEnvironmentVariable('Path', 'User')
 $originalLocalAppData = $env:LOCALAPPDATA
 try {
-    # The packaged executable must run without Go, Node, or Codex on PATH.
     $env:PATH = "$(Split-Path -Parent $gitPath);$env:SystemRoot\System32;$env:SystemRoot"
     $env:LOCALAPPDATA = $testProfile
     & $installerPath -Archive $archive -AddToPath:$TestUserPath
@@ -35,7 +34,6 @@ try {
     $refused = $false
     try { & $installerPath -Archive $archive -InstallDir $installDir } catch { $refused = $true }
     if (-not $refused -or (Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash -ne $hashBefore) { throw 'Existing installation was not preserved.' }
-    # Simulate an older installation, then exercise explicit replacement.
     [System.IO.File]::WriteAllText($binary, 'older installation placeholder')
     & $installerPath -Archive $archive -InstallDir $installDir -Force
     if ((Get-FileHash -LiteralPath $binary -Algorithm SHA256).Hash -ne $hashBefore) { throw 'Explicit upgrade did not restore the release binary.' }
@@ -65,7 +63,6 @@ try {
         $diagnostic = (& $binary doctor 2>&1 | Out-String)
         $doctorCode = $LASTEXITCODE
         $ErrorActionPreference = 'Stop'
-        # Doctor must detect the intentionally missing Codex, after storage checks.
         if ($doctorCode -eq 0 -or $diagnostic -notmatch 'SQLite integrity: OK' -or $diagnostic -notmatch 'Codex unavailable') { throw "Unexpected clean-PATH doctor result: $diagnostic" }
         Write-Output 'doctor: storage integrity passed; missing Codex correctly reported.'
     } finally { Pop-Location }

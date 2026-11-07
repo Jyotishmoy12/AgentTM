@@ -1,0 +1,38 @@
+@media (max-width: 620px) {
+  .demo-dialog {
+    width: calc(100% - 24px);
+  }
+}
+@media (max-width: 620px) {
+  .dialog-heading {
+    padding: 10px 13px;
+  }
+}
+@media (max-width: 620px) {
+  .dialog-heading h2 {
+    font-size: 15px;
+  }
+}
+@media (max-width: 620px) {
+  .demo-dialog > p {
+    font-size: 10px;
+    padding: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .button:hover {
+    transform: none;
+  }
+}
+.showcase-section {
+  overflow: clip;
+}

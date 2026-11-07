@@ -1,0 +1,173 @@
+@media (max-width: 600px) {
+  .overview-welcome p {
+    font-size: 11px;
+  }
+}
+@media (max-width: 600px) {
+  .overview-recording {
+    padding: 14px;
+  }
+}
+@media (max-width: 600px) {
+  .overview-recording code {
+    font-size: 10px;
+  }
+}
+@media (max-width: 600px) {
+  .section-title {
+    gap: 10px;
+  }
+}
+@media (max-width: 600px) {
+  .section-title h2 {
+    font-size: 13px;
+  }
+}
+@media (max-width: 600px) {
+  .section-title .text-button {
+    font-size: 9px;
+  }
+}
+@media (max-width: 600px) {
+  .session-summary {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 600px) {
+  .session-summary strong {
+    font-size: 11px;
+  }
+}
+@media (max-width: 600px) {
+  .session-summary .status-pill {
+    font-size: 9px;
+  }
+}
+@media (max-width: 600px) {
+  .session-summary-main > span {
+    font-size: 9px;
+  }
+}
+@media (max-width: 600px) {
+  .overview-footnote {
+    gap: 10px;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .session-select {
+    width: 100%;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .session-select label {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .session-select select {
+    width: 100%;
+    flex: 1;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .session-bar > .status-pill {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .session-tabs {
+    padding: 0 16px;
+  }
+}
+@media (max-width: 600px) {
+  .view-explanation {
+    padding: 10px 16px;
+    font-size: 9px;
+  }
+}
+@media (max-width: 600px) {
+  .timeline-workspace {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    flex: 1;
+  }
+}
+@media (max-width: 600px) {
+  .timeline-workspace .timeline-panel {
+    min-height: 330px;
+    flex: none;
+    height: 330px;
+    border-bottom: 1px solid var(--line);
+  }
+}
+@media (max-width: 600px) {
+  .event-inspector {
+    min-height: 260px;
+    flex-shrink: 0;
+    border-left: 0;
+    overflow: visible;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .activity-panel {
+    max-height: none;
+    min-height: 200px;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .activity-content {
+    overflow: visible;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .event-navigation {
+    padding: 8px 16px;
+    gap: 10px;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .file-layout {
+    grid-template-columns: 115px minmax(0, 1fr);
+    min-height: 0;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .code-viewer {
+    min-height: 0;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .checkpoint-view {
+    min-height: 0;
+  }
+}
+@media (max-width: 600px) {
+  .checkpoint-controls .fork-action {
+    font-size: 9px;
+    padding: 7px;
+  }
+}
+@media (max-width: 600px) {
+  .help-card,
+  .restored-card {
+    padding: 18px;
+  }
+}
+@media (max-width: 600px) {
+  .help-card p,
+  .help-card li {
+    font-size: 11px;
+  }
+}
+@media (max-width: 600px) {
+  .page-heading-actions button {
+    font-size: 9px;
+    padding: 6px;
+  }
+}
+@media (max-width: 600px) {
+  .navigation-shell .readonly-label {
+    display: none;
+  }
+}

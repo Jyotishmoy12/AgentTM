@@ -6,85 +6,13 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"agenttm/internal/capture"
-	"agenttm/internal/config"
 	"agenttm/internal/events"
-	"agenttm/internal/project"
 	"agenttm/internal/snapshot"
 	"agenttm/internal/storage"
 )
 
-func historyFixture(t *testing.T) *snapshot.Engine {
-	t.Helper()
-	root := t.TempDir()
-	if b, err := exec.Command("git", "init", root).CombinedOutput(); err != nil {
-		t.Fatalf("%s: %v", b, err)
-	}
-	if err := project.Init(root); err != nil {
-		t.Fatal(err)
-	}
-	s, err := storage.Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { s.DB.Close() })
-	return &snapshot.Engine{Root: root, Store: s, Config: config.Default()}
-}
-func captureFile(t *testing.T, e *snapshot.Engine, content string) (string, snapshot.Manifest) {
-	t.Helper()
-	if err := os.WriteFile(filepath.Join(e.Root, "note.txt"), []byte(content), 0600); err != nil {
-		t.Fatal(err)
-	}
-	id, err := e.Store.Start()
-	if err != nil {
-		t.Fatal(err)
-	}
-	cp, err := e.Capture(context.Background(), id, "baseline")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err = e.Store.Finish(id, "completed", 0); err != nil {
-		t.Fatal(err)
-	}
-	return id, cp.Manifest
-}
-func TestGCSharedObjectsAndPreview(t *testing.T) {
-	e := historyFixture(t)
-	first, _ := captureFile(t, e, "shared")
-	_, retained := captureFile(t, e, "shared")
-	removedID, _ := captureFile(t, e, "orphan")
-	if _, err := Purge(e.Root, e.Store, first); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := Purge(e.Root, e.Store, removedID); err != nil {
-		t.Fatal(err)
-	}
-	report, err := Collect(e, false, "", 0)
-	if err != nil || report.Candidates != 1 {
-		t.Fatalf("%+v %v", report, err)
-	}
-	if _, err = Collect(e, true, "wrong-preview", 0); err == nil {
-		t.Fatal("stale preview accepted")
-	}
-	report, err = Collect(e, true, report.Token, 0)
-	if err != nil || report.Removed != 1 {
-		t.Fatalf("%+v %v", report, err)
-	}
-	if _, err = e.ReadObject(retained.Files[0]); err != nil {
-		t.Fatal("shared referenced blob removed", err)
-	}
-	if _, err = Collect(e, false, "", 24*time.Hour); err != nil {
-		t.Fatal(err)
-	}
-	if err = os.WriteFile(filepath.Join(e.Root, ".agenttm", "manifests", storage.ID()+".json"), []byte("{}"), 0600); err != nil {
-		t.Fatal(err)
-	}
-	if _, err = Collect(e, false, "", 0); err == nil {
-		t.Fatal("unindexed manifest ignored")
-	}
-}
 func TestEncryptedBackupRoundTripAndAuthentication(t *testing.T) {
 	ctx := context.Background()
 	e := historyFixture(t)

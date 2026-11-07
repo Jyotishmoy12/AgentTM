@@ -1,0 +1,173 @@
+.history-empty svg {
+  width: 32px;
+  height: 32px;
+}
+.history-empty h2 {
+  font-size: 20px;
+  color: #e0e0df;
+  font-weight: 500;
+}
+.history-empty p {
+  font-size: 12px;
+  line-height: 1.8;
+  max-width: 470px;
+  margin: 14px auto;
+}
+.checkpoint-explorer {
+  background: #1e2020;
+  --file-panel-width: 200px;
+}
+.explorer-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px;
+  border-bottom: 1px solid #373736;
+  flex-shrink: 0;
+  min-width: 0;
+}
+.explorer-header .back-history {
+  font-size: 12px;
+  padding: 8px 0;
+  margin-right: 9px;
+  white-space: nowrap;
+}
+.explorer-identity {
+  flex: 1;
+  min-width: 0;
+}
+.explorer-identity h1 {
+  font-size: 19px;
+  font-weight: 550;
+  letter-spacing: -0.4px;
+  margin: 5px 0 0;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.explorer-header > button {
+  font-size: 11px;
+  white-space: nowrap;
+}
+.history-experience .primary-button {
+  background: #b3c79a;
+  color: #172011;
+  border: 0;
+}
+.history-experience .primary-button:hover:not(:disabled) {
+  background: #c1d3ab;
+  color: #172011;
+}
+.explorer-navigation {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 24px;
+  font-size: 10px;
+  color: #a5a5a3;
+  flex-shrink: 0;
+  min-width: 0;
+}
+.explorer-navigation select {
+  font-size: 11px;
+  color: #c8c9c7;
+  background: #292929;
+  border: 1px solid #40403f;
+  width: 260px;
+  min-width: 0;
+  max-width: 50%;
+  padding: 7px;
+}
+.explorer-readonly {
+  margin-left: auto;
+  letter-spacing: 1px;
+}
+.explorer-mode {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  border-bottom: 1px solid #373736;
+  min-height: 43px;
+  flex-shrink: 0;
+}
+.explorer-mode [role='tablist'],
+.explorer-mode [role='group'] {
+  display: flex;
+  gap: 8px;
+}
+.explorer-mode button {
+  font-size: 11px;
+  padding: 9px 12px;
+  color: #b1b2b0;
+  border-radius: 0;
+}
+.explorer-mode [aria-selected='true'] {
+  color: #e0e1df;
+  border-bottom: 2px solid #b2b4b0;
+}
+.explorer-mode [aria-pressed='true'] {
+  background: #343732;
+  border-radius: 5px;
+}
+.explorer-mode > span {
+  margin-left: auto;
+  font-size: 10px;
+  color: #a1a2a0;
+}
+.explorer-content {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+.checkpoint-explorer .historical-inspector {
+  min-width: 0;
+  flex: 1;
+}
+.checkpoint-explorer .file-layout {
+  display: grid;
+  grid-template-columns: clamp(120px, var(--file-panel-width), 35%) 5px minmax(0, 1fr);
+  min-width: 0;
+}
+.checkpoint-explorer .file-tree {
+  background: #222522;
+  border: 0;
+}
+.checkpoint-explorer .editor-panel {
+  background: #191a1f;
+  border: 0;
+  min-width: 0;
+}
+.checkpoint-explorer .file-tree > input {
+  background: #1e211e;
+  border-color: #3e3e3d;
+  border-radius: 6px;
+  font-size: 11px;
+  padding: 8px;
+}
+.checkpoint-explorer .file-heading {
+  background: #222522;
+  color: #cacac9;
+  border-color: #393938;
+  font-size: 11px;
+  padding: 12px 16px;
+  min-height: 39px;
+}
+.checkpoint-explorer .file-list-title {
+  color: #afb0ae;
+  font-family: inherit;
+  letter-spacing: 0.6px;
+  padding: 15px 12px 7px;
+}
+.checkpoint-explorer .tree-list button {
+  color: #b9bab8;
+  text-align: left;
+  font-size: 11px;
+  border: 0;
+  border-radius: 4px;
+  min-width: 0;
+}

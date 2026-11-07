@@ -14,16 +14,6 @@ import (
 	"agenttm/internal/storage"
 )
 
-// FolderState is an on-demand directory check, never a worktree integrity claim.
-type FolderState struct {
-	State     string `json:"state"`
-	CheckedAt string `json:"checked_at"`
-	Message   string `json:"message"`
-	Path      string `json:"-"`
-}
-
-// CheckRestoredFolder accepts a ledger ID rather than an arbitrary frontend path.
-// It only inspects direct children of this project's managed worktree directory.
 func CheckRestoredFolder(store *storage.Store, root, id string) (FolderState, error) {
 	result := FolderState{CheckedAt: time.Now().UTC().Format(time.RFC3339)}
 	if store == nil || !snapshot.ValidID(id) {

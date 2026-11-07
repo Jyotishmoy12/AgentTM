@@ -1,0 +1,77 @@
+@media (max-width: 650px) {
+  .history-filterbar {
+    flex-wrap: wrap;
+  }
+  .history-filters button {
+    padding: 8px 10px;
+  }
+  .history-statline {
+    gap: 13px;
+  }
+  .chronology-row {
+    grid-template-columns: 20px minmax(0, 1fr);
+  }
+  .chronology-row > time {
+    grid-column: 2;
+    font-size: 9px;
+    padding-left: 12px;
+    padding-top: 14px;
+  }
+  .timeline-marker {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+  .history-event,
+  .milestone-content {
+    grid-column: 2;
+  }
+  .milestone-content {
+    flex-wrap: wrap;
+  }
+  .milestone-content button {
+    padding-left: 0;
+  }
+  .visual-history {
+    padding: 23px 16px;
+  }
+  .history-experience .session-bar {
+    padding: 10px 14px;
+  }
+  .explorer-header {
+    flex-wrap: wrap;
+  }
+  .explorer-identity {
+    min-width: 100px;
+  }
+  .explorer-header .primary-button {
+    margin-left: auto;
+  }
+  .explorer-readonly {
+    display: none;
+  }
+  .history-search select {
+    max-width: 135px;
+  }
+  .activity-density figcaption {
+    flex-direction: column;
+  }
+  .density-times > span {
+    display: none;
+  }
+  .checkpoint-explorer .file-layout {
+    grid-template-columns: 120px 5px minmax(0, 1fr);
+  }
+  .explorer-header .back-history {
+    margin-right: 0;
+  }
+  .explorer-navigation select {
+    max-width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .history-experience * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}

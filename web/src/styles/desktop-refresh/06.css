@@ -1,0 +1,173 @@
+.event-kind {
+  font-size: 8px;
+  color: #949dac;
+  letter-spacing: 0.7px;
+}
+.event-bottom {
+  color: #8b94a1;
+  font-size: 9px;
+}
+.mini-badge {
+  background: #30392a;
+  border-color: #4a573f;
+  color: #bfd2a8;
+  font-size: 9px;
+}
+.timeline-footer {
+  font-size: 9px;
+  color: #838b97;
+  background: #191b20;
+  padding: 10px 17px;
+}
+.event-inspector {
+  background: #1b1c22;
+  border-left: 0;
+}
+.navigation-shell .activity-panel {
+  background: #1b1c22;
+}
+.activity-content {
+  padding: 21px;
+}
+.activity-content h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: #e0e2e8;
+}
+.details {
+  grid-template-columns: 80px minmax(0, 1fr);
+  font-size: 11px;
+  line-height: 1.6;
+  gap: 11px 14px;
+}
+.details dt {
+  color: #8c95a3;
+}
+.details dd {
+  color: #c9ced9;
+}
+.activity-content h4 {
+  color: #959dab;
+  font-size: 9px;
+}
+.payload-text {
+  background: #14151a;
+  border-color: #343740;
+  color: #b8c1d0;
+  font-size: 11px;
+}
+.agent-message {
+  color: #bdc5d3;
+  font-size: 12px;
+}
+.changed-paths {
+  color: #b4c6a2;
+  font-size: 11px;
+}
+.payload-details summary {
+  font-size: 10px;
+  color: #969fad;
+}
+.attribution-note {
+  border-color: #353740;
+  color: #8c96a5;
+}
+.event-inspector .inspect-files {
+  background: #262a30;
+  border-color: #3a414b;
+  font-size: 11px;
+  padding: 9px;
+}
+.navigation-shell .event-navigation {
+  padding: 8px 22px;
+  background: #1b1c21;
+}
+.event-navigation button {
+  font-size: 10px;
+  color: #b2bac7;
+}
+.workspace-divider {
+  position: relative;
+  cursor: col-resize;
+  background: #24262d;
+  outline-offset: -2px !important;
+  touch-action: none;
+}
+.workspace-divider:hover,
+.workspace-divider:focus-visible,
+.is-resizing .workspace-divider {
+  background: #718365;
+}
+.workspace-divider > span {
+  position: absolute;
+  top: 45%;
+  left: 1px;
+  width: 3px;
+  height: 30px;
+  border-radius: 3px;
+  background: #515961;
+}
+.is-resizing {
+  user-select: none;
+}
+.checkpoint-controls,
+.checkpoint-bar {
+  background: #1c1d22;
+}
+.checkpoint-controls .fork-action {
+  padding: 7px 12px;
+  font-size: 10px;
+}
+.checkpoint-bar {
+  min-height: 46px;
+  padding: 0 22px;
+}
+.checkpoint-bar select {
+  color: #c6d5b5;
+  font-size: 11px;
+}
+.state-note {
+  padding: 8px 22px;
+  background: #1b1c21;
+  color: #969daa;
+  font-size: 10px;
+}
+.state-note.last-known {
+  background: #29271f;
+  color: #cbbd90;
+}
+.history-panel {
+  background: #191a1f;
+}
+.view-tabs {
+  background: #1b1c21;
+  height: 39px;
+}
+.view-tabs button {
+  color: #989fac;
+}
+.navigation-shell .file-layout {
+  grid-template-columns: 205px minmax(0, 1fr);
+}
+.file-tree {
+  background: #18191e;
+}
+.file-tree > input {
+  background: #22232a;
+  border-color: #373a44;
+  font-size: 10px;
+}
+.tree-list button,
+.tree-folder summary {
+  color: #9ca5b3;
+  font-size: 11px;
+}
+.tree-list button.active-file {
+  background: #2c3329;
+  border-color: #434f3b;
+  color: #cfdfbe;
+}
+.tree-folder summary:hover {
+  background: #262a32;
+  color: #d1d8e4;
+}

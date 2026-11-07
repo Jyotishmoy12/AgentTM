@@ -1,0 +1,149 @@
+.checkpoint-explorer .tree-list button.active-file {
+  background: #383b36;
+  color: #e6e6e5;
+}
+.checkpoint-explorer .partial-notice {
+  background: #2c2b23;
+  color: #d7c497;
+  border: 0;
+  font-size: 11px;
+  padding: 10px 20px;
+  max-height: 140px;
+  overflow: auto;
+  flex-shrink: 0;
+}
+.checkpoint-explorer .partial-notice details {
+  font-size: 10px;
+}
+.checkpoint-explorer .partial-notice code {
+  overflow-wrap: anywhere;
+}
+.checkpoint-explorer .diff-heading,
+.checkpoint-explorer .comparison-labels {
+  background: #282828;
+  color: #c6c7c5;
+  border-color: #3f3f3e;
+  font-size: 10px;
+}
+.file-panel-divider {
+  background: #393938;
+  cursor: col-resize;
+  touch-action: none;
+}
+.file-panel-divider:hover,
+.file-panel-divider:focus-visible {
+  background: #a0b587;
+}
+.explorer-details {
+  width: 280px;
+  flex-shrink: 0;
+  padding: 20px;
+  background: #282828;
+  border-left: 1px solid #414140;
+  overflow: auto;
+  z-index: 3;
+  color: #bebfbd;
+  font-size: 11px;
+  line-height: 1.8;
+  min-height: 0;
+}
+.explorer-details > button {
+  float: right;
+  font-size: 20px;
+  padding: 0 4px;
+}
+.explorer-details h2 {
+  font-size: 17px;
+  font-weight: 500;
+  color: #e4e4e3;
+  margin: 0 0 22px;
+}
+.explorer-details dl {
+  display: block;
+}
+.explorer-details dt {
+  font-size: 10px;
+  color: #aeafad;
+  margin-top: 16px;
+}
+.explorer-details dd {
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+  color: #dcdcdb;
+}
+.visual-history .operations-view {
+  padding: 20px 0;
+  overflow: visible;
+}
+.visual-history .operation-card {
+  border: 0;
+  border-bottom: 1px solid #3f3f3e;
+  background: transparent;
+  padding: 20px 0;
+  border-radius: 0;
+}
+@media (min-width: 1000px) {
+  .checkpoint-explorer .file-layout {
+    grid-template-columns:
+      clamp(120px, var(--file-panel-width), 30%)
+      5px minmax(0, 1fr);
+  }
+}
+@media (max-width: 1050px) {
+  .explorer-details {
+    position: absolute;
+    inset: 0 0 0 auto;
+    max-width: 75%;
+    box-shadow: -16px 0 35px #1118;
+  }
+  .history-statline > span:last-child {
+    margin-left: 0;
+  }
+  .explorer-mode > span {
+    display: none;
+  }
+}
+@media (max-width: 800px) {
+  .history-experience .session-bar {
+    padding: 10px 20px;
+  }
+  .history-experience .session-meta,
+  .history-experience .session-name-trigger span {
+    display: none;
+  }
+  .visual-history {
+    padding: 24px;
+  }
+  .history-intro h1 {
+    font-size: 27px;
+  }
+  .explorer-header {
+    padding: 12px 16px;
+    gap: 9px;
+  }
+  .explorer-identity h1 {
+    font-size: 16px;
+  }
+  .explorer-identity .editorial-kicker {
+    display: none;
+  }
+  .explorer-navigation {
+    padding: 9px 16px;
+  }
+  .explorer-mode {
+    padding: 0 16px;
+  }
+  .explorer-navigation > span:not(.explorer-readonly) {
+    display: none;
+  }
+  .milestone-content {
+    gap: 8px;
+    padding-left: 12px;
+  }
+  .milestone-content h2 {
+    font-size: 18px;
+  }
+  .chronology-row {
+    grid-template-columns: 65px 25px minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,173 @@
+.editorial-install .command-steps .code-block {
+  grid-column: 1 / -1;
+  margin-top: 9px;
+}
+.editorial-install .code-block:hover {
+  border-color: #7d8680;
+  box-shadow: 0 0 15px #838d8711;
+}
+.editorial-install .code-block pre {
+  color: #d1d5d2;
+  font-size: 10px;
+}
+.editorial-install .code-block .prompt {
+  color: #a3aea7;
+}
+.editorial-install .copy-feedback:not(:empty) {
+  background: #383b3a;
+  border-color: #717873;
+  color: #e5e9e7;
+}
+.editorial-install .docs-content > .docs-footnote {
+  margin-top: 27px;
+  font-size: 10px;
+  color: #949996;
+}
+.editorial-install .inline-button {
+  color: #c9d2cc;
+}
+.editorial-install .requirements li,
+.editorial-install .requirements li p,
+.editorial-install .prose-steps,
+.editorial-install .safety-list {
+  color: #abafad;
+}
+.editorial-install .requirements li {
+  border-color: #3c3f3e;
+}
+.editorial-install .requirements .icon {
+  color: #b0bab3;
+}
+.editorial-install .docs-content code:not(pre code) {
+  color: #d6dad7;
+  background: #303332;
+}
+.editorial-install .docs-callout {
+  color: #b7bcb9;
+  background: #242726;
+  border-color: #4e5150;
+}
+.editorial-install .platform-guides > a {
+  color: #d5d9d6;
+  background: #292c2b;
+  border-color: #565d58;
+}
+.editorial-install .platform-guides > a:hover {
+  background: #3d403f;
+}
+@media (max-width: 1050px) {
+  .editorial-install .docs-sidebar {
+    gap: 8px;
+    padding: 13px 15px;
+  }
+  .editorial-install .docs-sidebar button {
+    padding-inline: 9px;
+  }
+  .editorial-install .docs-content {
+    padding: 30px;
+  }
+}
+@media (max-width: 800px) {
+  .download-hero {
+    padding: 70px 20px 50px;
+  }
+  .download-hero h2 {
+    font-size: 57px;
+  }
+  .install-journey {
+    padding: 23px 24px 0;
+  }
+  .journey-heading h3 {
+    font-size: 23px;
+  }
+  .install-journey h4 {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .install-journey li > p {
+    font-size: 10px;
+  }
+  .install-journey li {
+    padding-right: 17px;
+  }
+  .install-journey li + li {
+    padding-left: 17px;
+  }
+  .editorial-install .docs-sidebar-heading {
+    width: 100%;
+    padding-bottom: 8px;
+  }
+  .editorial-install .docs-sidebar [role='tablist'] {
+    margin: 0;
+    flex-wrap: wrap;
+  }
+  .editorial-install .docs-content {
+    min-height: 450px;
+    padding: 28px;
+  }
+  .editorial-install .command-steps {
+    gap: 25px 22px;
+  }
+  .editorial-install .command-steps h4 {
+    font-size: 11px;
+  }
+  .editorial-install .code-block pre {
+    font-size: 9px;
+  }
+}
+@media (max-width: 620px) {
+  .download-hero {
+    padding: 60px 0 43px;
+  }
+}
+@media (max-width: 620px) {
+  .download-hero::before {
+    inset: 0 -20px;
+    background-size:
+      auto,
+      50px 50px,
+      50px 50px;
+  }
+}
+@media (max-width: 620px) {
+  .download-hero .eyebrow {
+    font-size: 7px;
+    letter-spacing: 0.12em;
+  }
+}
+@media (max-width: 620px) {
+  .download-hero h2 {
+    font-size: 48px;
+  }
+}
+@media (max-width: 620px) {
+  .download-intro {
+    font-size: 12px;
+    margin: 20px auto 25px;
+  }
+}
+@media (max-width: 620px) {
+  .platform-options {
+    padding: 4px;
+    gap: 2px;
+    max-width: 100%;
+  }
+}
+@media (max-width: 620px) {
+  .platform-options > label {
+    font-size: 10px;
+    padding: 9px 12px;
+    gap: 7px;
+  }
+}
+@media (max-width: 620px) {
+  .platform-options .platform-mark {
+    width: 12px;
+    height: 12px;
+  }
+}
+@media (max-width: 620px) {
+  .download-mode {
+    margin-bottom: 22px;
+  }
+}

@@ -1,95 +1,12 @@
 package snapshot
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"path"
 	"reflect"
 	"strings"
-	"unicode"
-	"unicode/utf8"
 )
 
-const MaxManifestBytes = 32 << 20
-const MaxFiles = 100000
-const MaxBlobBytes = 64 << 20
-
-type File struct {
-	Path     string `json:"path"`
-	ObjectID string `json:"object_id"`
-	Mode     uint32 `json:"mode"`
-	Size     int64  `json:"size"`
-}
-type Omission struct {
-	Path   string `json:"path"`
-	Reason string `json:"reason"`
-}
-type Manifest struct {
-	Version                 int        `json:"version"`
-	ID                      string     `json:"id"`
-	ProjectID               string     `json:"project_id"`
-	SessionID               string     `json:"session_id"`
-	ParentID                string     `json:"parent_id,omitempty"`
-	EventID                 string     `json:"event_id"`
-	ObservedEventID         string     `json:"observed_event_id,omitempty"`
-	CreatedAt               string     `json:"created_at"`
-	BaseCommit              string     `json:"base_commit,omitempty"`
-	Kind                    string     `json:"kind"`
-	Fidelity                string     `json:"fidelity"`
-	Partial                 bool       `json:"partial"`
-	PotentiallyInconsistent bool       `json:"potentially_inconsistent"`
-	Files                   []File     `json:"files"`
-	Omissions               []Omission `json:"omissions"`
-}
-
-func Hash(b []byte) string { h := sha256.Sum256(b); return hex.EncodeToString(h[:]) }
-func ValidID(s string) bool {
-	if len(s) != 36 {
-		return false
-	}
-	for i, c := range s {
-		if i == 8 || i == 13 || i == 18 || i == 23 {
-			if c != '-' {
-				return false
-			}
-		} else if !strings.ContainsRune("0123456789abcdef", c) {
-			return false
-		}
-	}
-	return true
-}
-func ValidHash(s string) bool {
-	if len(s) != 64 {
-		return false
-	}
-	_, e := hex.DecodeString(s)
-	return e == nil && s == strings.ToLower(s)
-}
-
-// Require paths that are safe and unambiguous on every supported platform,
-// even when a manifest was produced on a case-sensitive filesystem.
-func ValidatePath(p string) error {
-	if p == "" || len(p) > 4096 || !utf8.ValidString(p) || path.IsAbs(p) || path.Clean(p) != p || strings.ContainsAny(p, "\\:") {
-		return fmt.Errorf("unsafe snapshot path %q", p)
-	}
-	for _, c := range p {
-		if unicode.IsControl(c) {
-			return fmt.Errorf("control character in snapshot path")
-		}
-	}
-	for _, part := range strings.Split(p, "/") {
-		lower := strings.ToLower(part)
-		if part == "." || part == ".." || strings.TrimRight(part, " .") != part || lower == ".git" || lower == ".agenttm" || strings.ContainsAny(part, "<>\"|?*") {
-			return fmt.Errorf("unsafe snapshot path %q", p)
-		}
-		stem := strings.Split(lower, ".")[0]
-		if stem == "con" || stem == "prn" || stem == "aux" || stem == "nul" || len(stem) == 4 && (strings.HasPrefix(stem, "com") || strings.HasPrefix(stem, "lpt")) && stem[3] >= '0' && stem[3] <= '9' {
-			return fmt.Errorf("reserved snapshot path %q", p)
-		}
-	}
-	return nil
-}
 func (m Manifest) Validate() error {
 	if m.Version != 1 || !ValidID(m.ID) || !ValidID(m.ProjectID) || !ValidID(m.SessionID) || !ValidID(m.EventID) || m.ParentID != "" && !ValidID(m.ParentID) {
 		return fmt.Errorf("unsupported or invalid manifest identity")
@@ -147,6 +64,7 @@ func (m Manifest) Validate() error {
 	}
 	return nil
 }
+
 func sameState(a, b Manifest) bool {
 	return reflect.DeepEqual(a.Files, b.Files) && reflect.DeepEqual(a.Omissions, b.Omissions) && a.PotentiallyInconsistent == b.PotentiallyInconsistent
 }

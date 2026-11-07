@@ -27,9 +27,7 @@ func TestBackgroundConsoleAndDescendantStayHidden(t *testing.T) {
 	defer cancel()
 	cmd := exec.CommandContext(ctx, os.Args[0], "-test.run=^TestConsoleWindowHelper$")
 	cmd.Env = append(os.Environ(), "AGENTTM_CONSOLE_TEST=parent")
-	// Emulate the new console allocated for a console child of a GUI process.
-	// HideWindow must hide that console while retaining it for descendants.
-	cmd.SysProcAttr = &syscall.SysProcAttr{CreationFlags: 0x00000010} // CREATE_NEW_CONSOLE
+	cmd.SysProcAttr = &syscall.SysProcAttr{CreationFlags: 0x00000010}
 	HideWindow(cmd)
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("background console regression: %s: %v", output, err)

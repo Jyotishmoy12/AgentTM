@@ -28,7 +28,6 @@ func TestSessionTitleMigrationPersistenceAndScope(t *testing.T) {
 	if err = s.Append(id, "turn.completed", "", "", []byte(`{"preserve":"event"}`)); err != nil {
 		t.Fatal(err)
 	}
-	// Simulate the actual v4 schema, then verify upgrading preserves history.
 	if _, err = s.DB.Exec("ALTER TABLE sessions DROP COLUMN title; PRAGMA user_version=4"); err != nil {
 		t.Fatal(err)
 	}

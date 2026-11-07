@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-// Opt-in live acceptance test. Normal unit/CI tests never invoke a paid model.
 func TestRealCodexModelCatalog(t *testing.T) {
 	if os.Getenv("AGENTTM_REAL_CODEX") != "1" {
 		t.Skip("opt-in real Codex catalog discovery")

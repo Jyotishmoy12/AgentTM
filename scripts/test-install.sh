@@ -1,5 +1,4 @@
 #!/bin/sh
-# Run on a native Linux/macOS runner. Does not execute a model or edit shell profiles.
 set -eu
 asset_dir=$(CDPATH= cd -- "${1:?asset directory required}" && pwd)
 version=${2:?version required}

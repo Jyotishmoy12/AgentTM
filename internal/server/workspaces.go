@@ -2,8 +2,6 @@ package server
 
 import "net/http"
 
-// restoredWorkspaces lists this project's restore ledger without touching Git
-// or the worktrees. Paths describe recorded destinations, not live health.
 func (s *Server) restoredWorkspaces(w http.ResponseWriter, r *http.Request) {
 	cursor, err := queryInt(r, "cursor", 0, 1<<31-1)
 	if err != nil {

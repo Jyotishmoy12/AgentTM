@@ -1,0 +1,21 @@
+:root {
+  --ui-icon: #8acb9c;
+  --ui-icon-on-green: #0c3b22;
+  --ui-icon-muted: #759781;
+}
+svg.app-icon,
+.file-tree .file-icon {
+  color: var(--ui-icon) !important;
+}
+.primary-button svg.app-icon,
+.chat-send:not(.chat-stop):not(:disabled) svg.app-icon {
+  color: var(--ui-icon-on-green) !important;
+}
+button:disabled svg.app-icon {
+  color: var(--ui-icon-muted) !important;
+}
+.marker-failure svg.app-icon,
+.chat-system-error svg.app-icon,
+.error-box svg.app-icon {
+  color: #d6a092 !important;
+}

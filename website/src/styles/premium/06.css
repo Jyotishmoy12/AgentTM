@@ -1,0 +1,171 @@
+.continue-thread {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 8px;
+  color: #8a908c;
+  width: 100%;
+  border-top: 1px solid #3f4241;
+  padding-top: 12px;
+}
+.continue-thread > span {
+  width: 5px;
+  height: 5px;
+  border: 1px solid #b1b7af;
+  border-radius: 50%;
+}
+.continue-thread > b {
+  margin-left: auto;
+  font-weight: 400;
+  color: #cbcfc9;
+}
+.backup-diagram {
+  display: grid;
+  gap: 13px;
+  justify-items: center;
+  position: relative;
+}
+.backup-file {
+  background: #2f3231;
+  border: 1px solid #696e67;
+  font:
+    15px Consolas,
+    monospace;
+  color: #dfe2db;
+  padding: 16px 30px;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px #0004;
+}
+.backup-file > small {
+  display: block;
+  margin-top: 6px;
+  color: #a5a9a3;
+  font-size: 7px;
+  text-align: center;
+}
+.password-dots {
+  display: flex;
+  gap: 8px;
+  border: 1px solid #494c4b;
+  background: #1b1e1d;
+  padding: 10px 25px;
+  border-radius: 5px;
+}
+.password-dots > i {
+  height: 4px;
+  width: 4px;
+  background: #b0b7b1;
+  border-radius: 50%;
+}
+.encrypted-chip {
+  font:
+    7px Consolas,
+    monospace;
+  color: #8b918c;
+}
+.integrity-diagram {
+  position: relative;
+  width: 83%;
+  max-width: 270px;
+}
+.mini-terminal {
+  background: #161918;
+  border: 1px solid #4c4f4e;
+  border-radius: 7px;
+  padding-bottom: 15px;
+  box-shadow: 0 15px 30px #0004;
+}
+.mini-terminal > span:not(.mini-title) {
+  display: block;
+  font:
+    9px/1.9 Consolas,
+    monospace;
+  margin-left: 17px;
+  color: #cdd0cc;
+}
+.mini-terminal b {
+  color: #8a938b;
+  font-weight: 400;
+}
+.mini-terminal > .check-line {
+  color: #a4ada4 !important;
+  animation: check-glow 5s infinite;
+}
+.mini-terminal > .check-line.second {
+  animation-delay: 0.7s;
+}
+.storage-diagram {
+  position: relative;
+  width: 78%;
+  max-width: 330px;
+}
+.object-cells {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 7px;
+}
+.object-cells > i {
+  aspect-ratio: 1;
+  border: 1px solid #737971;
+  background: linear-gradient(140deg, #494c4b, #323534);
+  border-radius: 5px;
+  box-shadow: inset 0 1px #d1d8cc0a;
+}
+.object-cells > .unreferenced {
+  border: 1px dashed #6e706c;
+  background: #212423;
+  animation: object-soften 6s ease-in-out infinite alternate;
+}
+.storage-legend {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 16px;
+  font:
+    7px Consolas,
+    monospace;
+  color: #929690;
+}
+.storage-legend > i {
+  width: 6px;
+  height: 6px;
+  border: 1px solid #888f86;
+  background: #4c4f4e;
+  border-radius: 2px;
+}
+.storage-legend > .unreferenced {
+  margin-left: auto;
+  background: #212423;
+  border-style: dashed;
+}
+.install-section {
+  background: radial-gradient(ellipse 80% 70% at 50% 100%, #35383726, transparent 80%), #0d100f;
+}
+.docs-shell {
+  border-color: #363938;
+  box-shadow:
+    0 15px 100px #191c1b26,
+    0 0 0 6px #45484708;
+}
+.docs-sidebar button {
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+.docs-sidebar button:hover {
+  background: #1b1e1d;
+  border-color: #323534;
+}
+.code-block {
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.code-block:hover {
+  border-color: #58545c;
+  box-shadow: 0 0 22px #716c750b;
+}
+.code-block .prompt {
+  color: #bdc2b9;
+}

@@ -1,0 +1,172 @@
+:root {
+  --muted: #92959e;
+  --line: #2b2d33;
+  --accent: #b6dca1;
+  --surface: #1b1c20;
+  --canvas: #17181c;
+  --sidebar: #111215;
+  --text: #e4e5e9;
+  --hover: #26272e;
+  color: var(--text);
+  background: var(--sidebar);
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  font-size: 13px;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #41434c transparent;
+}
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+button {
+  background: #24252b;
+  border-color: #383a43;
+  border-radius: 6px;
+  color: #d6d7dc;
+  font-size: 12px;
+}
+button:hover:not(:disabled) {
+  background: #30313a;
+  border-color: #494b56;
+}
+input,
+select,
+textarea {
+  background: #191a1f;
+  border-color: #363840;
+  color: var(--text);
+  border-radius: 6px;
+}
+input::placeholder,
+textarea::placeholder {
+  color: #7e818d;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+kbd {
+  font:
+    10px/1.4 'SFMono-Regular',
+    Consolas,
+    monospace;
+  border: 1px solid #3b3c44;
+  border-radius: 4px;
+  padding: 1px 4px;
+  color: #a3a5af;
+  background: #222329;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.primary-button,
+.fork-action {
+  background: #b6dca1;
+  color: #172112;
+  border-color: #b6dca1;
+  font-weight: 600;
+}
+.primary-button:hover:not(:disabled),
+.fork-action:hover:not(:disabled) {
+  background: #c5e9b2;
+  border-color: #c5e9b2;
+}
+.text-button {
+  background: transparent;
+  border: 0;
+  color: #bbd5ab;
+}
+.eyebrow {
+  color: #8c8f9a;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.status-dot {
+  background: #a9cd96;
+  width: 5px;
+  height: 5px;
+}
+.status-pill {
+  background: #263128;
+  color: #b9d3ac;
+  border: 1px solid #3d4c3d;
+  border-radius: 20px;
+  padding: 3px 8px;
+  font-size: 10px;
+}
+.status-pill.active {
+  background: #283138;
+  border-color: #3f515f;
+  color: #b6d0e6;
+}
+.status-pill.failed,
+.status-pill.recording_failed {
+  background: #38272b;
+  border-color: #633b43;
+  color: #f1b6bd;
+}
+.app-shell.navigation-shell.refreshed-shell {
+  display: grid;
+  grid-template-columns: 218px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) 27px;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--canvas);
+}
+.refreshed-shell .app-sidebar {
+  grid-row: 1;
+  grid-column: 1;
+  background: var(--sidebar);
+  padding: 19px 12px 15px;
+  overflow-x: hidden;
+  border-right-color: #282930;
+}
+.app-sidebar .brand {
+  font-size: 21px;
+  gap: 9px;
+  padding: 0 6px 22px;
+}
+.app-sidebar .brand-mark {
+  width: 29px;
+  height: 30px;
+  border: 1px solid #3b4935;
+  background: #20271e;
+  border-radius: 8px;
+}
+.app-sidebar .brand svg {
+  width: 21px;
+  height: 21px;
+}
+.app-sidebar .brand-light {
+  color: #b6dca1;
+  font-weight: 600;
+}
+.app-sidebar .brand small {
+  font-size: 6px;
+  color: #7c808c;
+  letter-spacing: 1.8px;
+}

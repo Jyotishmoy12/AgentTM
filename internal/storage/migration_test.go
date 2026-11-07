@@ -11,8 +11,6 @@ import (
 
 func TestPhaseOneMigrationPreservesHistory(t *testing.T) {
 	root := t.TempDir()
-	// Existing phase-one database, including a session and event.
-	// Use the same disposable repo helper pattern as the storage integration test.
 	if b, err := exec.Command("git", "init", root).CombinedOutput(); err != nil {
 		t.Fatalf("%s %v", b, err)
 	}

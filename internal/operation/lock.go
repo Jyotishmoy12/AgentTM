@@ -8,8 +8,6 @@ import (
 	"agenttm/internal/project"
 )
 
-// File locks intentionally survive a force-kill. Doctor reports them; never
-// infer that a different process is dead from a timestamp or remove its lock.
 func Acquire(root, name string) (func(), error) {
 	p := filepath.Join(root, ".agenttm", "data", name+".lock")
 	if err := project.SafePath(p); err != nil {

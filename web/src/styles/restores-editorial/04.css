@@ -1,0 +1,80 @@
+@media (max-width: 800px) {
+  .restores-heading h1 {
+    font-size: 24px;
+  }
+  .restores-heading p {
+    font-size: 11px;
+  }
+  .restores-heading {
+    padding: 23px 20px 18px;
+    gap: 12px;
+  }
+  .restores-heading > button {
+    padding: 8px;
+  }
+  .restores-controls {
+    margin: 0 20px 15px;
+  }
+  .restores-body {
+    margin: 0 20px 20px;
+  }
+  .restores-columns,
+  .restores-row {
+    grid-template-columns: minmax(130px, 1fr) 108px 90px;
+  }
+  .restores-columns > span:nth-child(3),
+  .restores-row > .restore-source {
+    display: none;
+  }
+  .restores-heading .editorial-kicker {
+    font-size: 8px;
+  }
+}
+@media (max-width: 650px) {
+  .restores-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .restores-heading > button {
+    padding-left: 0;
+  }
+  .restores-controls {
+    gap: 8px;
+  }
+  .restores-sort {
+    font-size: 0;
+  }
+  .restores-sort select {
+    max-width: 125px;
+  }
+  .restores-columns,
+  .restores-row {
+    grid-template-columns: minmax(100px, 1fr) 82px;
+  }
+  .restores-columns > span:nth-child(2),
+  .restores-row > time {
+    display: none;
+  }
+  .restore-row-identity {
+    gap: 8px;
+  }
+  .restore-row-identity strong {
+    font-size: 11px;
+  }
+  .restore-manager .restores-row {
+    padding: 13px 8px;
+  }
+  .restores-details.restores-drawer {
+    max-width: 100%;
+  }
+  .restores-heading h1 {
+    font-size: 23px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .restore-manager * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}

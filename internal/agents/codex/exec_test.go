@@ -3,46 +3,13 @@ package codex
 import (
 	"context"
 	"errors"
-	"fmt"
-	"io"
 	"os"
-	"strings"
 	"testing"
 	"time"
 
 	"agenttm/internal/events"
 )
 
-// A synthetic child process exercises supervision, never serves as a real Codex
-// integration claim. Observed real CLI fixtures live separately in tests/fixtures.
-func TestMain(m *testing.M) {
-	if os.Getenv("AGENTTM_TEST_CHILD") == "1" {
-		args := strings.Join(os.Args[1:], " ")
-		if args == "--version" {
-			fmt.Println("codex-cli synthetic-test")
-			os.Exit(0)
-		}
-		if args == "exec --help" {
-			fmt.Println("--json")
-			os.Exit(0)
-		}
-		task, _ := io.ReadAll(os.Stdin)
-		if strings.Contains(string(task), "sleep") {
-			time.Sleep(time.Minute)
-			os.Exit(0)
-		}
-		fmt.Println(`{"type":"thread.started","thread_id":"test-thread"}`)
-		fmt.Println(`malformed`)
-		fmt.Println(`{"type":"future.event","secret":"must not persist"}`)
-		if strings.Contains(string(task), "fail") {
-			fmt.Println(`{"type":"turn.failed","error":{"message":"test failure"}}`)
-			os.Exit(7)
-		}
-		fmt.Println(`{"type":"turn.completed","usage":{"input_tokens":1,"output_tokens":1}}`)
-		os.Exit(0)
-	}
-	os.Exit(m.Run())
-}
 func TestLifecycle(t *testing.T) {
 	t.Setenv("AGENTTM_TEST_CHILD", "1")
 	a := Adapter{Executable: os.Args[0], MaxPayload: 1024}

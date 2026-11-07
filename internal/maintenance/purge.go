@@ -11,13 +11,6 @@ import (
 	"agenttm/internal/storage"
 )
 
-type PurgeResult struct {
-	SessionID   string   `json:"session_id"`
-	Events      int      `json:"events"`
-	Checkpoints int      `json:"checkpoints"`
-	Warnings    []string `json:"warnings"`
-}
-
 func Purge(root string, s *storage.Store, id string) (PurgeResult, error) {
 	r := PurgeResult{SessionID: id, Warnings: []string{}}
 	if !snapshot.ValidID(id) {
@@ -106,8 +99,6 @@ func Purge(root string, s *storage.Store, id string) (PurgeResult, error) {
 	if err = tx.Commit(); err != nil {
 		return r, err
 	}
-	// Only validated individual store files are removed. Shared blobs and all Git
-	// worktrees/branches are retained. A crash here leaves doctor-visible orphans.
 	for _, p := range paths {
 		if err = os.Remove(p); err != nil && !os.IsNotExist(err) {
 			r.Warnings = append(r.Warnings, "Could not remove an unindexed manifest/log; inspect .agenttm and run doctor.")

@@ -1,13 +1,14 @@
 package server
 
 import (
-	"agenttm/internal/storage"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"io"
 	"mime"
 	"net/http"
+
+	"agenttm/internal/storage"
 )
 
 func (s *Server) renameSession(w http.ResponseWriter, r *http.Request, id string) {
@@ -23,9 +24,7 @@ func (s *Server) renameSession(w http.ResponseWriter, r *http.Request, id string
 	}
 	body := http.MaxBytesReader(w, r.Body, 2048)
 	defer body.Close()
-	var input struct {
-		Title *string `json:"title"`
-	}
+	var input sessionTitleRequest
 	decoder := json.NewDecoder(body)
 	decoder.DisallowUnknownFields()
 	err = decoder.Decode(&input)

@@ -3,12 +3,9 @@ package cli
 import (
 	"bytes"
 	"context"
-	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 
@@ -17,65 +14,9 @@ import (
 	"agenttm/internal/storage"
 )
 
-// Synthetic Codex-shaped child for testing recorder behavior, not evidence of
-// real model/tool execution. Ordinary CLI usage never enables this helper.
-func TestMain(m *testing.M) {
-	if os.Getenv("AGENTTM_CLI_TEST_CHILD") == "1" {
-		args := strings.Join(os.Args[1:], " ")
-		if args == "--version" {
-			fmt.Println("codex-cli synthetic-test")
-			os.Exit(0)
-		}
-		if args == "exec --help" {
-			fmt.Println("--json")
-			os.Exit(0)
-		}
-		task, _ := io.ReadAll(os.Stdin)
-		mode := string(task)
-		fmt.Println(`{"type":"turn.started"}`)
-		if mode != "unchanged" {
-			if err := os.WriteFile("observed.txt", []byte("written by synthetic child"), 0600); err != nil {
-				os.Exit(9)
-			}
-		}
-		switch mode {
-		case "cancel":
-			time.Sleep(time.Minute)
-		case "fail":
-			fmt.Println(`{"type":"turn.failed","error":{"message":"synthetic failure"}}`)
-			os.Exit(7)
-		default:
-			fmt.Println(`{"type":"turn.completed"}`)
-			os.Exit(0)
-		}
-		os.Exit(0)
-	}
-	os.Exit(m.Run())
-}
-
 func TestRecordingSnapshots(t *testing.T) {
-	fakeDir := t.TempDir()
-	binary, err := os.Executable()
-	if err != nil {
-		t.Fatal(err)
-	}
-	name := "codex"
-	if filepath.Ext(binary) == ".exe" {
-		name += ".exe"
-	}
-	fake := filepath.Join(fakeDir, name)
-	// Copy rather than hard-linking the test executable. Windows keeps an
-	// executable image locked while the test process is alive, which makes
-	// TempDir cleanup fail when the child alias is a hard link to this binary.
-	b, err := os.ReadFile(binary)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err = os.WriteFile(fake, b, 0700); err != nil {
-		t.Fatal(err)
-	}
-	t.Setenv("PATH", fakeDir+string(os.PathListSeparator)+os.Getenv("PATH"))
-	t.Setenv("AGENTTM_CLI_TEST_CHILD", "1")
+	installCLIChild(t)
+	var err error
 	for _, mode := range []string{"unchanged", "success", "fail", "cancel", "baseline-failure"} {
 		t.Run(mode, func(t *testing.T) {
 			root := t.TempDir()

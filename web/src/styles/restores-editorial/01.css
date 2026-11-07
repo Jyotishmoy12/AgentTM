@@ -1,0 +1,173 @@
+.restore-manager {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  background: #1e2020;
+  color: #e2e2e1;
+}
+.restores-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 30px 36px 24px;
+  flex-shrink: 0;
+}
+.restores-heading h1 {
+  font-size: 27px;
+  line-height: 1.25;
+  font-weight: 550;
+  letter-spacing: -0.7px;
+  margin: 9px 0 10px;
+}
+.restores-heading p {
+  font-size: 12px;
+  color: #acacab;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 590px;
+}
+.restore-manager button {
+  font-family: inherit;
+  transition: background 0.15s;
+  color: #c5c6c4;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 11px;
+}
+.restore-manager button:hover:not(:disabled) {
+  background: #343433;
+  color: #e7e8e7;
+}
+.restore-manager button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.restore-manager button:focus-visible,
+.restore-manager input:focus-visible,
+.restore-manager select:focus-visible {
+  outline: 2px solid #a8bf90;
+  outline-offset: 2px;
+}
+.restore-manager .primary-button {
+  background: #b3c79a;
+  color: #182211;
+}
+.restore-manager .primary-button:hover:not(:disabled) {
+  background: #c4d7ad;
+  color: #182211;
+}
+.restores-heading > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  padding: 9px 12px;
+  background: #2d2d2c;
+}
+.restore-manager svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.restores-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0 36px 20px;
+  padding: 9px 0;
+  border-top: 1px solid #393938;
+  border-bottom: 1px solid #393938;
+  flex-shrink: 0;
+}
+.restores-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+  color: #a6a7a5;
+}
+.restores-search input {
+  border: 0;
+  background: transparent;
+  width: 100%;
+  color: #e1e2e1;
+  font-size: 12px;
+  padding: 8px 0;
+  min-width: 0;
+}
+.restores-search input::placeholder {
+  color: #acacab;
+}
+.restores-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: #adaeac;
+  white-space: nowrap;
+}
+.restores-sort select {
+  background: #292929;
+  border: 1px solid #424241;
+  color: #cfd0ce;
+  font-size: 11px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  font-family: inherit;
+  max-width: 160px;
+}
+.restores-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 22px;
+  margin: 0 36px 26px;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  min-width: 0;
+}
+.restores-body:not(:has(.restores-details)) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.restores-list-pane {
+  min-height: 0;
+  overflow: auto;
+  min-width: 0;
+  overscroll-behavior: contain;
+}
+.restores-columns,
+.restores-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 1fr) 118px 75px 82px;
+  align-items: center;
+  gap: 12px;
+}
+.restores-columns {
+  font-size: 9px;
+  color: #a5a6a4;
+  letter-spacing: 0.5px;
+  padding: 7px 12px 13px;
+  position: sticky;
+  top: 0;
+  background: #1e2020;
+  z-index: 1;
+  border-bottom: 1px solid #393938;
+}
+.restore-manager .restores-row {
+  width: 100%;
+  text-align: left;
+  padding: 16px 12px;
+  border: 0;
+  border-bottom: 1px solid #353534;
+  border-radius: 0;
+  color: #c0c1bf;
+  min-height: 78px;
+  font-size: 10px;
+}

@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"syscall"
 )
 
 func Configure(cmd *exec.Cmd) {
@@ -22,14 +21,4 @@ func Configure(cmd *exec.Cmd) {
 		}
 		return nil
 	}
-}
-
-// HideWindow keeps background console applications hidden when launched from
-// the native GUI. Retain the hidden console so their console children inherit
-// it instead of allocating a visible console of their own.
-func HideWindow(cmd *exec.Cmd) {
-	if cmd.SysProcAttr == nil {
-		cmd.SysProcAttr = &syscall.SysProcAttr{}
-	}
-	cmd.SysProcAttr.HideWindow = true
 }

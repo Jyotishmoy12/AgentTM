@@ -1,74 +1,9 @@
 package capture
 
 import (
-	"context"
 	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
 	"testing"
-
-	"agenttm/internal/config"
-	"agenttm/internal/events"
-	"agenttm/internal/project"
-	"agenttm/internal/snapshot"
-	"agenttm/internal/storage"
 )
-
-func setup(t *testing.T) (*snapshot.Engine, string) {
-	t.Helper()
-	root := t.TempDir()
-	if b, err := exec.Command("git", "init", root).CombinedOutput(); err != nil {
-		t.Fatalf("%s: %v", b, err)
-	}
-	if err := project.Init(root); err != nil {
-		t.Fatal(err)
-	}
-	s, err := storage.Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { s.DB.Close() })
-	id, err := s.Start()
-	if err != nil {
-		t.Fatal(err)
-	}
-	e := &snapshot.Engine{Root: root, Store: s, Config: config.Default()}
-	write(t, e, "zero")
-	if _, err = e.Capture(context.Background(), id, "baseline"); err != nil {
-		t.Fatal(err)
-	}
-	return e, id
-}
-func write(t *testing.T, e *snapshot.Engine, value string) {
-	t.Helper()
-	if err := os.WriteFile(filepath.Join(e.Root, "code.txt"), []byte(value), 0600); err != nil {
-		t.Fatal(err)
-	}
-}
-func notify(t *testing.T, o *Observer, item, kind string) error {
-	t.Helper()
-	r := events.Normalize([]byte(fmt.Sprintf(`{"type":%q,"item":{"id":%q,"type":"command_execution","status":"completed"}}`, kind, item)), 65536, "")
-	id, err := o.Engine.Store.AppendID(o.Session, r.Kind, r.Tool, r.Call, r.Payload)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return o.Observe(context.Background(), r, id)
-}
-func mustNotify(t *testing.T, o *Observer, item, kind string) {
-	t.Helper()
-	if err := notify(t, o, item, kind); err != nil {
-		t.Fatal(err)
-	}
-}
-func ops(t *testing.T, e *snapshot.Engine, s string) []storage.Operation {
-	t.Helper()
-	v, err := e.Store.Operations(s, 0, 100)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return v
-}
 
 func TestSequentialEditsAndNoOp(t *testing.T) {
 	e, s := setup(t)
@@ -150,50 +85,5 @@ func TestCoverageAndRepeatedItemIDs(t *testing.T) {
 	rows = ops(t, e, s)
 	if rows[5].CaptureStatus != "disabled" || rows[5].After != "" {
 		t.Fatal(rows[5])
-	}
-}
-func TestCaptureFailureIsRecorded(t *testing.T) {
-	e, s := setup(t)
-	o := New(e, s, true)
-	lock := filepath.Join(e.Root, ".agenttm", "data", "snapshot.lock")
-	if err := os.WriteFile(lock, []byte("test"), 0600); err != nil {
-		t.Fatal(err)
-	}
-	if err := notify(t, o, "locked", "item.started"); err == nil {
-		t.Fatal("capture failure hidden")
-	}
-	rows := ops(t, e, s)
-	if rows[0].CaptureStatus != "failed" || rows[0].Before != "" || rows[0].After != "" {
-		t.Fatal(rows)
-	}
-}
-
-func TestCancellationAndFailedTool(t *testing.T) {
-	e, s := setup(t)
-	o := New(e, s, true)
-	mustNotify(t, o, "fail", "item.started")
-	r := events.Normalize([]byte(`{"type":"item.completed","item":{"id":"fail","type":"command_execution","status":"failed","exit_code":1}}`), 65536, "")
-	id, err := e.Store.AppendID(s, r.Kind, r.Tool, r.Call, r.Payload)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err = o.Observe(context.Background(), r, id); err != nil {
-		t.Fatal(err)
-	}
-	if rows := ops(t, e, s); rows[0].Status != "failed" || rows[0].After == "" {
-		t.Fatal(rows)
-	}
-	r = events.Normalize([]byte(`{"type":"item.started","item":{"id":"cancel","type":"file_change"}}`), 65536, "")
-	id, err = e.Store.AppendID(s, r.Kind, r.Tool, r.Call, r.Payload)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	if err = o.Observe(ctx, r, id); err == nil {
-		t.Fatal("cancelled capture succeeded")
-	}
-	if rows := ops(t, e, s); rows[1].CaptureStatus != "interrupted" {
-		t.Fatal(rows[1])
 	}
 }

@@ -6,8 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"os/exec"
-	"runtime"
 
 	"agenttm/internal/server"
 	"agenttm/internal/snapshot"
@@ -35,10 +33,6 @@ func uiCommand(ctx context.Context, args []string, engine *snapshot.Engine, out,
 	return err, 0
 }
 
-// desktopCommand is the installed-app entry point. It performs a best-effort
-// Codex readiness check, then opens the same local UI used by `agenttm ui`.
-// History remains available when Codex is absent; only new recordings require
-// the dependency.
 func desktopCommand(ctx context.Context, args []string, engine *snapshot.Engine, out, errOut io.Writer) (error, int) {
 	var diagnostic bytes.Buffer
 	if err := codexDoctor(ctx, &diagnostic); err != nil {
@@ -48,20 +42,4 @@ func desktopCommand(ctx context.Context, args []string, engine *snapshot.Engine,
 		fmt.Fprintln(out, "Codex readiness: OK")
 	}
 	return uiCommand(ctx, args, engine, out, errOut)
-}
-func openBrowser(url string) error {
-	var cmd *exec.Cmd
-	switch runtime.GOOS {
-	case "windows":
-		cmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
-	case "darwin":
-		cmd = exec.Command("open", url)
-	default:
-		cmd = exec.Command("xdg-open", url)
-	}
-	if err := cmd.Start(); err != nil {
-		return err
-	}
-	go func() { _ = cmd.Wait() }()
-	return nil
 }

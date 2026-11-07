@@ -3,37 +3,13 @@ package snapshot
 import (
 	"bufio"
 	"context"
-	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"testing"
 	"time"
-
-	"agenttm/internal/operation"
 )
 
-func TestMain(m *testing.M) {
-	if root := os.Getenv("AGENTTM_CRASH_STAGE_ROOT"); root != "" {
-		release, err := operation.Acquire(root, "snapshot")
-		if err != nil {
-			os.Exit(2)
-		}
-		defer release()
-		data := []byte("synthetic crash-recovery object")
-		hash := Hash(data)
-		if _, err = stageFile(filepath.Join(root, ".agenttm", "objects", hash[:2], hash), data); err != nil {
-			os.Exit(3)
-		}
-		// At this exact production persistence boundary the object is synced but
-		// unpublished. The parent force-kills this child, so deferred cleanup cannot run.
-		fmt.Println("staged")
-		time.Sleep(time.Hour)
-		os.Exit(0)
-	}
-	os.Exit(m.Run())
-}
 func TestDoctorAfterForceKillDuringPersistence(t *testing.T) {
 	e, _ := setup(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)

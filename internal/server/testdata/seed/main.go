@@ -1,5 +1,3 @@
-// This program creates explicit synthetic test data in a NEW disposable Git
-// repository. It is never used by the product's recording path.
 package main
 
 import (

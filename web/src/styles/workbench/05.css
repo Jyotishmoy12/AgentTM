@@ -1,0 +1,174 @@
+.workbench-status > div {
+  display: flex;
+  gap: 15px;
+}
+.workbench-status button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font-size: 10px;
+  color: #a5bdd6;
+}
+.workbench-status button:disabled {
+  opacity: 0.35;
+}
+.history-hidden .history-rail,
+.history-hidden .divider-history {
+  display: none;
+}
+.details-hidden .workbench-context,
+.details-hidden .divider-details {
+  display: none;
+}
+.history-hidden .workbench-body {
+  grid-template-columns: minmax(0, 1fr) 5px var(--details-width);
+}
+.history-hidden .workbench-inspection {
+  grid-column: 1;
+}
+.history-hidden .divider-details {
+  grid-column: 2;
+}
+.history-hidden .workbench-context {
+  grid-column: 3;
+}
+.details-hidden:not(.history-hidden) .workbench-body {
+  grid-template-columns: var(--history-width) 5px minmax(0, 1fr);
+}
+.history-hidden.details-hidden .workbench-body {
+  grid-template-columns: minmax(0, 1fr);
+}
+.inspection-focused .workbench-body {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+.inspection-focused .history-rail,
+.inspection-focused .workbench-divider,
+.inspection-focused .workbench-context {
+  display: none !important;
+}
+.inspection-focused .workbench-inspection {
+  grid-column: 1 !important;
+}
+.project-selector {
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.project-selector:hover {
+  background: #26313c;
+  border-color: #4c6079;
+}
+.project-chevron {
+  color: #839bb7;
+  margin-left: auto;
+}
+.project-dialog {
+  max-width: 480px;
+  width: calc(100vw - 30px);
+  padding: 24px;
+  background: #1d2632;
+  color: #c3d2e7;
+  border: 1px solid #52657e;
+  border-radius: 10px;
+  box-shadow: 0 20px 100px #0008;
+}
+.project-dialog::backdrop {
+  background: #070d15bb;
+  backdrop-filter: blur(3px);
+}
+.project-dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.project-dialog-heading h2 {
+  font-size: 20px;
+}
+.project-dialog-heading button {
+  border: 0;
+  background: none;
+  font-size: 22px;
+  padding: 0;
+}
+.project-dialog > p {
+  font-size: 13px;
+  margin: 20px 0 10px;
+  color: #a7bedb;
+}
+.project-dialog > code {
+  display: block;
+  font-size: 12px;
+  line-height: 1.9;
+  padding: 12px;
+  background: #121c29;
+  border: 1px solid #364d68;
+  border-radius: 5px;
+  overflow-wrap: anywhere;
+  margin-bottom: 12px;
+}
+.project-dialog button {
+  font-size: 12px;
+}
+.project-switch-info {
+  border-top: 1px solid #3a4a61;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+.project-switch-info h3 {
+  font-size: 15px;
+}
+.project-switch-info p {
+  color: #92a9c8;
+  font-size: 12px;
+  line-height: 1.9;
+  margin: 12px 0 20px;
+}
+.app-sidebar nav > button {
+  min-height: 35px;
+}
+.refreshed-shell .session-bar {
+  min-height: 45px;
+  padding: 7px 16px;
+  background: #202832;
+  border-color: #364152;
+}
+.refreshed-shell .session-select select {
+  width: 300px;
+  background: #151d27;
+  border-color: #3d4f68;
+}
+.refreshed-shell .session-meta {
+  font-size: 10px;
+  color: #819ab9;
+}
+.overview-welcome {
+  background: #1c252f;
+  border: 0;
+  border-bottom: 1px solid #394656;
+  border-radius: 0;
+  padding: 0 0 22px;
+  gap: 22px;
+}
+.overview-welcome h2 {
+  font-size: 23px;
+  margin-top: 12px;
+  letter-spacing: -0.5px;
+}
+.overview-recording {
+  background: #141d28;
+  border-color: #3b4d65;
+  box-shadow: none;
+}
+.overview-steps {
+  gap: 0;
+  border: 1px solid #35455b;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.overview-step {
+  background: #1e2936;
+  border: 0;
+  border-right: 1px solid #35455b;
+  border-radius: 0;
+  padding: 17px;
+}

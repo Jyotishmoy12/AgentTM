@@ -80,7 +80,6 @@ func TestStore(t *testing.T) {
 	if _, e = s.DB.Exec("INSERT INTO events(id,session_id,sequence,kind,received_at,payload_json) VALUES ('orphan','missing',1,'test','now','{}')"); e == nil {
 		t.Fatal("foreign keys disabled")
 	}
-	// Reopening an initialized database must preserve data.
 	s.DB.Close()
 	s, e = Open(root)
 	if e != nil {

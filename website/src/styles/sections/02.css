@@ -1,0 +1,172 @@
+.focus-tour > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #cfd3d0;
+  font-size: 11px;
+}
+.tour-play {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #555b58;
+  border-radius: 50%;
+  background: #1f2221;
+  transition:
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.tour-play > .icon {
+  width: 11px;
+  height: 11px;
+}
+.focus-tour > button:hover .tour-play {
+  background: #3a3d3c;
+  box-shadow: 0 0 0 4px #616a651a;
+}
+.focus-tour > button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.focus-tour > small {
+  display: block;
+  font-size: 8px;
+  line-height: 1.8;
+  color: #737875;
+  margin-top: 10px;
+}
+.focus-guide {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 25px;
+  color: #8f9491;
+  font-size: 10px;
+}
+.focus-guide > .icon {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.2s;
+}
+.focus-guide:hover > .icon {
+  transform: translateX(3px);
+}
+.focus-panel-stack {
+  min-width: 0;
+  display: grid;
+}
+.focus-panel-stack > [role='tabpanel'] {
+  grid-area: 1 / 1;
+  min-width: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  animation: none;
+  transition:
+    opacity 550ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s 550ms;
+}
+.focus-panel-stack > [role='tabpanel'].is-active {
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+.marketing-site[data-motion='paused'] .focus-panel-stack > [role='tabpanel'] {
+  transition: none;
+}
+.focus-viewer {
+  position: relative;
+  border: 1px solid #3a3d3c;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #151817;
+  box-shadow: 0 16px 70px #0004;
+}
+.focus-viewer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #333635;
+  background: #1b1e1d;
+}
+.focus-viewer-bar > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font:
+    9px Consolas,
+    monospace;
+  color: #a0a4a2;
+  min-width: 0;
+}
+.focus-viewer-bar > span > .icon {
+  width: 13px;
+  height: 13px;
+  color: #89908c;
+}
+.capture-expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: #a0a6a3;
+  padding: 5px;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+.capture-expand:hover {
+  background: #333635;
+  color: #e6e9e7;
+}
+.capture-expand > svg {
+  width: 14px;
+  height: 14px;
+}
+.focus-shot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.8;
+  overflow: hidden;
+  background: #121514;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.focus-shot-timeline > img {
+  position: absolute;
+  top: -11%;
+  left: 0;
+  width: 175%;
+  max-width: none;
+  height: auto;
+}
+.focus-shot-diffs > img {
+  position: absolute;
+  top: -24%;
+  left: 0;
+  width: 175%;
+  max-width: none;
+  height: auto;
+}
+.focus-shot-restore {
+  background: radial-gradient(ellipse at center, #2c2f2e77, transparent 80%), #171a19;
+}
+.focus-shot-restore > img {
+  display: block;
+  width: auto;
+  height: 88%;
+  max-width: 90%;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 15px 35px #0004;
+}

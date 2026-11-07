@@ -1,0 +1,173 @@
+.doc-step-number {
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+  border-radius: 6px;
+  border: 1px solid #4e544f;
+  background: #272a27;
+  color: #bdc3ba;
+  font:
+    10px Consolas,
+    monospace;
+}
+.doc-step h2 {
+  margin-top: 0;
+}
+.doc-command {
+  margin: 18px 0;
+}
+.docs-site .code-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  margin: 0;
+  border: 1px solid #3a3f3c;
+  border-radius: 7px;
+  background: #111412;
+  min-width: 0;
+}
+.docs-site .code-block pre {
+  min-width: 0;
+  flex: 1;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 0;
+}
+.docs-site .code-block code {
+  font-size: 11px;
+  color: #ccd0c9;
+}
+.docs-site .code-block .prompt {
+  font-size: 11px;
+  color: #949e95;
+  flex-shrink: 0;
+}
+.docs-site .code-block button {
+  flex-shrink: 0;
+  color: #a9b2a8;
+  padding: 5px;
+  background: transparent;
+  border: 0;
+}
+.docs-site .code-block button .icon {
+  width: 15px;
+  height: 15px;
+}
+.docs-site .copy-feedback {
+  font-size: 10px;
+}
+.docs-site .copy-feedback:empty {
+  display: none;
+}
+.docs-article .doc-expected {
+  font-size: 11px;
+  color: #a8ada8;
+  line-height: 1.75;
+  margin: 8px 0 0;
+}
+.doc-expected > span {
+  margin-right: 8px;
+  color: #bdc3ba;
+  font-weight: 550;
+}
+.doc-inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: 12px;
+  color: #b3bbb1;
+  font-size: 12px;
+}
+.doc-inline-link .icon {
+  width: 13px;
+  height: 13px;
+}
+.doc-os-picker {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+.doc-os-picker button {
+  padding: 10px 19px;
+  border: 1px solid #474c48;
+  border-radius: 7px;
+  background: #1b1e1c;
+  color: #bec3be;
+  font-size: 12px;
+}
+.doc-os-picker button[aria-pressed='true'] {
+  border-color: #8f9a8f;
+  background: #353c37;
+  color: #dee1db;
+}
+.doc-filename-label {
+  display: block;
+  font-size: 12px;
+  color: #ccd0ca;
+  margin: 23px 0 9px;
+}
+.doc-filename {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #575e58;
+  border-radius: 7px;
+  background: #161918;
+  color: #d5d9d4;
+  font:
+    12px Consolas,
+    monospace;
+}
+.docs-article .doc-field-hint {
+  font-size: 11px;
+}
+.docs-article .doc-field-error {
+  font-size: 12px;
+  color: #e0c09c;
+}
+.doc-table-scroll {
+  overflow-x: auto;
+  margin: 25px 0;
+}
+.doc-table-scroll table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 500px;
+  text-align: left;
+}
+.doc-table-scroll caption {
+  color: #aeb4af;
+  font-size: 11px;
+  text-align: left;
+  margin-bottom: 12px;
+}
+.doc-table-scroll th,
+.doc-table-scroll td {
+  border-bottom: 1px solid #343835;
+  padding: 14px 12px;
+  vertical-align: top;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.doc-table-scroll th {
+  color: #d1d4cf;
+  font-weight: 500;
+}
+.doc-table-scroll td {
+  color: #b0b3b0;
+}
+.doc-product-image {
+  width: 100%;
+  margin: 25px 0;
+  border: 1px solid #404540;
+  border-radius: 8px;
+}
+.doc-trouble {
+  padding: 18px 0;
+  border-bottom: 1px solid #313532;
+}

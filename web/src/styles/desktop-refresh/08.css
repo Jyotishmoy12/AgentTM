@@ -1,0 +1,173 @@
+.operation-card p,
+.operations-view > p {
+  color: #a0abba;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.page-empty {
+  background: #1b1d22;
+  border: 1px dashed #3d424c;
+  border-radius: 8px;
+  padding: 45px 24px;
+}
+.page-empty h2,
+.empty h2 {
+  font-size: 18px;
+  color: #d4dae4;
+}
+.page-empty p,
+.empty p {
+  color: #969fab;
+  font-size: 12px;
+}
+.page-empty code,
+.empty code {
+  background: #252830;
+  border-color: #3b414c;
+  color: #c4d2b9;
+}
+.restored-card,
+.help-card {
+  background: #1d1f25;
+  border-color: #343943;
+  border-radius: 8px;
+  padding: 23px;
+}
+.restored-card p,
+.help-card p,
+.help-card li,
+.help-card dd {
+  color: #a2adbb;
+  font-size: 12px;
+}
+.help-card dt {
+  color: #c0d2af;
+}
+.restored-card label code,
+.help-command {
+  background: #171c18;
+  border-color: #3d4b36;
+  color: #c8d8b5;
+}
+.backup-fields label {
+  color: #a5afbc;
+}
+.backup-fields input {
+  background: #191c22;
+  border-color: #3b424e;
+}
+.gc-preview {
+  background: #222c20;
+  border-color: #47543c;
+}
+.error-box {
+  background: #38252c;
+  border-color: #73474f;
+  color: #f2bac5;
+}
+.global-error {
+  background: #22191f;
+}
+.partial-notice,
+.warning-box,
+.chat-approvals {
+  background: #302b20;
+  border-color: #685a38;
+  color: #e1c992;
+}
+.fork-dialog,
+.setup-dialog {
+  color: #e1e4ec;
+  background: #1c1e24;
+  border-color: #454b57;
+  box-shadow: 0 25px 100px #0009;
+}
+.fork-dialog input {
+  background: #15181e;
+}
+.fork-dialog-header p,
+.fork-description {
+  color: #a2adbd;
+}
+.fork-destination {
+  background: #242f20;
+  color: #c6dbb3;
+  border-color: #46593c;
+}
+.setup-steps {
+  background: #15171c;
+  border-color: #343b46;
+}
+.setup-steps button {
+  color: #9ba6b7;
+}
+.setup-steps button[aria-current='step'] {
+  color: #c8deba;
+  background: #2a3425;
+  border-color: #45553a;
+}
+.setup-main {
+  background: #1c1e24;
+}
+.setup-top,
+.setup-actions {
+  background: #20232a;
+  border-color: #353b47;
+}
+.setup-body p,
+.setup-body li {
+  color: #aab4c3;
+}
+.setup-command {
+  background: #15191e;
+  border-color: #3a4550;
+}
+.setup-command code {
+  color: #c0d7ad;
+}
+.setup-callout {
+  background: #242e20;
+  color: #c4d6b5;
+  border-color: #415438;
+}
+.command-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(570px, calc(100vw - 32px));
+  padding: 0;
+  color: #dfe3de;
+  background: #1e2022;
+  border: 1px solid #3b3e40;
+  border-radius: 12px;
+  box-shadow: 0 32px 130px #000b;
+  height: min(580px, calc(100dvh - 64px));
+  max-height: calc(100dvh - 64px);
+  overflow: hidden;
+}
+.command-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.command-search,
+.command-group-label,
+.command-footer {
+  flex-shrink: 0;
+}
+.command-dialog::backdrop {
+  background: #090b0dcc;
+  backdrop-filter: none;
+}
+.command-search {
+  display: flex;
+  align-items: center;
+  padding: 16px 17px;
+  gap: 12px;
+  border-bottom: 1px solid #333936;
+}
+.command-search > svg {
+  width: 19px;
+  height: 19px;
+  color: #a3aaa4;
+  flex-shrink: 0;
+}

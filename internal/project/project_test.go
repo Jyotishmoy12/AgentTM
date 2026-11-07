@@ -3,19 +3,10 @@ package project
 import (
 	"bytes"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"testing"
 )
 
-func gitTest(t *testing.T, dir string, args ...string) []byte {
-	t.Helper()
-	b, e := exec.Command("git", append([]string{"-C", dir}, args...)...).CombinedOutput()
-	if e != nil {
-		t.Fatalf("git: %s %v", b, e)
-	}
-	return b
-}
 func TestInitSafety(t *testing.T) {
 	root := filepath.Join(t.TempDir(), "project spaces 日本語")
 	t.Setenv("GIT_CEILING_DIRECTORIES", filepath.Dir(root))
@@ -59,45 +50,5 @@ func TestInitSafety(t *testing.T) {
 	}
 	if _, e = os.Stat(filepath.Join(root, ".gitignore")); !os.IsNotExist(e) {
 		t.Fatal("created tracked ignore file")
-	}
-}
-func TestRejectStorageSymlink(t *testing.T) {
-	root := t.TempDir()
-	outside := t.TempDir()
-	if e := os.Symlink(outside, filepath.Join(root, ".agenttm")); e != nil {
-		t.Skip("symlinks unavailable:", e)
-	}
-	if e := Init(root); e == nil {
-		t.Fatal("storage symlink accepted")
-	}
-}
-
-func TestStorageAllowsRepositoryAncestorAlias(t *testing.T) {
-	parent := t.TempDir()
-	real := filepath.Join(parent, "physical")
-	if err := os.Mkdir(real, 0700); err != nil {
-		t.Fatal(err)
-	}
-	alias := filepath.Join(parent, "alias")
-	if err := os.Symlink(real, alias); err != nil {
-		t.Skip("symlinks unavailable:", err)
-	}
-	root := filepath.Join(alias, "repo")
-	if err := os.Mkdir(root, 0700); err != nil {
-		t.Fatal(err)
-	}
-	gitTest(t, root, "init")
-	if err := Init(root); err != nil {
-		t.Fatalf("legitimate ancestor alias rejected: %v", err)
-	}
-	if err := SafePath(filepath.Join(root, ".agenttm", "objects", "new-object")); err != nil {
-		t.Fatal(err)
-	}
-	outside := t.TempDir()
-	if err := os.Symlink(outside, filepath.Join(root, ".agenttm", "objects", "escape")); err != nil {
-		t.Fatal(err)
-	}
-	if err := SafePath(filepath.Join(root, ".agenttm", "objects", "escape", "blob")); err == nil {
-		t.Fatal("storage symlink beneath an aliased repository was accepted")
 	}
 }

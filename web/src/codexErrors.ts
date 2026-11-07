@@ -1,5 +1,3 @@
-// Unwrap App Server errors that contain an API error JSON inside `message`.
-// Raw error payloads remain in recorded history; the chat displays useful text.
 export function codexError(raw: string): { title: string; detail: string; action: string } {
   let detail = raw;
   for (let depth = 0; depth < 6; depth++) {

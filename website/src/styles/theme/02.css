@@ -1,0 +1,165 @@
+.download-main-button {
+  background: linear-gradient(120deg, #81d78e, #5bc285);
+  border-color: #76ce92;
+  color: #0b2918;
+}
+.download-main-button:hover {
+  background: linear-gradient(120deg, #a1e6a7, #81d89d);
+  border-color: #91dba0;
+  color: #10251b;
+}
+.editorial-install .docs-sidebar button[aria-selected='true'] {
+  color: #a2d890;
+  background: #263c2b;
+  border-color: #587951;
+}
+.editorial-install .code-block .prompt {
+  color: #8bd283;
+}
+.editorial-install .copy-feedback:not(:empty),
+.inline-button {
+  color: #8bd69e;
+}
+.feature-diagram {
+  background: radial-gradient(ellipse 75% 85% at 50% 60%, #24533355, transparent);
+  border-color: #2c4934;
+}
+.feature-diagram .diagram-grid {
+  background-image:
+    linear-gradient(#80bb8b12 1px, transparent 1px),
+    linear-gradient(90deg, #80bb8b12 1px, transparent 1px);
+}
+.feature-diagram .diagram-caption {
+  color: #82a88b;
+}
+.feature-diagram .mini-window,
+.feature-diagram .mini-terminal {
+  background: #12251b;
+  border-color: #477a54;
+}
+.feature-diagram .mini-title {
+  color: #92bd9b;
+  border-color: #2d5039;
+}
+.feature-diagram .mini-title > i {
+  background: #8ed399;
+}
+.feature-diagram .mini-file {
+  color: #d2e9c9;
+}
+.feature-diagram .mini-file.indent {
+  color: #91bd99;
+}
+.feature-diagram .mini-file > em {
+  background: #294b33;
+  color: #b5e39b;
+}
+.feature-diagram .orbit-lock {
+  background: #28513a;
+  border-color: #6a9c67;
+  color: #cbebaa;
+  box-shadow: 0 8px 28px #08231288;
+}
+.feature-diagram .hash-sources > span {
+  background: #172f22;
+  border-color: #3e6b4a;
+  color: #b6d9ba;
+}
+.feature-diagram .dedup-diagram > svg {
+  stroke: #5c946b;
+}
+.feature-diagram .dedup-diagram > svg .data-packet {
+  stroke: #b5e5a5;
+}
+.feature-diagram .hash-object {
+  background: linear-gradient(140deg, #30553a, #1c3928);
+  border-color: #79a96e;
+  color: #d7efbf;
+  box-shadow: 0 0 35px #48875725;
+}
+.feature-diagram .hash-object > small {
+  color: #a4c496;
+}
+.feature-diagram .mini-bubble {
+  background: #214530;
+  border-color: #548a5e;
+  color: #d2edc7;
+}
+.feature-diagram .mini-bubble.answer {
+  background: #193324;
+  border-color: #355e40;
+}
+.feature-diagram .mini-bubble.answer i {
+  background: #8dd19a;
+}
+.feature-diagram .continue-thread {
+  color: #92be9d;
+  border-color: #345e40;
+}
+.feature-diagram .continue-thread > span {
+  border-color: #abd797;
+}
+.feature-diagram .continue-thread > b {
+  color: #b9e4a8;
+}
+.feature-diagram .backup-file {
+  background: linear-gradient(135deg, #2b5035, #1a3727);
+  border-color: #659a65;
+  color: #d8edc3;
+}
+.feature-diagram .backup-file > small {
+  color: #a3c699;
+}
+.feature-diagram .password-dots {
+  background: #142c1e;
+  border-color: #3c6946;
+}
+.feature-diagram .password-dots > i {
+  background: #a8d88f;
+}
+.feature-diagram .encrypted-chip {
+  color: #95c39d;
+}
+.feature-diagram .mini-terminal > span:not(.mini-title) {
+  color: #c5e5bf;
+}
+.feature-diagram .mini-terminal b {
+  color: #89cc90;
+}
+.feature-diagram .mini-terminal > .check-line {
+  color: #92d69c !important;
+}
+.feature-diagram .object-cells > i {
+  background: linear-gradient(140deg, #3e7547, #214b31);
+  border-color: #72a56a;
+  box-shadow: inset 0 1px #c6e6b71a;
+}
+.feature-diagram .object-cells > .unreferenced {
+  background: #172f20;
+  border-color: #658c6b;
+}
+.feature-diagram .storage-legend {
+  color: #9ebf9d;
+}
+.feature-diagram .storage-legend > i {
+  background: #467f4c;
+  border-color: #89b77d;
+}
+.feature-diagram .storage-legend > .unreferenced {
+  background: #172f20;
+  border-color: #658c6b;
+}
+:root {
+  --site-icon: #8acb9c;
+  --site-icon-on-green: #0c3b22;
+}
+.marketing-site svg.icon,
+.marketing-site svg.platform-mark,
+.marketing-site .capture-expand > svg {
+  color: var(--site-icon) !important;
+}
+.marketing-site .button:not(.button-secondary) svg.icon,
+.marketing-site .download-main-button svg.icon,
+.marketing-site .download-main-button svg.platform-mark {
+  color: var(--site-icon-on-green) !important;
+}

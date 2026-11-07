@@ -1,26 +1,14 @@
 package maintenance
 
 import (
-	"agenttm/internal/project"
 	"fmt"
 	"io/fs"
 	"path/filepath"
 	"strings"
 	"time"
-)
 
-// Usage reports logical regular-file bytes in disjoint history categories.
-// Worktrees are deliberately excluded. This is an observation, not a quota,
-// allocated disk measurement, or atomic view during concurrent filesystem writes.
-type Usage struct {
-	Total      int64  `json:"total"`
-	Blobs      int64  `json:"blobs"`
-	Database   int64  `json:"database"`
-	Manifests  int64  `json:"manifests"`
-	Logs       int64  `json:"logs"`
-	Other      int64  `json:"other"`
-	MeasuredAt string `json:"measured_at"`
-}
+	"agenttm/internal/project"
+)
 
 func StorageUsage(root string) (Usage, error) {
 	var result Usage

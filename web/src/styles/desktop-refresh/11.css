@@ -1,0 +1,171 @@
+@media (max-width: 650px) {
+  .app-sidebar nav > button {
+    flex: 0 0 auto;
+    padding: 10px;
+    min-height: 38px;
+    gap: 7px;
+  }
+}
+@media (max-width: 650px) {
+  .app-sidebar nav > button > span {
+    display: inline;
+  }
+}
+@media (max-width: 650px) {
+  .app-sidebar nav strong {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 650px) {
+  .app-sidebar nav > button > span small,
+  .app-sidebar nav > button > .nav-count {
+    display: none;
+  }
+}
+@media (max-width: 650px) {
+  .app-sidebar nav > button > svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+@media (max-width: 650px) {
+  .topbar {
+    padding: 0 13px;
+    min-height: 44px;
+  }
+}
+@media (max-width: 650px) {
+  .topbar > .toolbar-location {
+    gap: 0;
+  }
+}
+@media (max-width: 650px) {
+  .toolbar-location > .toolbar-icon {
+    display: none;
+  }
+}
+@media (max-width: 650px) {
+  .workspace-breadcrumb {
+    gap: 8px;
+    font-size: 10px;
+  }
+}
+@media (max-width: 650px) {
+  .workspace-breadcrumb > span:first-child {
+    max-width: 115px;
+  }
+}
+@media (max-width: 650px) {
+  .topbar > .toolbar-actions {
+    gap: 3px;
+  }
+}
+@media (max-width: 650px) {
+  .topbar .setup-launcher {
+    font-size: 9px;
+    padding-inline: 4px;
+  }
+}
+@media (max-width: 650px) {
+  .topbar .toolbar-command {
+    padding: 5px;
+  }
+}
+@media (max-width: 650px) {
+  .topbar .toolbar-icon {
+    width: 24px;
+    padding: 4px;
+  }
+}
+@media (max-width: 650px) {
+  .page-heading,
+  .chat-layout .page-heading {
+    padding: 18px 17px;
+    min-height: 0;
+  }
+}
+@media (max-width: 650px) {
+  .page-heading h1,
+  .chat-layout .page-heading h1 {
+    font-size: 20px;
+  }
+}
+@media (max-width: 650px) {
+  .page-heading p {
+    font-size: 11px;
+  }
+}
+@media (max-width: 650px) {
+  .page-scroll {
+    padding: 18px 16px;
+  }
+}
+@media (max-width: 650px) {
+  .overview-welcome {
+    padding: 21px;
+    gap: 23px;
+  }
+}
+@media (max-width: 650px) {
+  .overview-welcome h2 {
+    font-size: 27px;
+  }
+}
+@media (max-width: 650px) {
+  .overview-steps {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+@media (max-width: 650px) {
+  .overview-step {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 8px 10px;
+    padding: 16px;
+  }
+}
+@media (max-width: 650px) {
+  .overview-step h3 {
+    font-size: 13px;
+  }
+}
+@media (max-width: 650px) {
+  .overview-step p,
+  .overview-step .step-link {
+    grid-column: 2;
+  }
+}
+@media (max-width: 650px) {
+  .overview-step p {
+    font-size: 11px;
+  }
+}
+@media (max-width: 650px) {
+  .workspace-summary {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 650px) {
+  .workspace-summary > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+}
+@media (max-width: 650px) {
+  .workspace-summary > div:last-child {
+    border: 0;
+  }
+}
+@media (max-width: 650px) {
+  .session-summary {
+    padding: 15px 12px;
+    gap: 10px;
+  }
+}
+@media (max-width: 650px) {
+  .session-summary-main > span {
+    font-size: 9px;
+  }
+}

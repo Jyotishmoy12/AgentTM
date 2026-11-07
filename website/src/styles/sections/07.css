@@ -1,0 +1,174 @@
+.download-mode > button[aria-pressed='true'] {
+  color: #e0e4e2;
+  border-bottom: 1px solid #c1cec5;
+}
+.download-mode > button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.download-mode small {
+  font-size: 7px;
+  border: 1px solid #464948;
+  border-radius: 3px;
+  padding: 2px 3px;
+  color: #9ca09d;
+}
+.download-primary {
+  max-width: 390px;
+  margin-inline: auto;
+  border: 1px solid #58635e;
+  border-radius: 9px;
+  background: #242726;
+  box-shadow:
+    0 0 70px #63736a12,
+    0 15px 60px #0005;
+  overflow: hidden;
+}
+.download-ribbon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font:
+    8px Consolas,
+    monospace;
+  letter-spacing: 0.8px;
+  color: #bfc5c1;
+  padding: 10px 8px;
+  background: linear-gradient(90deg, #212423, #353837, #212423);
+}
+.download-ribbon > .status-dot {
+  width: 4px;
+  height: 4px;
+}
+.download-main-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+  gap: 14px;
+  padding: 19px 25px;
+  color: #212423;
+  background: #e7e8e8;
+  border-radius: 7px;
+  border: 1px solid white;
+  transition:
+    background 0.25s,
+    box-shadow 0.25s;
+}
+.download-main-button:hover {
+  background: white;
+  box-shadow: inset 0 0 25px #a3afa724;
+}
+.download-main-button > .platform-mark {
+  width: 27px;
+  height: 27px;
+}
+.download-main-button > span {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.3px;
+}
+.download-main-button small {
+  display: block;
+  font-size: 9px;
+  font-weight: 400;
+  margin-top: 6px;
+  letter-spacing: 0;
+  color: #686c6a;
+}
+.download-main-button > .icon {
+  width: 16px;
+  height: 16px;
+  margin-left: auto;
+  color: #696f6b;
+  transition: transform 0.25s;
+}
+.download-main-button:hover > .icon {
+  transform: translateY(3px);
+}
+.release-destination {
+  font-size: 8px;
+  color: #808682;
+  margin-top: 14px;
+}
+.platform-guide-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #c7ccc9;
+  font-size: 10px;
+  margin: 19px 0;
+  padding: 3px;
+}
+.platform-guide-link .icon {
+  width: 13px;
+  height: 13px;
+  transition: transform 0.25s;
+}
+.platform-guide-link:hover .icon {
+  transform: translateX(3px);
+}
+.download-prerequisites {
+  font-size: 9px;
+  color: #838885;
+  line-height: 1.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.install-journey {
+  padding: 28px 30px 0;
+  background: #161918;
+  border: 1px solid #373a39;
+  border-radius: 11px;
+}
+.journey-heading {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.journey-heading > .eyebrow {
+  width: 100%;
+  margin: 0;
+  font-size: 8px;
+  color: #8d938e;
+}
+.journey-heading > h3 {
+  font-size: 26px;
+  letter-spacing: -0.7px;
+  font-weight: 500;
+}
+.journey-heading > a {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  color: #c1c5c2;
+  padding-bottom: 3px;
+}
+.journey-heading > a > .icon {
+  width: 12px;
+  height: 12px;
+}
+.install-journey > ol {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0;
+  margin: 28px 0 0;
+  border-top: 1px solid #373a39;
+}
+.install-journey li {
+  padding: 24px 24px 28px 0;
+  border-right: 1px solid #373a39;
+  position: relative;
+}
+.install-journey li + li {
+  padding-left: 24px;
+}
+.install-journey li:last-child {
+  border-right: 0;
+  padding-right: 0;
+}

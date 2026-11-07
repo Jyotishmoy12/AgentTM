@@ -28,12 +28,21 @@ jobs:
           cache-dependency-path: web/package-lock.json
       - run: npm ci
         working-directory: web
+      - run: npm run lint
+        working-directory: web
+      - run: npm run format:check
+        working-directory: web
+      - run: npm run check:architecture
+        working-directory: web
       - run: npm test
         working-directory: web
       - run: npm run build
         working-directory: web
       - run: go test ./...
       - run: node scripts/check-docs.mjs
+      - run: node --test scripts/tests/docs.test.mjs scripts/tests/smoke-ui.test.mjs scripts/tests/contracts.test.mjs
+      - run: ./scripts/test-scripts.ps1
+        if: runner.os == 'Windows'
       - run: go vet ./...
       - run: go test -race ./internal/storage ./internal/fork ./internal/server
         if: runner.os == 'Linux'
@@ -71,9 +80,33 @@ jobs:
           sh scripts/test-install.sh dist/native "$RELEASE_VERSION" "$(go env GOOS)_$(go env GOARCH)"
           sh scripts/install.sh dist/native/*.tar.gz "$RUNNER_TEMP/agenttm-ui-installed"
           node scripts/smoke-ui.mjs "$RUNNER_TEMP/agenttm-ui-installed/agenttm" "$RELEASE_VERSION"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7.0.2
         if: runner.os == 'Windows'
         with:
           name: windows-desktop-preview
           path: dist/native/agenttm-desktop_*.zip
           if-no-files-found: error
+          archive: true
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - run: npm ci
+        working-directory: website
+      - run: npm run lint
+        working-directory: website
+      - run: npm run format:check
+        working-directory: website
+      - run: npm run check:architecture
+        working-directory: website
+      - run: npm run build
+        working-directory: website
+      - run: npx playwright install --with-deps chromium
+        working-directory: website
+      - run: npm test
+        working-directory: website

@@ -1,0 +1,170 @@
+.aurora-one {
+  background: radial-gradient(ellipse at center, #175b365c, transparent 67%);
+}
+.aurora-two {
+  background: radial-gradient(ellipse, #29865540, transparent 65%);
+}
+.hero h1 > span {
+  background-image: linear-gradient(100deg, #eff2e8, #a8c6ac 65%, #d1ddc8);
+}
+.eyebrow,
+.focus-heading .eyebrow,
+.install-reference-heading > .eyebrow {
+  color: #9bbb9d;
+}
+.focus-heading h2 > span,
+.comparison-heading h2 span {
+  color: #a8bfa6;
+}
+.focus-heading > p,
+.comparison-heading > p,
+.hero-description {
+  color: #b0bbb1;
+}
+.focus-tabs > button {
+  color: #98aa9c;
+}
+.focus-tabs > button[aria-selected='true'] {
+  color: #d5e2ce;
+  border-color: #425d47;
+}
+.focus-tabs > button::before {
+  background: #a7c595;
+}
+.focus-tab-body > span {
+  color: #9faf9f;
+}
+.focus-viewer-bar,
+.focus-image-label {
+  background: #151e19;
+}
+.focus-viewer-bar > span,
+.focus-image-label {
+  color: #9db5a2;
+}
+.feature-card .icon,
+.benefit-top > .icon,
+.download-platforms .icon {
+  color: #a5be9f;
+}
+.editorial-install .docs-sidebar button[aria-selected='true'] {
+  background: #28372b;
+  border-color: #465d45;
+  color: #d7e2cf;
+}
+.editorial-install .docs-shell {
+  background: #111613;
+}
+.editorial-install .docs-sidebar {
+  background: #161d18;
+}
+.editorial-install .code-block {
+  background: #0e1410;
+  border-color: #344337;
+}
+.editorial-install .code-block .prompt {
+  color: #9dba96;
+}
+.comparison-table-scroll th:last-child,
+.comparison-table-scroll td:last-child {
+  background: #17251b9c;
+}
+.comparison-table-scroll tbody td:last-child {
+  color: #d0ddcc;
+}
+.comparison-table-scroll td > .icon {
+  color: #a5c593;
+}
+:root {
+  --accent: #70cc8c;
+  --green: #57bd7b;
+}
+.brand-accent {
+  color: #8bce7c;
+}
+.hero h1 > span {
+  background-image: linear-gradient(105deg, #d8efc8 5%, #64c38b 62%, #9cd57f);
+}
+.hero-description {
+  color: #abc7b1;
+}
+.eyebrow,
+.focus-heading .eyebrow,
+.section-heading > .eyebrow,
+.install-reference-heading > .eyebrow {
+  color: #79c997;
+}
+.navigation a {
+  color: #a1c0aa;
+}
+.navigation a:hover {
+  color: #c5eccd;
+}
+.button:not(.button-secondary) {
+  background: linear-gradient(120deg, #78d48f, #51bd7c);
+  border-color: #72cc8b;
+  color: #0b2817;
+}
+.button:not(.button-secondary):hover {
+  background: linear-gradient(120deg, #91e2a3, #6dd195);
+  border-color: #8bd99e;
+  color: #082311;
+}
+.button.button-secondary {
+  color: #9fdfb0;
+  background: #12291b;
+  border-color: #35734b;
+}
+.button.button-secondary:hover {
+  color: #e2f1dc;
+  background: #193a26;
+  border-color: #559862;
+}
+.hero .platform-note,
+.hero-watch,
+.text-link {
+  color: #91cba0;
+}
+.hero-watch > span {
+  border-color: #5d8160;
+  color: #a4d889;
+}
+.focus-heading h2 > span,
+.comparison-heading h2 span {
+  color: #86cc92;
+}
+.focus-tabs > button {
+  color: #83b995;
+}
+.focus-tabs > button[aria-selected='true'] {
+  color: #a8dfa1;
+  border-color: #45874f;
+}
+.focus-tabs > button[aria-selected='true'] .focus-tab-body > span {
+  color: #9acba9;
+}
+.focus-tab-number,
+.focus-viewer-bar > span,
+.focus-image-label {
+  color: #8ec28b;
+}
+.focus-tour > button,
+.focus-user-guide,
+.comparison-notes a {
+  color: #9dd591;
+}
+.feature-card h3,
+.steps h3,
+.install-reference-heading h3 {
+  color: #b6dda7;
+}
+.feature-card-copy > .icon,
+.benefit-top > .icon {
+  color: #7cca98;
+}
+.comparison-table-scroll thead th:last-child {
+  color: #a1dfa8;
+}
+.comparison-table-scroll td > .icon {
+  color: #80cd8b;
+}

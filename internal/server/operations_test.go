@@ -38,7 +38,7 @@ func TestOperationsAPI(t *testing.T) {
 	op := items[0].(map[string]any)
 	if op["capture_status"] != "partial" || op["after_checkpoint_id"] == "" {
 		t.Fatal(op)
-	} // fixture excludes .env
+	}
 	w = request(f.app, "GET", fmt.Sprintf("%s?limit=1&cursor=%.0f", path, b["next_cursor"].(float64)), nil)
 	if w.Code != 200 || body(t, w)["next_cursor"] != nil {
 		t.Fatal(w.Body.String())

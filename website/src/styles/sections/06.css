@@ -1,0 +1,173 @@
+@media (max-width: 440px) {
+  .focus-heading h2 {
+    font-size: 30px;
+  }
+  .focus-tab-body > strong {
+    font-size: 11px;
+  }
+  .focus-shot {
+    aspect-ratio: 1.25;
+  }
+  .focus-shot-timeline > img {
+    width: 280%;
+    top: -16%;
+  }
+  .focus-shot-diffs > img {
+    width: 280%;
+    top: -32%;
+  }
+  .focus-caption h3 {
+    font-size: 21px;
+  }
+  .focus-viewer-bar > span {
+    font-size: 7px;
+  }
+  .focus-viewer-bar {
+    gap: 8px;
+  }
+  .capture-expand {
+    gap: 5px;
+  }
+  .capture-expand > span {
+    font-size: 8px;
+  }
+  .focus-image-label {
+    font-size: 5px;
+    letter-spacing: 0.7px;
+  }
+  .focus-shot-restore > img {
+    height: 88%;
+    max-width: 94%;
+  }
+  .focus-tour > small {
+    max-width: 130px;
+  }
+}
+.editorial-install {
+  padding: 0 0 100px;
+  background: #0e1110;
+  border: 0;
+  position: relative;
+  overflow: clip;
+}
+.download-hero {
+  position: relative;
+  isolation: isolate;
+  text-align: center;
+  padding: 90px 20px 65px;
+  border-top: 1px solid #2b2e2d;
+}
+.download-hero::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset: 0 -80px;
+  background:
+    radial-gradient(ellipse 40% 70% at 50% 65%, #3c3f3e33, transparent),
+    linear-gradient(#a2a9a408 1px, transparent 1px),
+    linear-gradient(90deg, #a2a9a408 1px, transparent 1px);
+  background-size:
+    auto,
+    80px 80px,
+    80px 80px;
+  mask-image: radial-gradient(ellipse at center, #000, transparent 75%);
+}
+.download-hero .eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: #a0a9a3;
+  margin-bottom: 23px;
+}
+.download-hero h2 {
+  font-size: clamp(46px, 5vw, 69px);
+  font-weight: 550;
+  line-height: 1.08;
+  letter-spacing: -0.06em;
+}
+.download-hero h2 > span {
+  color: #d5ded8;
+}
+.download-intro {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #a4a6a5;
+  margin: 25px auto 28px;
+}
+.platform-options {
+  display: inline-flex;
+  gap: 5px;
+  border: 1px solid #3a3d3c;
+  border-radius: 30px;
+  padding: 5px;
+  margin: 0 0 15px;
+  background: #171a19;
+  min-width: 0;
+}
+.platform-options > label {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid transparent;
+  border-radius: 25px;
+  color: #9da19f;
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    background 0.25s,
+    color 0.25s,
+    border-color 0.25s;
+}
+.platform-options > label:hover {
+  background: #292c2b;
+  color: #e1e4e2;
+}
+.platform-options > label.is-selected {
+  background: #323534;
+  border-color: #5d625e;
+  color: #e6e9e7;
+}
+.platform-options input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+}
+.platform-options > label:focus-within {
+  outline: 2px solid #ccd8d0;
+  outline-offset: 3px;
+}
+.platform-mark {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.platform-options .platform-mark {
+  width: 14px;
+  height: 14px;
+}
+.download-mode {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  margin: 0 auto 23px;
+}
+.download-mode > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 0;
+  padding: 7px 13px;
+  border-bottom: 1px solid #3a3d3c;
+  background: transparent;
+  color: #8b8f8c;
+  font-size: 10px;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}

@@ -1,0 +1,146 @@
+@media (max-width: 760px) {
+  .focused-showcase {
+    padding: 60px 0;
+  }
+  .focus-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+  .focus-heading .eyebrow {
+    font-size: 7px;
+    margin-bottom: 18px;
+  }
+  .focus-heading h2 {
+    font-size: 34px;
+  }
+  .focus-heading > p {
+    font-size: 12px;
+    line-height: 1.85;
+    margin-top: 18px;
+  }
+  .focus-rail {
+    width: 100%;
+    padding: 0;
+  }
+  .focus-rail-label {
+    display: none;
+  }
+  .focus-rail .focus-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-bottom: 1px solid #373a39;
+    gap: 8px;
+  }
+  .focus-tabs > button {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 1px 14px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+  }
+  .focus-tabs > button[aria-selected='true'] {
+    border-bottom: 2px solid #b5beb7;
+  }
+  .focus-tabs > button::before,
+  .focus-tabs.is-advancing > button[aria-selected='true']::after {
+    display: none;
+  }
+  .focus-tab-icon > .icon {
+    width: 16px;
+    height: 16px;
+  }
+  .focus-tab-body > strong {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .focus-tab-body > span,
+  .focus-tabs > button[aria-selected='true'] .focus-tab-body > span,
+  .focus-tab-number {
+    display: none;
+  }
+  .focus-tour {
+    padding: 17px 0 0;
+    border: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    align-items: center;
+  }
+  .focus-tour > button {
+    font-size: 10px;
+    gap: 7px;
+    white-space: nowrap;
+  }
+  .tour-play {
+    width: 25px;
+    height: 25px;
+  }
+  .focus-tour > small {
+    font-size: 7px;
+    text-align: right;
+    margin-top: 0;
+    max-width: 150px;
+  }
+  .focus-guide {
+    display: none;
+  }
+  .focus-panel-stack {
+    width: 100%;
+  }
+  .focus-shot {
+    aspect-ratio: 1.5;
+  }
+  .focus-shot-timeline > img {
+    width: 210%;
+    top: -10%;
+  }
+  .focus-shot-diffs > img {
+    width: 210%;
+    top: -24%;
+  }
+  .focus-viewer-bar > span {
+    font-size: 8px;
+  }
+  .capture-expand > span {
+    display: inline;
+  }
+  .focus-image-label {
+    font-size: 6px;
+  }
+  .focus-image-label > span:last-child {
+    display: inline;
+  }
+  .focus-caption {
+    padding-top: 20px;
+  }
+  .focus-caption h3 {
+    font-size: 23px;
+  }
+  .focus-caption > p {
+    font-size: 11px;
+  }
+  .focus-accuracy {
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 8px;
+    align-items: flex-start;
+    margin-top: 25px;
+    padding-top: 20px;
+  }
+  .focus-accuracy > .icon {
+    margin-top: 2px;
+  }
+  .capture-dialog-bar {
+    padding: 10px 14px;
+  }
+  .capture-dialog-image {
+    padding: 8px;
+  }
+  .capture-dialog > p {
+    padding: 10px 14px;
+    font-size: 9px;
+  }
+}

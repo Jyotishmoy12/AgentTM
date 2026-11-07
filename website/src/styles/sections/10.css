@@ -1,0 +1,172 @@
+@media (max-width: 620px) {
+  .download-mode > button {
+    font-size: 9px;
+  }
+}
+@media (max-width: 620px) {
+  .download-primary {
+    max-width: 330px;
+  }
+}
+@media (max-width: 620px) {
+  .download-ribbon {
+    font-size: 6px;
+    padding: 9px 6px;
+  }
+}
+@media (max-width: 620px) {
+  .download-main-button {
+    padding: 18px 19px;
+    gap: 12px;
+  }
+}
+@media (max-width: 620px) {
+  .download-main-button > .platform-mark {
+    width: 23px;
+    height: 23px;
+  }
+}
+@media (max-width: 620px) {
+  .download-main-button > span {
+    font-size: 13px;
+  }
+}
+@media (max-width: 620px) {
+  .download-main-button small {
+    font-size: 7px;
+    line-height: 1.6;
+  }
+}
+@media (max-width: 620px) {
+  .download-main-button > .icon {
+    width: 13px;
+    height: 13px;
+  }
+}
+@media (max-width: 620px) {
+  .release-destination {
+    font-size: 7px;
+  }
+}
+@media (max-width: 620px) {
+  .platform-guide-link {
+    font-size: 10px;
+    margin: 18px 0;
+  }
+}
+@media (max-width: 620px) {
+  .download-prerequisites {
+    font-size: 8px;
+    line-height: 1.9;
+    max-width: 300px;
+  }
+}
+@media (max-width: 620px) {
+  .install-journey {
+    padding: 22px 22px 0;
+  }
+}
+@media (max-width: 620px) {
+  .journey-heading {
+    gap: 13px;
+  }
+}
+@media (max-width: 620px) {
+  .journey-heading > .eyebrow {
+    font-size: 7px;
+    line-height: 1.7;
+  }
+}
+@media (max-width: 620px) {
+  .journey-heading > h3 {
+    font-size: 24px;
+  }
+}
+@media (max-width: 620px) {
+  .journey-heading > a {
+    margin: 0;
+    font-size: 9px;
+  }
+}
+@media (max-width: 620px) {
+  .install-journey > ol {
+    grid-template-columns: 1fr;
+    margin-top: 23px;
+  }
+}
+@media (max-width: 620px) {
+  .install-journey li,
+  .install-journey li + li,
+  .install-journey li:last-child {
+    padding: 23px 0;
+    border: 0;
+    border-bottom: 1px solid #373a39;
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 5px 10px;
+  }
+}
+@media (max-width: 620px) {
+  .install-journey li:last-child {
+    border-bottom: 0;
+  }
+}
+@media (max-width: 620px) {
+  .journey-step-number {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 4px 0 0;
+    font-size: 8px;
+  }
+}
+@media (max-width: 620px) {
+  .install-journey li > .icon {
+    display: none;
+  }
+}
+@media (max-width: 620px) {
+  .install-journey h4 {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+}
+@media (max-width: 620px) {
+  .install-journey li > p {
+    grid-column: 2;
+    font-size: 11px;
+  }
+}
+@media (max-width: 620px) {
+  .install-reference-heading {
+    padding-top: 44px;
+  }
+}
+@media (max-width: 620px) {
+  .install-reference-heading > .eyebrow {
+    font-size: 7px;
+    line-height: 1.8;
+  }
+}
+@media (max-width: 620px) {
+  .install-reference-heading h3 {
+    font-size: 26px;
+  }
+}
+@media (max-width: 620px) {
+  .install-reference-heading > p {
+    font-size: 11px;
+    line-height: 1.8;
+  }
+}
+@media (max-width: 620px) {
+  .editorial-install .docs-sidebar {
+    padding: 16px 12px 12px;
+  }
+}
+@media (max-width: 620px) {
+  .editorial-install .docs-sidebar-heading {
+    padding-left: 5px;
+  }
+}

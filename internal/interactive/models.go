@@ -6,16 +6,6 @@ import (
 	"time"
 )
 
-type Model struct {
-	Model           string   `json:"model"`
-	DisplayName     string   `json:"displayName"`
-	IsDefault       bool     `json:"isDefault"`
-	Hidden          bool     `json:"hidden"`
-	InputModalities []string `json:"inputModalities"`
-}
-
-// ListModels queries Codex's current catalog without starting a thread or turn.
-// The catalog is discovery, not a guarantee that every request will be accepted.
 func ListModels(ctx context.Context, executable, root string) ([]Model, error) {
 	ctx, cancel := context.WithTimeout(ctx, 45*time.Second)
 	defer cancel()

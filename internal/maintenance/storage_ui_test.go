@@ -102,7 +102,6 @@ func TestRestoreMissingAndMalformedArchivesNeverPublishHistory(t *testing.T) {
 	e := historyFixture(t)
 	_, _ = captureFile(t, e, "source history")
 	target := historyFixture(t).Root
-	// Existing history is refused even before considering an invalid archive.
 	if err := RestoreBackup(context.Background(), filepath.Join(t.TempDir(), "missing.age"), target, "test passphrase"); err == nil {
 		t.Fatal("existing history accepted")
 	}
@@ -110,7 +109,6 @@ func TestRestoreMissingAndMalformedArchivesNeverPublishHistory(t *testing.T) {
 	if _, err := os.Stat(clean); err != nil {
 		t.Fatal(err)
 	}
-	// Initialize a separate disposable repository without .agenttm history.
 	if output, err := project.Git(clean, "init"); err != nil {
 		t.Fatalf("%s: %v", output, err)
 	}

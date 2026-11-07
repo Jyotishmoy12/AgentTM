@@ -10,13 +10,6 @@ import (
 	"agenttm/internal/project"
 )
 
-type Report struct {
-	Checkpoints int      `json:"checkpoints"`
-	Objects     int      `json:"objects"`
-	Problems    []string `json:"problems"`
-	Warnings    []string `json:"warnings"`
-}
-
 func (e *Engine) Doctor() Report {
 	r := Report{Problems: []string{}, Warnings: []string{}}
 	var uncertain, invalid int

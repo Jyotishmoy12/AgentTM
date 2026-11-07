@@ -1,121 +1,12 @@
 package snapshot
 
 import (
-	"agenttm/internal/project"
-	"bytes"
 	"context"
 	"fmt"
 	"io"
 	"os"
-	"path"
-	"sort"
 	"strings"
 )
-
-type limitedBuffer struct {
-	bytes.Buffer
-	max int
-}
-
-func (b *limitedBuffer) Write(p []byte) (int, error) {
-	if len(p) > b.max-b.Len() {
-		return 0, fmt.Errorf("Git candidate list exceeds 16 MiB")
-	}
-	return b.Buffer.Write(p)
-}
-func candidates(ctx context.Context, root string) ([]string, error) {
-	cmd := project.Command(ctx, root, "-c", "core.fsmonitor=false", "ls-files", "--cached", "--others", "--exclude-standard", "-z")
-	b := &limitedBuffer{max: 16 << 20}
-	cmd.Stdout = b
-	cmd.Stderr = io.Discard
-	if err := cmd.Run(); err != nil {
-		return nil, fmt.Errorf("cannot enumerate Git snapshot candidates: %w", err)
-	}
-	unique := map[string]bool{}
-	for _, v := range strings.Split(b.String(), "\x00") {
-		if v != "" {
-			unique[strings.TrimSuffix(v, "/")] = true
-		}
-	}
-	if len(unique) > MaxFiles {
-		return nil, fmt.Errorf("snapshot candidate limit exceeded (%d)", MaxFiles)
-	}
-	out := make([]string, 0, len(unique))
-	for v := range unique {
-		out = append(out, v)
-	}
-	sort.Strings(out)
-	return out, nil
-}
-func glob(pattern, p string) bool {
-	var match func([]string, []string) bool
-	type key struct{ a, b int }
-	memo := map[key]bool{}
-	done := map[key]bool{}
-	match = func(a, b []string) bool {
-		k := key{len(a), len(b)}
-		if done[k] {
-			return memo[k]
-		}
-		done[k] = true
-		result := false
-		if len(a) == 0 {
-			result = len(b) == 0
-		} else if a[0] == "**" {
-			result = match(a[1:], b) || len(b) > 0 && match(a, b[1:])
-		} else if len(b) > 0 {
-			ok, _ := path.Match(a[0], b[0])
-			result = ok && match(a[1:], b[1:])
-		}
-		memo[k] = result
-		return result
-	}
-	if !strings.Contains(pattern, "/") {
-		for _, part := range strings.Split(p, "/") {
-			ok, _ := path.Match(pattern, part)
-			if ok {
-				return true
-			}
-		}
-		return false
-	}
-	return match(strings.Split(pattern, "/"), strings.Split(p, "/"))
-}
-func (e *Engine) excluded(p string) string {
-	parts := strings.Split(strings.ToLower(p), "/")
-	dirs := map[string]bool{"node_modules": true, "vendor": true, "dist": true, "build": true, "target": true, ".cache": true, "__pycache__": true, ".venv": true, "venv": true, "coverage": true, ".next": true, "bin": true, "obj": true}
-	for _, part := range parts {
-		if dirs[part] {
-			return "dependency/build/cache exclusion"
-		}
-		if part == ".aws" || part == ".ssh" {
-			return "secret exclusion"
-		}
-	}
-	name := parts[len(parts)-1]
-	if strings.HasPrefix(name, ".env") || name == "id_rsa" || name == "id_ed25519" || name == "id_dsa" || name == "credentials" || name == "credentials.json" || name == ".npmrc" || name == ".netrc" || name == ".pypirc" || name == ".git-credentials" {
-		return "secret exclusion"
-	}
-	for _, suffix := range []string{".pem", ".key", ".p12", ".pfx"} {
-		if strings.HasSuffix(name, suffix) {
-			return "secret exclusion"
-		}
-	}
-	for _, pattern := range e.Config.Exclude {
-		if glob(pattern, p) {
-			return "configured exclusion"
-		}
-	}
-	return ""
-}
-func internalPath(p string) bool {
-	for _, v := range strings.Split(strings.ToLower(p), "/") {
-		if v == ".git" || v == ".agenttm" {
-			return true
-		}
-	}
-	return false
-}
 
 func (e *Engine) scan(ctx context.Context) (Manifest, error) {
 	m := Manifest{Files: []File{}, Omissions: []Omission{}}
@@ -152,8 +43,6 @@ func (e *Engine) scan(ctx context.Context) (Manifest, error) {
 			continue
 		}
 		blocked := ""
-		// Inspect all parents before reading; OpenRoot additionally prevents escape
-		// if a parent is swapped for an outside symlink between these operations.
 		parts := strings.Split(p, "/")
 		for i := 1; i <= len(parts); i++ {
 			sub := strings.Join(parts[:i], "/")
@@ -180,7 +69,6 @@ func (e *Engine) scan(ctx context.Context) (Manifest, error) {
 				}
 			}
 		}
-		// A tracked file absent in the working tree is a deletion, not an omission.
 		if blocked == "missing" {
 			continue
 		}

@@ -1,0 +1,168 @@
+html {
+  scroll-padding-top: 84px;
+}
+.marketing-site section[id] {
+  scroll-margin-top: 0;
+}
+.focused-showcase {
+  background: #0d100f;
+  padding: 88px 0 92px;
+  border-block: 1px solid #292c2b70;
+}
+.focus-heading {
+  display: block;
+  margin-bottom: 26px;
+}
+.focus-heading .eyebrow {
+  color: #949e98;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  margin-bottom: 18px;
+}
+.focus-heading h2 {
+  font-size: 35px;
+  line-height: 1.18;
+  letter-spacing: -0.045em;
+  font-weight: 500;
+}
+.focus-heading h2 > span {
+  color: #a7aba8;
+}
+.focus-heading > p {
+  font-size: 12px;
+  line-height: 1.85;
+  color: #9a9d9b;
+  padding-bottom: 5px;
+  margin-top: 17px;
+}
+.focus-layout {
+  display: grid;
+  grid-template-columns: 275px minmax(0, 1fr);
+  gap: 55px;
+  align-items: start;
+}
+.focus-rail {
+  padding-top: 8px;
+  min-width: 0;
+}
+.focus-rail-label {
+  color: #696e6b;
+  font:
+    7px Consolas,
+    monospace;
+  letter-spacing: 1.1px;
+  margin-bottom: 13px;
+}
+.focus-rail .focus-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.focus-tabs > button {
+  position: relative;
+  overflow: visible;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 21px 0;
+  min-height: 0;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #2f3231;
+  border-radius: 0;
+  color: #7b7f7d;
+  transition: color 0.25s;
+}
+.focus-tabs > button[aria-selected='true'] {
+  background: transparent;
+  border-color: #414443;
+  color: #d7dbd8;
+  box-shadow: none;
+}
+.focus-tabs > button:hover {
+  background: transparent;
+  color: #e0e2e1;
+}
+.focus-tabs > button::before {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 23px;
+  bottom: 23px;
+  width: 2px;
+  background: #b5bfb9;
+  border-radius: 2px;
+  opacity: 0;
+}
+.focus-tabs > button[aria-selected='true']::before {
+  opacity: 0.65;
+}
+.focus-tabs.is-advancing > button[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  top: 23px;
+  bottom: 23px;
+  left: -15px;
+  right: auto;
+  width: 2px;
+  height: auto;
+  background: #e2e8e3;
+  transform-origin: top;
+  animation: focus-progress 3s linear forwards;
+}
+.focus-tab-icon {
+  padding-top: 1px;
+  flex-shrink: 0;
+}
+.focus-tab-icon > .icon {
+  width: 17px;
+  height: 17px;
+  color: inherit;
+}
+.focus-tab-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.focus-tab-body > strong {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: inherit;
+  letter-spacing: -0.2px;
+}
+.focus-tab-body > span {
+  display: none;
+  color: #9ea3a0;
+  font-size: 11px;
+  line-height: 1.85;
+  margin-top: 9px;
+  max-width: 215px;
+}
+.focus-tabs > button[aria-selected='true'] .focus-tab-body > span {
+  display: block;
+  animation: text-arrive 0.3s ease both;
+}
+.focus-tab-number {
+  color: #606562;
+  font:
+    8px Consolas,
+    monospace;
+  margin: 4px 0 0 auto;
+}
+.focus-tabs > button[aria-selected='true'] .focus-tab-number {
+  color: #a2a7a3;
+}
+.focus-tour {
+  border-bottom: 1px solid #2f3231;
+  padding: 23px 0 21px;
+}

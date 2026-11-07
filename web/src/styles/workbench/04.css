@@ -1,0 +1,174 @@
+.comparison-editor {
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+.comparison-fallback {
+  min-height: 0;
+  overflow: auto;
+  padding: 15px;
+}
+.comparison-fallback pre {
+  white-space: pre;
+  overflow: auto;
+  color: #adc1d9;
+  font-size: 12px;
+}
+.inspection-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  min-height: 100px;
+  flex: 1;
+  padding: 24px;
+  color: #859bb5;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.inspection-empty h2 {
+  color: #beccdf;
+  font-size: 15px;
+  font-weight: 500;
+}
+.inspection-empty p {
+  max-width: 400px;
+}
+.workbench-context {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #1d252f;
+}
+.workbench-context .activity-panel {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  background: #1d252f;
+  border: 0;
+  display: flex;
+}
+.workspace-context .panel-heading {
+  height: 40px;
+  min-height: 40px;
+  padding: 0 13px;
+  background: #252e3a;
+}
+.workspace-context .panel-heading button {
+  border: 0;
+  background: transparent;
+  font-size: 19px;
+  padding: 0 2px;
+  color: #9eb0c8;
+}
+.workspace-context .activity-content {
+  padding: 17px 14px;
+}
+.context-section-label {
+  color: #8298b2;
+  font:
+    11px Consolas,
+    monospace;
+  letter-spacing: 0.7px;
+  margin-bottom: 7px;
+}
+.workspace-context .activity-content h3 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #d1dded;
+  line-height: 1.6;
+}
+.workspace-context .details {
+  grid-template-columns: 66px minmax(0, 1fr);
+  gap: 10px 7px;
+  font-size: 11px;
+  margin: 19px 0;
+}
+.workspace-context .details dt {
+  color: #8298b4;
+}
+.workspace-context .details dd {
+  color: #c0d0e4;
+}
+.workspace-context .activity-content h4 {
+  font-size: 10px;
+  color: #8ca3c1;
+  margin-bottom: 9px;
+}
+.context-observation > p {
+  font-size: 11px;
+  line-height: 1.9;
+  color: #9bb1c9;
+}
+.workspace-context .warning-box {
+  font-size: 11px;
+  padding: 11px;
+  margin-top: 12px;
+  background: #332d20;
+  border-color: #695b37;
+  color: #d5bf89;
+}
+.workspace-context .warning-box details {
+  margin-top: 9px;
+}
+.workspace-context .warning-box li {
+  font-size: 10px;
+  overflow-wrap: anywhere;
+  margin: 5px 0;
+}
+.workspace-context .warning-box ul {
+  padding-left: 13px;
+}
+.workspace-context .warning-box code {
+  font-size: 10px;
+}
+.workspace-context .changed-paths {
+  font-size: 11px;
+  line-height: 1.9;
+  color: #abc59c;
+}
+.workspace-context .payload-text {
+  font-size: 11px;
+  background: #141b24;
+  border-color: #35465b;
+}
+.workspace-context .attribution-note {
+  font-size: 10px;
+  color: #7f96b3;
+  border-color: #3a4759;
+}
+.context-restore {
+  padding: 13px;
+  border-top: 1px solid #3a4657;
+  background: #222c37;
+  flex-shrink: 0;
+}
+.context-restore > button {
+  width: 100%;
+  padding: 9px 8px;
+  font-size: 12px;
+}
+.context-restore > small {
+  display: block;
+  margin-top: 9px;
+  font-size: 10px;
+  line-height: 1.8;
+  color: #879fbb;
+}
+.workbench-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 13px;
+  min-height: 30px;
+  border-top: 1px solid #323e4f;
+  flex-shrink: 0;
+  background: #202832;
+  font-size: 10px;
+  color: #8099b5;
+}

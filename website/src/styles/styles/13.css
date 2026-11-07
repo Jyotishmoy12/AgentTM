@@ -1,0 +1,171 @@
+@media (max-width: 620px) {
+  .command-steps {
+    padding-left: 29px;
+    margin-top: 25px;
+  }
+}
+@media (max-width: 620px) {
+  .command-number {
+    left: -29px;
+    width: 21px;
+    height: 21px;
+  }
+}
+@media (max-width: 620px) {
+  .command-steps li::before {
+    left: -19px;
+  }
+}
+@media (max-width: 620px) {
+  .command-steps p {
+    font-size: 10px;
+  }
+}
+@media (max-width: 620px) {
+  .code-block {
+    padding: 9px 7px 9px 9px;
+    gap: 7px;
+  }
+}
+@media (max-width: 620px) {
+  .code-block pre {
+    font-size: 10px;
+  }
+}
+@media (max-width: 620px) {
+  .code-block .icon-button {
+    width: 24px;
+    height: 24px;
+  }
+}
+@media (max-width: 620px) {
+  .docs-content > .docs-footnote {
+    font-size: 10px;
+    line-height: 1.9;
+  }
+}
+@media (max-width: 620px) {
+  .command-steps li {
+    padding-bottom: 19px;
+  }
+}
+@media (max-width: 620px) {
+  .requirements li {
+    font-size: 12px;
+  }
+}
+@media (max-width: 620px) {
+  .requirements li p,
+  .prose-steps,
+  .safety-list,
+  .docs-callout {
+    font-size: 11px;
+  }
+}
+@media (max-width: 620px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 620px) {
+  .feature-grid article,
+  .feature-grid article:nth-child(3n),
+  .feature-grid article:nth-child(2n) {
+    border-right: 0;
+    border-bottom: 1px solid #2b2e2d;
+  }
+}
+@media (max-width: 620px) {
+  .feature-grid article:last-child {
+    border-bottom: 0;
+  }
+}
+@media (max-width: 620px) {
+  .feature-grid article {
+    padding: 25px;
+  }
+}
+@media (max-width: 620px) {
+  .feature-grid article > .icon {
+    margin-bottom: 20px;
+  }
+}
+@media (max-width: 620px) {
+  .feature-grid h3 {
+    font-size: 18px;
+  }
+}
+@media (max-width: 620px) {
+  .feature-grid p {
+    font-size: 12px;
+  }
+}
+@media (max-width: 620px) {
+  .feature-footnote {
+    font-size: 9px;
+  }
+}
+@media (max-width: 620px) {
+  .final-cta {
+    padding: 65px 0 70px;
+  }
+}
+@media (max-width: 620px) {
+  .final-cta .eyebrow {
+    font-size: 8px;
+  }
+}
+@media (max-width: 620px) {
+  .final-cta h2 {
+    font-size: 34px;
+  }
+}
+@media (max-width: 620px) {
+  .final-cta img {
+    width: 43px;
+    height: 43px;
+  }
+}
+@media (max-width: 620px) {
+  .final-cta .platform-note {
+    font-size: 9px;
+    max-width: 290px;
+    margin-inline: auto;
+  }
+}
+@media (max-width: 620px) {
+  .footer-top {
+    align-items: flex-start;
+    gap: 28px;
+  }
+}
+@media (max-width: 620px) {
+  .footer-top nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 17px 20px;
+    font-size: 10px;
+  }
+}
+@media (max-width: 620px) {
+  .footer-top .brand {
+    font-size: 19px;
+  }
+}
+@media (max-width: 620px) {
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+@media (max-width: 620px) {
+  .site-footer {
+    padding-block: 30px 25px;
+  }
+}
+@media (max-width: 620px) {
+  .footer-bottom p {
+    font-size: 9px;
+  }
+}

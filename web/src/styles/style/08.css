@@ -1,0 +1,67 @@
+.fork-dialog::backdrop {
+  background: #06090dcc;
+  backdrop-filter: blur(3px);
+}
+.fork-dialog-header h2 {
+  font-size: 21px;
+  margin-top: 9px;
+}
+.fork-dialog-header p {
+  color: #95a6bb;
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 12px 0 24px;
+}
+.fork-dialog label {
+  display: block;
+  font-size: 11px;
+  color: #a8b8cc;
+  margin: 14px 0 7px;
+}
+.fork-dialog input:not([type='checkbox']) {
+  width: 100%;
+  padding: 10px;
+}
+.fork-destination {
+  display: block;
+  padding: 12px;
+  margin: 7px 0 12px;
+  color: #c8e1b5;
+  border: 1px solid #354a32;
+  border-radius: 6px;
+  background: #172018;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+  font-size: 11px;
+}
+.fork-dialog .muted {
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.fork-description {
+  color: #95a6bb;
+  font-size: 11px;
+  line-height: 1.9;
+  margin: 20px 0;
+}
+.partial-consent {
+  display: flex !important;
+  gap: 9px;
+  align-items: flex-start;
+  line-height: 1.8;
+  color: #e6d29e !important;
+}
+.partial-consent input {
+  margin-top: 4px;
+  accent-color: #c1e6a1;
+}
+.fork-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+.fork-success {
+  color: #c1e6a1;
+  margin-bottom: 18px;
+}

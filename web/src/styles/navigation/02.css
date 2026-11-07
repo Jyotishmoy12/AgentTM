@@ -1,0 +1,172 @@
+.overview-welcome {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 30px;
+  border: 1px solid #354532;
+  background: linear-gradient(120deg, #1a251e, #111922);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 22px;
+}
+.overview-welcome h2 {
+  font-size: 25px;
+  letter-spacing: -0.7px;
+  font-weight: 500;
+  margin: 13px 0;
+}
+.overview-welcome p {
+  color: #a4b5aa;
+  font-size: 12px;
+  line-height: 1.9;
+  max-width: 420px;
+}
+.overview-welcome button {
+  margin-top: 23px;
+  font-size: 11px;
+  padding: 10px 14px;
+}
+.overview-welcome button span {
+  margin-left: 16px;
+}
+.overview-recording {
+  align-self: center;
+  border: 1px solid #334138;
+  background: #0c1312;
+  border-radius: 9px;
+  padding: 22px;
+}
+.overview-recording code {
+  display: block;
+  margin: 18px 0;
+  color: #c6e0b4;
+  font-size: 11px;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+.overview-recording p {
+  font-size: 10px;
+}
+.overview-recording .eyebrow {
+  font-size: 8px;
+}
+.overview-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 30px;
+}
+.overview-step {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background: #111823;
+  border: 1px solid var(--line);
+  padding: 21px;
+  border-radius: 9px;
+  gap: 13px;
+}
+.overview-step > .eyebrow {
+  color: #a9c397;
+}
+.overview-step h3 {
+  font-size: 13px;
+  font-weight: 500;
+}
+.overview-step p {
+  font-size: 11px;
+  line-height: 1.9;
+  color: #91a2b8;
+}
+.step-link {
+  margin-top: auto;
+  color: #bcd7a8;
+  font-size: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 9px;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+.section-title h2 {
+  font-size: 14px;
+  font-weight: 500;
+}
+.section-title p {
+  font-size: 10px;
+  color: #8193aa;
+  line-height: 1.8;
+  margin-top: 7px;
+}
+.section-title .text-button {
+  white-space: nowrap;
+}
+.session-cards {
+  display: grid;
+  gap: 9px;
+}
+.session-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 17px 18px;
+  text-align: left;
+  background: #111721;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.session-symbol {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: #1b2330;
+  border: 1px solid #2e3b4e;
+  border-radius: 7px;
+  color: #94a9c2;
+}
+.session-symbol svg {
+  width: 18px;
+  height: 18px;
+}
+.session-summary-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+}
+.session-summary strong {
+  font-size: 12px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.session-summary-main > span {
+  font-size: 10px;
+  color: #8193aa;
+}
+.session-summary-main > span > span {
+  margin: 0 6px;
+}
+.session-summary > .status-pill {
+  flex-shrink: 0;
+}
+.overview-footnote {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-size: 9px;
+  color: #718398;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  margin-top: 25px;
+}
+.navigation-shell .session-bar {
+  min-height: 54px;
+  padding: 10px 25px;
+}
