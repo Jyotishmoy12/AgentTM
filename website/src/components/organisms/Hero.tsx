@@ -17,6 +17,7 @@ export function Hero() {
           <span className="status-dot" /> Public beta <span className="pill-divider">/</span> Your
           agent’s history, on your device <Icon name="arrow" />
         </a>
+        <ProductHuntBadge />
         <p className="eyebrow">LOCAL-FIRST · CODEX SESSION HISTORY</p>
         <h1 id="hero-title">
           Your agent moved fast.
@@ -44,7 +45,6 @@ export function Hero() {
           </span>{' '}
           Watch the 30-second demo <Icon name="arrow" />
         </button>
-        <ProductHuntBadge />
         <div className="hero-preview">
           <span className="preview-corner corner-tl" aria-hidden="true" />
           <span className="preview-corner corner-tr" aria-hidden="true" />
