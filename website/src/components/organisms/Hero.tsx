@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { links } from '../../content';
 import { Icon } from '../atoms/Icon';
+import { ProductHuntBadge } from '../molecules/ProductHuntBadge';
 import { AmbientField } from './AmbientField';
 import { DemoVideo } from './DemoVideo';
 import { ProductPreview } from './ProductPreview';
@@ -43,6 +44,7 @@ export function Hero() {
           </span>{' '}
           Watch the 30-second demo <Icon name="arrow" />
         </button>
+        <ProductHuntBadge />
         <div className="hero-preview">
           <span className="preview-corner corner-tl" aria-hidden="true" />
           <span className="preview-corner corner-tr" aria-hidden="true" />
