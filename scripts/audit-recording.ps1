@@ -13,8 +13,13 @@ if ($InspectExistingAudit) {
     if ((Split-Path -Leaf $repo) -notmatch '^agenttm-recording-audit-[0-9a-f-]{36}$') { throw 'Only an existing disposable audit directory is accepted.' }
 } else { New-Item -ItemType Directory -Path $repo | Out-Null }
 function Checked([string[]]$Arguments) {
-    & $exe @Arguments
-    if ($LASTEXITCODE -ne 0) { throw "agenttm command failed: $($Arguments[0])" }
+    $previousPreference=$ErrorActionPreference
+    try {
+        $ErrorActionPreference='Continue'
+        & $exe @Arguments
+        $commandCode=$LASTEXITCODE
+    } finally { $ErrorActionPreference=$previousPreference }
+    if ($commandCode -ne 0) { throw "agenttm command failed: $($Arguments[0])" }
 }
 Push-Location $repo
 try {
@@ -23,7 +28,7 @@ try {
     git config user.name 'AgentTM audit'
     git config user.email 'audit@example.invalid'
     [IO.File]::WriteAllText((Join-Path $repo 'note.txt'),"original audit content`n")
-    git add note.txt
+    git -c core.autocrlf=false add note.txt
     git commit -m 'Disposable audit baseline'
     if ($LASTEXITCODE -ne 0) { throw 'Disposable Git setup failed.' }
     [IO.File]::WriteAllText((Join-Path $repo '.env'),'AGENTTM_SYNTHETIC_SECRET=never-snapshot-this')
