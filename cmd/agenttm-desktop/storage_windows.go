@@ -60,11 +60,11 @@ func (d *Desktop) RestoreHistory(password string) (string, error) {
 	if destination == "" {
 		return "", nil
 	}
-	answer, err := runtime.MessageDialog(d.ctx, runtime.MessageDialogOptions{Type: runtime.QuestionDialog, Title: "Restore encrypted history?", Message: "Restore AgentTM history into:\n" + destination + "\n\nThe destination must be a Git repository with no .agenttm directory. Project files and Git history are not included in this backup.", Buttons: []string{"Restore", "Cancel"}, DefaultButton: "Cancel", CancelButton: "Cancel"})
+	confirmed, err := confirmNativeAction(d.ctx, "Restore encrypted history?", "Restore AgentTM history into:\n"+destination+"\n\nThe destination must be a Git repository with no .agenttm directory. Project files and Git history are not included in this backup.", runtime.MessageDialog)
 	if err != nil {
 		return "", err
 	}
-	if answer != "Restore" {
+	if !confirmed {
 		return "", nil
 	}
 	if err = maintenance.RestoreBackup(d.ctx, archive, destination, password); err != nil {

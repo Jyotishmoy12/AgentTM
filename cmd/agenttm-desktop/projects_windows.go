@@ -27,12 +27,8 @@ func (d *Desktop) ChooseProject() (bool, error) {
 	return d.chooseProject(func() (string, error) {
 		return runtime.OpenDirectoryDialog(d.ctx, runtime.OpenDialogOptions{Title: "Choose an existing Git project"})
 	}, func(root string) (bool, error) {
-		answer, err := runtime.MessageDialog(d.ctx, runtime.MessageDialogOptions{
-			Type: runtime.QuestionDialog, Title: "Initialize AgentTM history?",
-			Message: "Create local AgentTM history in:\n" + root + "\n\nThis creates .agenttm and adds it to the local Git exclusion file. It does not create a commit or change your tracked files.",
-			Buttons: []string{"Initialize", "Cancel"}, DefaultButton: "Cancel", CancelButton: "Cancel",
-		})
-		return answer == "Initialize", err
+		return confirmNativeAction(d.ctx, "Initialize AgentTM history?",
+			"Create local AgentTM history in:\n"+root+"\n\nThis creates .agenttm and adds it to the local Git exclusion file. It does not create a commit or change your tracked files.", runtime.MessageDialog)
 	})
 }
 

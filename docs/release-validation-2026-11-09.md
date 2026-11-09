@@ -3,6 +3,13 @@
 Test date: 9 November 2026. Published release and source commit:
 `f0fa07013bb9e5c9e93ec789227d6f8881b287d4`.
 
+**Follow-up correction:** real native dialog testing subsequently found a Windows
+confirmation-label bug affecting first-time initialization and backup restore.
+The source fix and actual native retests are recorded in the
+[Windows native follow-up](windows-native-validation-2026-11-09.md).
+The published v0.4.1 release does not contain that fix. The earlier checks below
+remain evidence for their stated scopes, not proof of those native flows.
+
 Assessment: suitable for early evaluation with the limitations below. This is
 not a guarantee of lossless capture, clean-machine compatibility, or exact
 per-operation before/after states.
