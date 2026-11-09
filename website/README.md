@@ -122,17 +122,20 @@ Build command: `npm ci && npm run build`, working directory: `website`, output:
 SPA rewrite, environment secret, or API service is required. Vite's relative base
 supports subdirectory hosting. Local builds do not publish anything.
 
-The hosting domain has not been selected. Before public deployment:
+The production origin is `https://agenttm.site`. Both HTML entry points contain
+canonical links and Open Graph/Twitter metadata. `public/sitemap.xml` lists the
+homepage and documentation page; `public/robots.txt` references the sitemap.
+Keep these URLs consistent if the domain changes. Query-based guide selections
+share the documentation page's canonical URL.
 
-1. Set the canonical URL and `og:url` in [index.html](index.html) to the real HTTPS URL.
-2. Replace the Open Graph/Twitter image URLs there with your hosted absolute
-   `images/video-poster.png` URL. The current fallback is AgentTM's original
-   publicly available repository artwork, not third-party imagery.
-3. Add a sitemap with that real domain and reference it from a robots.txt file.
-   Neither is generated with an invented hostname.
-4. Check release notes/assets before promoting a new release. Downloads deliberately
-   go to the version-independent official latest-release page; this website does
-   not assume that every release contains every platform asset.
+The social preview is `public/images/og-image.png` (1200×630), with editable SVG
+source beside it. Regenerate with `node scripts/render-og.mjs`; set
+`AGENTTM_BROWSER_PATH` to your Chrome executable or install Playwright Chromium.
+Deploy the entire `dist` directory so crawlers can retrieve these public assets.
+Social platforms may cache previews after deployment.
+
+Check release assets before promoting a new release. Downloads use GitHub's
+version-independent latest-release page.
 
 ## Content and assets
 

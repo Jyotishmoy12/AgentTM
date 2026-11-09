@@ -29,7 +29,10 @@ func TestRestoreRefusesPopulatedDisabledHooksDirectory(t *testing.T) {
 
 func TestMaterializeRejectsUnexpectedFiles(t *testing.T) {
 	s, _, m := setup(t, true)
-	dest := t.TempDir()
+	dest, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
 	put(t, dest, "unexpected.txt", "must not be silently accepted\n")
 	if err := s.materialize(context.Background(), dest, m); err == nil || !strings.Contains(err.Error(), "unexpected file") {
 		t.Fatalf("expected inventory failure, got %v", err)
